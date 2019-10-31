@@ -9,7 +9,7 @@ Simple Client for Intel Owl Project
 ### Library
 `pip3 install pyintelowl`
 
-`import pyintelowl`
+`from pyintelowl.pyintelowl import IntelOwl`
 
 
 ### Command line Client
