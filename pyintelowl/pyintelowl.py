@@ -55,7 +55,8 @@ class IntelOwl:
             errors.append(str(e))
         return {"errors": errors, "answer": answer}
 
-    def send_file_analysis_request(self, md5, analyzers_requested, filename, binary, force_privacy=False):
+    def send_file_analysis_request(self, md5, analyzers_requested, filename, binary,
+                                   force_privacy=False, disable_external_analyzers=False):
         answer = {}
         errors = []
         try:
@@ -63,6 +64,7 @@ class IntelOwl:
                 "md5": md5,
                 "analyzers_requested": analyzers_requested,
                 "force_privacy": force_privacy,
+                "disable_external_analyzers": disable_external_analyzers,
                 "is_sample": True,
                 "file_name": filename,
                 "file_mimetype": magic.from_buffer(binary, mime=True),
@@ -77,7 +79,8 @@ class IntelOwl:
             errors.append(str(e))
         return {"errors": errors, "answer": answer}
 
-    def send_observable_analysis_request(self, md5, analyzers_requested, observable_name, force_privacy=False):
+    def send_observable_analysis_request(self, md5, analyzers_requested, observable_name,
+                                         force_privacy=False, disable_external_analyzers=False):
         answer = {}
         errors = []
         try:
@@ -85,6 +88,7 @@ class IntelOwl:
                 "md5": md5,
                 "analyzers_requested": analyzers_requested,
                 "force_privacy": force_privacy,
+                "disable_external_analyzers": disable_external_analyzers,
                 "is_sample": False,
                 "observable_name": observable_name,
                 "observable_classification": get_observable_classification(observable_name),

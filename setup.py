@@ -10,7 +10,7 @@ README = (HERE / "README.md").read_text()
 # This call to setup() does all the work
 setup(
     name="pyintelowl",
-    version="0.1.0",
+    version="0.1.1",
     description="Client and Library for Intel Owl",
     long_description=README,
     long_description_content_type="text/markdown",

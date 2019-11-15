@@ -21,6 +21,8 @@ def intel_owl_client():
                         help="list of analyzers to launch")
     parser.add_argument("-p", "--force-privacy", action="store_true", default=False,
                         help="disable analyzers that could impact privacy")
+    parser.add_argument("-e", "--disable-external-analyzers", action="store_true", default=False,
+                        help="disable analyzers that use external services")
     parser.add_argument("-r", "--check-reported-analysis-too", action="store_true", default=False,
                         help="check reported analysis too, not only 'running' ones")
 
@@ -88,10 +90,12 @@ def intel_owl_client():
 
             if args.command == 'file':
                 api_request_result = pyintelowl_client.send_file_analysis_request(md5, args.analyzers_list, filename,
-                                                                                  binary, args.force_privacy)
+                                                                                  binary, args.force_privacy,
+                                                                                  args.disable_external_analyzers)
             elif args.command == 'observable':
                 api_request_result = pyintelowl_client.send_observable_analysis_request(md5, args.analyzers_list,
-                                                                                        args.value, args.force_privacy)
+                                                                                        args.value, args.force_privacy,
+                                                                                        args.disable_external_analyzers)
             else:
                 raise NotImplementedError()
 

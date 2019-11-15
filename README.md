@@ -1,10 +1,12 @@
 # pyintelowl
 
-Simple Client for Intel Owl Project
+Simple Client for the [Intel Owl Project](https://github.com/mlodic/intel_owl)
 
 2 ways to use it:
 * as a library
 * as a command line script
+
+You can select which analyzers you want to run for every analysis you perform.
 
 ### Library
 `pip3 install pyintelowl`
