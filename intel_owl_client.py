@@ -25,6 +25,8 @@ def intel_owl_client():
                         help="disable analyzers that use external services")
     parser.add_argument("-r", "--check-reported-analysis-too", action="store_true", default=False,
                         help="check reported analysis too, not only 'running' ones")
+    parser.add_argument("-s", "--skip-check-analysis-availability", action="store_true", default=False,
+                        help="skip check analysis availability")
 
     subparsers = parser.add_subparsers(help='choose type of analysis', dest='command')
     parser_sample = subparsers.add_parser('file', help='File analysis')
@@ -57,33 +59,34 @@ def intel_owl_client():
 
         pyintelowl_client = IntelOwl(args.api_key, args.certificate, args.instance, args.debug)
 
-        job_id_to_get = None
-        # first step: ask analysis availability
-        logger.info("about to request ask_analysis_availability for md5: {}, analyzers: {}"
-                    "".format(md5, args.analyzers_list))
         analysis_available = False
+        if not args.skip_check_analysis_availability:
+            job_id_to_get = None
+            # first step: ask analysis availability
+            logger.info("about to request ask_analysis_availability for md5: {}, analyzers: {}"
+                        "".format(md5, args.analyzers_list))
 
-        api_request_result = pyintelowl_client.ask_analysis_availability(md5, args.analyzers_list,
-                                                                         args.check_reported_analysis_too)
-        errors = api_request_result.get('errors', [])
-        if errors:
-            raise IntelOwlClientException("API ask_analysis_availability failed. Errors: {}"
-                                          "".format(errors))
-        answer = api_request_result.get('answer', {})
-        status = answer.get('status', '')
-        if not status:
-            raise IntelOwlClientException("API ask_analysis_availability gave result without status!?!?"
-                                          "answer:{}".format(answer))
-        elif status != 'not_available':
-            analysis_available = True
-            job_id_to_get = answer.get('job_id', '')
-            if job_id_to_get:
-                logger.info("found already existing job with id {} and status {} for md5 {} and analyzers {}"
-                            "".format(job_id_to_get, status, md5, args.analyzers_list))
-            else:
-                raise IntelOwlClientException(
-                    "API ask_analysis_availability gave result without job_id!?!? answer:{}"
-                    "".format(answer))
+            api_request_result = pyintelowl_client.ask_analysis_availability(md5, args.analyzers_list,
+                                                                             args.check_reported_analysis_too)
+            errors = api_request_result.get('errors', [])
+            if errors:
+                raise IntelOwlClientException("API ask_analysis_availability failed. Errors: {}"
+                                              "".format(errors))
+            answer = api_request_result.get('answer', {})
+            status = answer.get('status', '')
+            if not status:
+                raise IntelOwlClientException("API ask_analysis_availability gave result without status!?!?"
+                                              "answer:{}".format(answer))
+            elif status != 'not_available':
+                analysis_available = True
+                job_id_to_get = answer.get('job_id', '')
+                if job_id_to_get:
+                    logger.info("found already existing job with id {} and status {} for md5 {} and analyzers {}"
+                                "".format(job_id_to_get, status, md5, args.analyzers_list))
+                else:
+                    raise IntelOwlClientException(
+                        "API ask_analysis_availability gave result without job_id!?!? answer:{}"
+                        "".format(answer))
 
         # second step: in case there are no analysis available, start a new analysis
         if not analysis_available:
