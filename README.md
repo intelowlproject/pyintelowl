@@ -1,6 +1,6 @@
 # pyintelowl
 
-Simple Client for the [Intel Owl Project](https://github.com/mlodic/intel_owl)
+Simple Client for the [Intel Owl Project](https://github.com/certego/IntelOwl)
 
 2 ways to use it:
 * as a library
