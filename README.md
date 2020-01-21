@@ -1,5 +1,8 @@
 # pyintelowl
 
+[![PyPI version](https://badge.fury.io/py/pyintelowl.svg)](https://badge.fury.io/py/pyintelowl)
+[![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/mlodic/pyintelowl.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/mlodic/pyintelowl/context:python)
+
 Simple Client for the [Intel Owl Project](https://github.com/certego/IntelOwl)
 
 2 ways to use it:
