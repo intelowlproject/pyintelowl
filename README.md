@@ -29,15 +29,23 @@ You can select which analyzers you want to run for every analysis you perform.
 
 
 ### Command line Client
+
+#### Analyze
 2 Submodules: `file` and `observable`
 
-#### Sample
+##### Sample
 Example:
+
 `python3 intel_owl_client.py -k <api_key> -i <url> -a PE_Info -a File_Info file -f <path_to_file>`
 
 Run all available analyzers (some of them could fail if you did not implemented the required configuration in the IntelOwl server):
+
 `python3 intel_owl_client.py -k <api_key> -i <url> -aa file -f <path_to_file>`
 
-#### Observable
+##### Observable
 Example:
+
 `python3 intel_owl_client.py -k <api_key> -i <url> -a AbuseIPDB -a OTXQuery observable -v google.com`
+
+#### Get Analyzers Configuration
+`python3 intel_owl_client.py -k <api_key> -i <url> -gc`
