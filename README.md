@@ -25,6 +25,8 @@ You can select which analyzers you want to run for every analysis you perform.
 
 `ask_analysis_result` -> request analysis result by job ID
 
+`get_analyzer_configs` -> get the analyzers configuration
+
 
 ### Command line Client
 2 Submodules: `file` and `observable`
@@ -32,6 +34,9 @@ You can select which analyzers you want to run for every analysis you perform.
 #### Sample
 Example:
 `python3 intel_owl_client.py -k <api_key> -i <url> -a PE_Info -a File_Info file -f <path_to_file>`
+
+Run all available analyzers (some of them could fail if you did not implemented the required configuration in the IntelOwl server):
+`python3 intel_owl_client.py -k <api_key> -i <url> -aa file -f <path_to_file>`
 
 #### Observable
 Example:

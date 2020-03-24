@@ -30,7 +30,7 @@ class IntelOwl:
             session.verify = self.certificate
             session.headers.update({
                 'Authorization': 'Token {}'.format(self.api_key),
-                'User-Agent': 'IntelOwlClient/0.1',
+                'User-Agent': 'IntelOwlClient/0.2.0',
             })
             self._session = session
 
@@ -56,13 +56,15 @@ class IntelOwl:
         return {"errors": errors, "answer": answer}
 
     def send_file_analysis_request(self, md5, analyzers_requested, filename, binary,
-                                   force_privacy=False, disable_external_analyzers=False):
+                                   force_privacy=False, disable_external_analyzers=False,
+                                   run_all_available_analyzers=False):
         answer = {}
         errors = []
         try:
             data = {
                 "md5": md5,
                 "analyzers_requested": analyzers_requested,
+                "run_all_available_analyzers": run_all_available_analyzers,
                 "force_privacy": force_privacy,
                 "disable_external_analyzers": disable_external_analyzers,
                 "is_sample": True,
@@ -80,13 +82,15 @@ class IntelOwl:
         return {"errors": errors, "answer": answer}
 
     def send_observable_analysis_request(self, md5, analyzers_requested, observable_name,
-                                         force_privacy=False, disable_external_analyzers=False):
+                                         force_privacy=False, disable_external_analyzers=False,
+                                         run_all_available_analyzers=False):
         answer = {}
         errors = []
         try:
             data = {
                 "md5": md5,
                 "analyzers_requested": analyzers_requested,
+                "run_all_available_analyzers": run_all_available_analyzers,
                 "force_privacy": force_privacy,
                 "disable_external_analyzers": disable_external_analyzers,
                 "is_sample": False,
@@ -111,6 +115,19 @@ class IntelOwl:
             }
             url = self.instance + "/api/ask_analysis_result"
             response = self.session.get(url, params=params)
+            logger.debug(response.url)
+            response.raise_for_status()
+            answer = response.json()
+        except Exception as e:
+            errors.append(str(e))
+        return {"errors": errors, "answer": answer}
+
+    def get_analyzer_configs(self):
+        answer = {}
+        errors = []
+        try:
+            url = self.instance + "/api/get_analyzer_configs"
+            response = self.session.get(url)
             logger.debug(response.url)
             response.raise_for_status()
             answer = response.json()

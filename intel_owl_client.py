@@ -2,9 +2,10 @@ import argparse
 import hashlib
 import logging
 import os
-import pprint
 import requests
 import time
+
+from pprint import pprint
 
 from pyintelowl.pyintelowl import IntelOwl, IntelOwlClientException
 
@@ -17,8 +18,12 @@ def intel_owl_client():
     parser.add_argument("-i", "--instance", required=True, help="your instance URL")
     parser.add_argument("-d", "--debug", action="store_true", default=False, help="debug mode")
     parser.add_argument("-l", "--log-to-file", help="log to specified file")
-    parser.add_argument("-a", "--analyzers-list", required=True, action='append',
+    parser.add_argument("-gc", "--get-configuration", action="store_true", default=False,
+                        help="get analyzers configuration only")
+    parser.add_argument("-a", "--analyzers-list", action='append',
                         help="list of analyzers to launch")
+    parser.add_argument("-aa", "--run-all-available-analyzers", action="store_true", default=False,
+                        help="run all available and compatible analyzers")
     parser.add_argument("-p", "--force-privacy", action="store_true", default=False,
                         help="disable analyzers that could impact privacy")
     parser.add_argument("-e", "--disable-external-analyzers", action="store_true", default=False,
@@ -37,11 +42,20 @@ def intel_owl_client():
 
     args = parser.parse_args()
 
+    if not args.get_configuration:
+        if not args.analyzers_list and not args.run_all_available_analyzers:
+            print("you must specify at least an analyzer (-a) or every available analyzer (--aa)")
+            exit(2)
+        if args.analyzers_list and args.run_all_available_analyzers:
+            print("you must specify either --aa or -a, not both")
+            exit(3)
+
     logger = get_logger(args.debug, args.log_to_file)
 
     md5 = None
     results = []
     elapsed_time = None
+    get_configuration_only = False
     try:
         filename = None
         binary = None
@@ -54,10 +68,22 @@ def intel_owl_client():
             md5 = hashlib.md5(binary).hexdigest()
         elif args.command == 'observable':
             md5 = hashlib.md5(args.value.encode('utf-8')).hexdigest()
+        elif args.get_configuration:
+            get_configuration_only = True
         else:
             raise IntelOwlClientException("you must specify the type of the analysis: [observable, file]")
 
         pyintelowl_client = IntelOwl(args.api_key, args.certificate, args.instance, args.debug)
+
+        if get_configuration_only:
+            api_request_result = pyintelowl_client.get_analyzer_configs()
+            errors = api_request_result.get('errors', [])
+            if errors:
+                logger.error("API get_analyzer_configs failed. Errors: {}".format(errors))
+            analyzers_config = api_request_result.get('answer', {})
+            logger.info("extracted analyzer_configuration: {}".format(analyzers_config))
+            pprint(analyzers_config)
+            exit(0)
 
         analysis_available = False
         if not args.skip_check_analysis_availability:
@@ -94,11 +120,13 @@ def intel_owl_client():
             if args.command == 'file':
                 api_request_result = pyintelowl_client.send_file_analysis_request(md5, args.analyzers_list, filename,
                                                                                   binary, args.force_privacy,
-                                                                                  args.disable_external_analyzers)
+                                                                                  args.disable_external_analyzers,
+                                                                                  args.run_all_available_analyzers)
             elif args.command == 'observable':
                 api_request_result = pyintelowl_client.send_observable_analysis_request(md5, args.analyzers_list,
                                                                                         args.value, args.force_privacy,
-                                                                                        args.disable_external_analyzers)
+                                                                                        args.disable_external_analyzers,
+                                                                                        args.run_all_available_analyzers)
             else:
                 raise NotImplementedError()
 
@@ -171,7 +199,7 @@ def intel_owl_client():
 
     logger.info("elapsed time: {}".format(elapsed_time))
     logger.info("results:")
-    pprint.pprint(results)
+    pprint(results)
 
 
 def get_logger(debug_mode, log_to_file):
