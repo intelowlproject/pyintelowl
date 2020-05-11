@@ -14,7 +14,7 @@ setup(
     description="Client and Library for Intel Owl",
     long_description=README,
     long_description_content_type="text/markdown",
-    url="https://github.com/mlodic/pyintelowl",
+    url="https://github.com/intelowlproject/pyintelowl",
     author="Matteo Lodi",
     classifiers=[
         "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)",
