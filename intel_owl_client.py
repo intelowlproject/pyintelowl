@@ -145,16 +145,15 @@ def intel_owl_client():
             if status != "accepted":
                 raise IntelOwlClientException("API send_analysis_request gave unexpected result status:{}"
                                               "".format(status))
+            job_id_to_get = answer.get('job_id', '')
+            analyzers_running = answer.get('analyzers_running', '')
+            warnings = answer.get('warnings', [])
+            if job_id_to_get:
+                logger.info("started job with id {} and status {} for md5 {} and analyzers {}. Warnings:{}"
+                            "".format(job_id_to_get, status, md5, analyzers_running, warnings))
             else:
-                job_id_to_get = answer.get('job_id', '')
-                analyzers_running = answer.get('analyzers_running', '')
-                warnings = answer.get('warnings', [])
-                if job_id_to_get:
-                    logger.info("started job with id {} and status {} for md5 {} and analyzers {}. Warnings:{}"
-                                "".format(job_id_to_get, status, md5, analyzers_running, warnings))
-                else:
-                    raise IntelOwlClientException("API send_analysis_request gave result without job_id!?!?"
-                                                  "answer:{}".format(answer))
+                raise IntelOwlClientException("API send_analysis_request gave result without job_id!?!?"
+                                              "answer:{}".format(answer))
 
         # third step: at this moment we must have a job_id to check for results
         polling_max_tries = 60 * 20
@@ -175,9 +174,9 @@ def intel_owl_client():
                     "".format(job_id_to_get, answer))
             if status in ['invalid_id', 'not_available']:
                 raise IntelOwlClientException("API send_analysis_request gave status {}".format(status))
-            elif status == 'running':
+            if status == 'running':
                 continue
-            elif status == 'pending':
+            if status == 'pending':
                 logger.warning("API ask_analysis_result check job in status 'pending'. Maybe it is stuck"
                                "job_id:{} md5:{} analyzer_list:{}".format(job_id_to_get, md5, args.analyzers_list))
             elif status in ['reported_without_fails', 'reported_with_fails', 'failed']:
