@@ -103,7 +103,7 @@ def intel_owl_client():
             if not status:
                 raise IntelOwlClientException("API ask_analysis_availability gave result without status!?!?"
                                               "answer:{}".format(answer))
-            elif status != 'not_available':
+            if status != 'not_available':
                 analysis_available = True
                 job_id_to_get = answer.get('job_id', '')
                 if job_id_to_get:
@@ -142,7 +142,7 @@ def intel_owl_client():
                 raise IntelOwlClientException(
                     "API send_analysis_request gave result without status!?!? answer:{}"
                     "".format(answer))
-            elif status != "accepted":
+            if status != "accepted":
                 raise IntelOwlClientException("API send_analysis_request gave unexpected result status:{}"
                                               "".format(status))
             else:
@@ -173,7 +173,7 @@ def intel_owl_client():
                 raise IntelOwlClientException(
                     "API ask_analysis_result gave result without status!?!? job_id:{} answer:{}"
                     "".format(job_id_to_get, answer))
-            elif status in ['invalid_id', 'not_available']:
+            if status in ['invalid_id', 'not_available']:
                 raise IntelOwlClientException("API send_analysis_request gave status {}".format(status))
             elif status == 'running':
                 continue
