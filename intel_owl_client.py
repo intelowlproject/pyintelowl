@@ -52,6 +52,10 @@ def intel_owl_client():
 
     logger = get_logger(args.debug, args.log_to_file)
 
+    _pyintelowl_logic(args, logger)
+
+
+def _pyintelowl_logic(args, logger):
     md5 = None
     results = []
     elapsed_time = None
@@ -92,8 +96,10 @@ def intel_owl_client():
             logger.info("about to request ask_analysis_availability for md5: {}, analyzers: {}"
                         "".format(md5, args.analyzers_list))
 
-            api_request_result = pyintelowl_client.ask_analysis_availability(md5, args.analyzers_list,
-                                                                             args.check_reported_analysis_too)
+            api_request_result = \
+                pyintelowl_client.ask_analysis_availability(md5, args.analyzers_list,
+                                                            args.run_all_available_analyzers,
+                                                            args.check_reported_analysis_too)
             errors = api_request_result.get('errors', [])
             if errors:
                 raise IntelOwlClientException("API ask_analysis_availability failed. Errors: {}"
