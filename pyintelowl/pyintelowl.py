@@ -30,13 +30,15 @@ class IntelOwl:
             session.verify = self.certificate
             session.headers.update({
                 'Authorization': 'Token {}'.format(self.api_key),
-                'User-Agent': 'IntelOwlClient/0.2.0',
+                'User-Agent': 'IntelOwlClient/0.2.1',
             })
             self._session = session
 
         return self._session
 
-    def ask_analysis_availability(self, md5, analyzers_needed, check_reported_analysis_too=False):
+    def ask_analysis_availability(self, md5, analyzers_needed,
+                                  run_all_available_analyzers=False,
+                                  check_reported_analysis_too=False):
         answer = {}
         errors = []
         try:
@@ -44,6 +46,8 @@ class IntelOwl:
                 "md5": md5,
                 "analyzers_needed": analyzers_needed
             }
+            if run_all_available_analyzers:
+                params['run_all_available_analyzers'] = True
             if not check_reported_analysis_too:
                 params['running_only'] = True
             url = self.instance + "/api/ask_analysis_availability"
