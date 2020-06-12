@@ -1,6 +1,5 @@
 import ipaddress
 import logging
-import magic
 import re
 import requests
 import sys
@@ -73,7 +72,6 @@ class IntelOwl:
                 "disable_external_analyzers": disable_external_analyzers,
                 "is_sample": True,
                 "file_name": filename,
-                "file_mimetype": magic.from_buffer(binary, mime=True),
             }
             files = {"file": (filename, binary)}
             url = self.instance + "/api/send_analysis_request"
