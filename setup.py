@@ -23,5 +23,5 @@ setup(
     packages=["pyintelowl"],
     python_requires='~=3.6',
     include_package_data=True,
-    install_requires=["requests", "python-magic"]
+    install_requires=["requests"]
 )
