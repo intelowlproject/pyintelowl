@@ -7,13 +7,25 @@ import time
 
 from pprint import pprint
 
-from pyintelowl.pyintelowl import IntelOwl, IntelOwlClientException
+from pyintelowl.pyintelowl import (
+    IntelOwl,
+    IntelOwlClientException,
+)
+from pyintelowl.token_auth import (
+    IntelOwlInvalidAPITokenException,
+    DEFAULT_TOKEN_FILE,
+)
 
 
 def intel_owl_client():
 
     parser = argparse.ArgumentParser(description='Intel Owl classic client.')
-    parser.add_argument("-k", "--api-key", required=True, help="your Intel Owl API key")
+    parser.add_argument(
+        "-k",
+        "--api-token-file",
+        default=DEFAULT_TOKEN_FILE,
+        help=f"File containing IntelOwl's API token. Default: '{DEFAULT_TOKEN_FILE}'"
+    )
     parser.add_argument("-c", "--certificate", default=False, help="path to Intel Owl certificate")
     parser.add_argument("-i", "--instance", required=True, help="your instance URL")
     parser.add_argument("-d", "--debug", action="store_true", default=False, help="debug mode")
@@ -41,6 +53,10 @@ def intel_owl_client():
     parser_observable.add_argument("-v", "--value", required=True, help="observable to analyze")
 
     args = parser.parse_args()
+
+    if not (args.api_token_file and os.path.isfile(args.api_token_file)):
+        print("API token file:'{}' is empty or does not exists.".format(args.api_token_file))
+        exit(1)
 
     if not args.get_configuration:
         if not args.analyzers_list and not args.run_all_available_analyzers:
@@ -77,7 +93,7 @@ def _pyintelowl_logic(args, logger):
         else:
             raise IntelOwlClientException("you must specify the type of the analysis: [observable, file]")
 
-        pyintelowl_client = IntelOwl(args.api_key, args.certificate, args.instance, args.debug)
+        pyintelowl_client = IntelOwl(args.api_token_file, args.certificate, args.instance, args.debug)
 
         if get_configuration_only:
             api_request_result = pyintelowl_client.get_analyzer_configs()
@@ -198,7 +214,10 @@ def _pyintelowl_logic(args, logger):
     except IntelOwlClientException as e:
         logger.error("Error:{} md5:{}".format(e, md5))
     except requests.exceptions.HTTPError as e:
-        logger.error(e)
+        logger.exception(e)
+    except IntelOwlInvalidAPITokenException as e:
+        logger.exception(e)
+        exit(-1)
     except Exception as e:
         logger.exception(e)
 
