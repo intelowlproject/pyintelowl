@@ -12,6 +12,8 @@ Simple Client for the [Intel Owl Project](https://github.com/intelowlproject/Int
 
 You can select which analyzers you want to run for every analysis you perform.
 
+> Note: To use this, you need a valid API token to interact with the IntelOwl server. Token should be created from the admin interface of [IntelOwl](https://github.com/intelowlproject/intelowl) and paste it into [api_token.txt](api_token.txt).
+
 ### Library
 `pip3 install pyintelowl`
 
@@ -31,22 +33,26 @@ You can select which analyzers you want to run for every analysis you perform.
 
 ### Command line Client
 
+#### Help
+
+`python3 intel_owl_client.py -h`
+
 #### Analyze
 2 Submodules: `file` and `observable`
 
 ##### Sample
 Example:
 
-`python3 intel_owl_client.py -k <api_key> -i <url> -a PE_Info -a File_Info file -f <path_to_file>`
+`python3 intel_owl_client.py -k <api_token_file> -i <url> -a PE_Info -a File_Info file -f <path_to_file>`
 
 Run all available analyzers (some of them could fail if you did not implemented the required configuration in the IntelOwl server):
 
-`python3 intel_owl_client.py -k <api_key> -i <url> -aa file -f <path_to_file>`
+`python3 intel_owl_client.py -k <api_token_file> -i <url> -aa file -f <path_to_file>`
 
 ##### Observable
 Example:
 
-`python3 intel_owl_client.py -k <api_key> -i <url> -a AbuseIPDB -a OTXQuery observable -v google.com`
+`python3 intel_owl_client.py -k <api_token_file> -i <url> -a AbuseIPDB -a OTXQuery observable -v google.com`
 
 #### Get Analyzers Configuration
-`python3 intel_owl_client.py -k <api_key> -i <url> -gc`
+`python3 intel_owl_client.py -k <api_token_file> -i <url> -gc`
