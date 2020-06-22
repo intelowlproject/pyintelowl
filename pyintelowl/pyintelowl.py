@@ -4,17 +4,16 @@ import re
 import requests
 import sys
 
+from .exceptions import IntelOwlClientException
+from .token_auth import APIToken
+
 logger = logging.getLogger(__name__)
-
-
-class IntelOwlClientException(Exception):
-    pass
 
 
 class IntelOwl:
 
-    def __init__(self, api_key, certificate, instance, debug):
-        self.api_key = api_key
+    def __init__(self, token_file, certificate, instance, debug):
+        self.token = APIToken(token_file, instance)
         self.certificate = certificate
         self.instance = instance
         if debug:
@@ -28,7 +27,7 @@ class IntelOwl:
             session = requests.Session()
             session.verify = self.certificate
             session.headers.update({
-                'Authorization': 'Token {}'.format(self.api_key),
+                'Authorization': 'Token {}'.format(str(self.token)),
                 'User-Agent': 'IntelOwlClient/0.2.1',
             })
             self._session = session
