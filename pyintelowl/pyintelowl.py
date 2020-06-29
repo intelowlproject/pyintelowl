@@ -1,21 +1,19 @@
 import ipaddress
 import logging
-import magic
 import re
 import requests
 import sys
 
+from .exceptions import IntelOwlClientException
+from .token_auth import APIToken
+
 logger = logging.getLogger(__name__)
-
-
-class IntelOwlClientException(Exception):
-    pass
 
 
 class IntelOwl:
 
-    def __init__(self, api_key, certificate, instance, debug):
-        self.api_key = api_key
+    def __init__(self, token_file, certificate, instance, debug):
+        self.token = APIToken(token_file, instance)
         self.certificate = certificate
         self.instance = instance
         if debug:
@@ -29,7 +27,7 @@ class IntelOwl:
             session = requests.Session()
             session.verify = self.certificate
             session.headers.update({
-                'Authorization': 'Token {}'.format(self.api_key),
+                'Authorization': 'Token {}'.format(str(self.token)),
                 'User-Agent': 'IntelOwlClient/0.2.1',
             })
             self._session = session
@@ -73,7 +71,6 @@ class IntelOwl:
                 "disable_external_analyzers": disable_external_analyzers,
                 "is_sample": True,
                 "file_name": filename,
-                "file_mimetype": magic.from_buffer(binary, mime=True),
             }
             files = {"file": (filename, binary)}
             url = self.instance + "/api/send_analysis_request"
