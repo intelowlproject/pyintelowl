@@ -28,7 +28,7 @@ class IntelOwl:
             session.verify = self.certificate
             session.headers.update({
                 'Authorization': 'Token {}'.format(str(self.token)),
-                'User-Agent': 'IntelOwlClient/0.2.1',
+                'User-Agent': 'IntelOwlClient/1.0.0',
             })
             self._session = session
 
