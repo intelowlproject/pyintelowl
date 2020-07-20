@@ -4,12 +4,14 @@ import logging
 import os
 import requests
 import time
-
+from domain_checkers import Checkers
+import sys
 from pprint import pprint
 
 from pyintelowl.pyintelowl import (
     IntelOwl,
     IntelOwlClientException,
+    get_observable_classification,
 )
 from pyintelowl.token_auth import (
     IntelOwlInvalidAPITokenException,
@@ -44,6 +46,8 @@ def intel_owl_client():
                         help="check reported analysis too, not only 'running' ones")
     parser.add_argument("-s", "--skip-check-analysis-availability", action="store_true", default=False,
                         help="skip check analysis availability")
+    parser.add_argument("-j", "--show-json", action="store_true", default=False,
+                        help="Show JSON raw results")    
 
     subparsers = parser.add_subparsers(help='choose type of analysis', dest='command')
     parser_sample = subparsers.add_parser('file', help='File analysis')
@@ -87,6 +91,7 @@ def _pyintelowl_logic(args, logger):
                 filename = os.path.basename(f.name)
             md5 = hashlib.md5(binary).hexdigest()
         elif args.command == 'observable':
+            args.value = args.value.lower()
             md5 = hashlib.md5(args.value.encode('utf-8')).hexdigest()
         elif args.get_configuration:
             get_configuration_only = True
@@ -220,10 +225,23 @@ def _pyintelowl_logic(args, logger):
         exit(-1)
     except Exception as e:
         logger.exception(e)
-
+    
     logger.info("elapsed time: {}".format(elapsed_time))
     logger.info("results:")
-    pprint(results)
+    if args.show_json:
+        pprint(results)
+        sys.exit()
+    
+    checkers = Checkers(results, args.value)
+    
+    observable = get_observable_classification(args.value)
+    if 'domain' in observable:
+        checkers.check_domain()
+    elif 'hash' in observable:
+        checkers.check_hash()
+    else:
+        checkers.check_ip()
+
 
 
 def get_logger(debug_mode, log_to_file):
