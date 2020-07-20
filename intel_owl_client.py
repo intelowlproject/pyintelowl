@@ -87,6 +87,7 @@ def _pyintelowl_logic(args, logger):
                 filename = os.path.basename(f.name)
             md5 = hashlib.md5(binary).hexdigest()
         elif args.command == 'observable':
+            args.value = args.value.lower()
             md5 = hashlib.md5(args.value.encode('utf-8')).hexdigest()
         elif args.get_configuration:
             get_configuration_only = True
