@@ -5,7 +5,6 @@ import os
 import requests
 import time
 from domain_checkers import Checkers
-import sys
 from pprint import pprint
 
 from pyintelowl.pyintelowl import (
@@ -21,7 +20,9 @@ from pyintelowl.token_auth import (
 
 def intel_owl_client():
 
-    parser = argparse.ArgumentParser(description='Intel Owl classic client.')
+    parser = argparse.ArgumentParser(description='Intel Owl classic client')
+    parser.add_argument("-sc", "--show-colors", action="store_true", default=False,
+                        help="Show colorful and more user-friendly results. By default JSON raw results are shown")
     parser.add_argument(
         "-k",
         "--api-token-file",
@@ -46,8 +47,6 @@ def intel_owl_client():
                         help="check reported analysis too, not only 'running' ones")
     parser.add_argument("-s", "--skip-check-analysis-availability", action="store_true", default=False,
                         help="skip check analysis availability")
-    parser.add_argument("-j", "--show-json", action="store_true", default=False,
-                        help="Show JSON raw results")    
 
     subparsers = parser.add_subparsers(help='choose type of analysis', dest='command')
     parser_sample = subparsers.add_parser('file', help='File analysis')
@@ -228,20 +227,17 @@ def _pyintelowl_logic(args, logger):
     
     logger.info("elapsed time: {}".format(elapsed_time))
     logger.info("results:")
-    if args.show_json:
-        pprint(results)
-        sys.exit()
-    
-    checkers = Checkers(results, args.value)
-    
-    observable = get_observable_classification(args.value)
-    if 'domain' in observable:
-        checkers.check_domain()
-    elif 'hash' in observable:
-        checkers.check_hash()
+    if args.show_colors:
+        checkers = Checkers(results, args.value)
+        observable = get_observable_classification(args.value)
+        if 'domain' in observable:
+            checkers.check_domain()
+        elif 'hash' in observable:
+            checkers.check_hash()
+        else:
+            checkers.check_ip()
     else:
-        checkers.check_ip()
-
+        pprint(results)
 
 
 def get_logger(debug_mode, log_to_file):

@@ -7,3 +7,4 @@ test_files/
 *.exe
 __pycache__
 .vscode
+api_token_value.txt

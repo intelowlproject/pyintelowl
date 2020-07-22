@@ -8,6 +8,7 @@ logger = logging.getLogger(__name__)
 
 DEFAULT_TOKEN_FILE = "api_token.txt"
 
+
 class APIToken:
 
     def __refresh_token(self, token):
@@ -23,8 +24,7 @@ class APIToken:
                 fp.write(str(resp_data["refresh"]))
 
             return resp_data["access"]
-        else:
-            raise IntelOwlInvalidAPITokenException(resp_data)
+        raise IntelOwlInvalidAPITokenException(resp_data)
 
     def __get_token(self):
         """
@@ -57,14 +57,11 @@ class APIToken:
 
         return self.__api_token
 
-
     def __str__(self):
         token = self.__get_token()
         if token:
             return token
-        else:
-            raise IntelOwlInvalidAPITokenException("pyintelowl failed. API token is invalid.")
-
+        raise IntelOwlInvalidAPITokenException("pyintelowl failed. API token is invalid.")
 
     def __init__(self, token_file, instance):
         self.token_file = token_file
