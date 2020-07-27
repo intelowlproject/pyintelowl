@@ -386,7 +386,7 @@ class Hybrid:
             print(MyColors.Foreground.lightgreen + "\nSubdomains:")
             print("_" * 19 + "\n")
             try:
-                for i in range(len(self.text['subdomains'])):
+                for i in self.text['subdomains']:
                     print("\t\t====>".ljust(28), end=' ')
                     print((self.text['subdomains'][i]))
             except KeyError:
@@ -399,7 +399,7 @@ class Hybrid:
                 print(MyColors.Foreground.lightcyan + "\nDomain Siblings: ")
                 print("_" * 20 + "\n")
                 try:
-                    for i in range(len(self.text['domain_siblings'])):
+                    for i in self.text['domain_siblings']:
                         print("\t\t====>".ljust(28), end=' ')
                         print(self.text['domain_siblings'][i])
                 except KeyError:
@@ -412,7 +412,7 @@ class Hybrid:
             print("_" * 24 + "\n")
 
             try:
-                for i in range(len(self.text['categories'])):
+                for i in self.text['categories']:
                     print("\t\t====>".ljust(28), end=' ')
                     print((self.text['categories'][i]))
             except KeyError:
@@ -425,7 +425,7 @@ class Hybrid:
                 if results:
                     print(MyColors.Foreground.orange + "\nResults found: {}".format(self.text["count"]))
                     print("-" * 28)
-                    for i in range(len(results)):
+                    for i in results:
                         if results[i]['verdict'] is not None:
                             print(MyColors.Foreground.orange, "Verdict\t=> ", MyColors.Foreground.lightred,
                                   results[i]['verdict'])
@@ -605,7 +605,7 @@ class IPs:
         if 'records' in self.text:
             records = self.text['records']
             try:
-                for i in range(len(records)):
+                for i in records:
                     if records[i]['name'] is not None:
                         print("\nRecord:\t=>\t{}".format((records[i]['name'])))
                     if records[i]['metadata'] is not None:
@@ -687,7 +687,7 @@ class Hashes:
                 tags = self.text['attributes']['tags']
                 print("Tags:")
                 print("_" * 9 + "\n")
-                for i in range(len(tags)):
+                for i in tags:
                     print("\t\t====>".ljust(28), end=' ')
                     print(MyColors.Foreground.orange, tags[i], MyColors.reset)
             if self.text['attributes']['names']:
@@ -695,7 +695,7 @@ class Hashes:
                 print("-" * 120)
                 print("Name(s) of file:")
                 print("_" * 20 + "\n")
-                for i in range(len(names)):
+                for i in names:
                     print("\t\t====>".ljust(28), end=' ')
                     print(MyColors.Foreground.orange, names[i], MyColors.reset)
             print("\n")
@@ -728,7 +728,7 @@ class Hashes:
         if self.text['relationships']['contacted_urls']['data']:
             data = self.text['relationships']['contacted_urls']['data']
             try:
-                for i in range(len(data)):
+                for i in data:
                     print("\t\t====>".ljust(28), end=' ')
                     print(MyColors.Foreground.orange, data[i]['context_attributes']['url'], MyColors.reset)
                 print("\n")
@@ -747,7 +747,7 @@ class Hashes:
         if self.text['relationships']['contacted_domains']['data']:
             data = self.text['relationships']['contacted_domains']['data']
             try:
-                for i in range(len(data)):
+                for i in data:
                     print("\t\t====>".ljust(28), end=' ')
                     print(MyColors.Foreground.orange, data[i]['id'])
             except KeyError:
@@ -761,7 +761,7 @@ class Hashes:
         try:
             x = 0
             if self.text:
-                for i in range(len(self.text)):
+                for i in self.text:
                     x += 1
                     print("".ljust(28), end=' ')
                     print(f"{MyColors.Foreground.lightred}Detection {x}")
@@ -840,7 +840,7 @@ class Hashes:
                 print("-" * 120)
                 print("Yara rule_name(s) Triggered:")
                 print("_" * 34 + "\n")
-                for i in range(len(self.text['analysis']['plugins'])):
+                for i in self.text['analysis']['plugins']:
                     print("".ljust(28), end=' ')
                     print(MyColors.Foreground.orange, detection[i]['rule_name'], MyColors.reset)
             except IndexError:
