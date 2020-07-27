@@ -458,28 +458,28 @@ class Hybrid:
             try:
                 print("-" * 120)
                 num = 0
-                for i in range(0, len(pulses)):
-                    if pulses[i].get('name'):
+                for pulse in pulses:
+                    if pulse.get('name'):
                         num += 1
                         print("\t\t====>".ljust(28), end=' ')
                         print(f"Data {MyColors.Foreground.orange}{num}")
                         print("\t\t====>".ljust(28), end=' ')
                         print(("Name: {0}{1}{2}".format(MyColors.Foreground.lightred,
-                                                        pulses[i]['name'], MyColors.reset)))
-                    if pulses[i].get('tags'):
+                                                        pulse['name'], MyColors.reset)))
+                    if pulse.get('tags'):
                         print("\t\t====>".ljust(28), end=' ')
                         print((MyColors.Foreground.orange + "Tags: {0}{1}{2}".format(MyColors.Foreground.lightred,
-                                                                                     pulses[i]['tags'],
+                                                                                     pulse['tags'],
                                                                                      MyColors.reset)))
-                    if pulses[i].get('targeted_countries'):
+                    if pulse.get('targeted_countries'):
                         print("\t\t====>".ljust(28), end=' ')
                         print((MyColors.Foreground.orange + "Targeted Countries: {0}{1}{2}".format(
-                            MyColors.Foreground.lightred, pulses[i]['targeted_countries'],
+                            MyColors.Foreground.lightred, pulse['targeted_countries'],
                             MyColors.reset)))
-                    if pulses[i].get('references'):
+                    if pulse.get('references'):
                         print("\t\t====>".ljust(28), end=' ')
                         print(MyColors.Foreground.orange + "References: {0}{1}{2}".format(
-                            MyColors.Foreground.lightred, pulses[i]['references'], MyColors.reset),
+                            MyColors.Foreground.lightred, pulse['references'], MyColors.reset),
                               end=' ')
                     print("\n")
             except KeyError:
@@ -494,10 +494,10 @@ class Hybrid:
                 print("-" * 120)
                 print(MyColors.Foreground.lightred + "\nDetected malware samples: ".ljust(17))
                 try:
-                    for i in range(0, len(samples)):
-                        if samples[i]:
+                    for sample in samples:
+                        if sample:
                             print("\t\t====>".ljust(28), end=' ')
-                            print(samples[i])
+                            print(sample)
                 except KeyError:
                     pass
         else:
@@ -512,10 +512,10 @@ class Hybrid:
                 print("-" * 120)
                 print(MyColors.Foreground.lightcyan + "\nDetected URLs: ".ljust(17))
                 try:
-                    for i in range(0, len(url_list)):
-                        if (url_list[i]).get('url'):
+                    for url in url_list:
+                        if url.get('url'):
                             print("\t\t====>".ljust(28), end=' ')
-                            print(url_list[i]['url'])
+                            print(url['url'])
                 except KeyError:
                     pass
             else:
@@ -805,28 +805,28 @@ class Hashes:
             pulses = self.text['pulses']
             try:
                 num = 0
-                for i in range(0, len(pulses)):
-                    if pulses[i].get('name'):
+                for pulse in pulses:
+                    if pulse.get('name'):
                         num += 1
                         print("\t\t====>".ljust(28), end=' ')
                         print(f"Data {MyColors.Foreground.orange}{num}")
                         print("\t\t====>".ljust(28), end=' ')
                         print(("Name: {0}{1}{2}".format(MyColors.Foreground.lightred,
-                                                        pulses[i]['name'], MyColors.reset)))
-                    if pulses[i].get('tags'):
+                                                        pulse['name'], MyColors.reset)))
+                    if pulse.get('tags'):
                         print("\t\t====>".ljust(28), end=' ')
                         print((MyColors.Foreground.orange + "Tags: {0}{1}{2}".format(MyColors.Foreground.lightred,
-                                                                                     pulses[i]['tags'],
+                                                                                     pulse['tags'],
                                                                                      MyColors.reset)))
-                    if pulses[i].get('targeted_countries'):
+                    if pulse.get('targeted_countries'):
                         print("\t\t====>".ljust(28), end=' ')
                         print((MyColors.Foreground.orange + "Targeted Countries: {0}{1}{2}".format(
-                            MyColors.Foreground.lightred, pulses[i]['targeted_countries'],
+                            MyColors.Foreground.lightred, pulse['targeted_countries'],
                             MyColors.reset)))
-                    if pulses[i].get('references'):
+                    if pulse.get('references'):
                         print("\t\t====>".ljust(28), end=' ')
                         print(MyColors.Foreground.orange + "References: {0}{1}{2}".format(
-                            MyColors.Foreground.lightred, pulses[i]['references'], MyColors.reset),
+                            MyColors.Foreground.lightred, pulse['references'], MyColors.reset),
                               end=' ')
                     print("\n")
             except KeyError:
@@ -888,10 +888,10 @@ class Hashes:
             if bool(self.text['malware_samples']):
                 samples = self.text['malware_samples']
                 try:
-                    for i in range(0, len(samples)):
-                        if samples[i]:
+                    for sample in samples:
+                        if sample:
                             print("\t\t====>".ljust(28), end=' ')
-                            print(f"{samples[i]}")
+                            print(f"{sample}")
                 except KeyError:
                     pass
             else:
@@ -908,10 +908,10 @@ class Hashes:
             if bool(self.text['url_list']):
                 urls = self.text['url_list']
                 try:
-                    for i in range(0, len(urls)):
-                        if (urls[i]).get('url'):
+                    for url in urls:
+                        if url.get('url'):
                             print("\t\t====>".ljust(28), end=' ')
-                            print(f"{urls[i]['url']}")
+                            print(f"{url['url']}")
                 except KeyError:
                     pass
             else:
