@@ -4,12 +4,13 @@ import logging
 import os
 import requests
 import time
-
+from domain_checkers import Checkers
 from pprint import pprint
 
 from pyintelowl.pyintelowl import (
     IntelOwl,
     IntelOwlClientException,
+    get_observable_classification,
 )
 from pyintelowl.token_auth import (
     IntelOwlInvalidAPITokenException,
@@ -19,7 +20,9 @@ from pyintelowl.token_auth import (
 
 def intel_owl_client():
 
-    parser = argparse.ArgumentParser(description='Intel Owl classic client.')
+    parser = argparse.ArgumentParser(description='Intel Owl classic client')
+    parser.add_argument("-sc", "--show-colors", action="store_true", default=False,
+                        help="Show colorful and more user-friendly results. By default JSON raw results are shown")
     parser.add_argument(
         "-k",
         "--api-token-file",
@@ -87,6 +90,7 @@ def _pyintelowl_logic(args, logger):
                 filename = os.path.basename(f.name)
             md5 = hashlib.md5(binary).hexdigest()
         elif args.command == 'observable':
+            args.value = args.value.lower()
             md5 = hashlib.md5(args.value.encode('utf-8')).hexdigest()
         elif args.get_configuration:
             get_configuration_only = True
@@ -220,10 +224,20 @@ def _pyintelowl_logic(args, logger):
         exit(-1)
     except Exception as e:
         logger.exception(e)
-
+    
     logger.info("elapsed time: {}".format(elapsed_time))
     logger.info("results:")
-    pprint(results)
+    if args.show_colors:
+        checkers = Checkers(results, args.value)
+        observable = get_observable_classification(args.value)
+        if 'domain' in observable:
+            checkers.check_domain()
+        elif 'hash' in observable:
+            checkers.check_hash()
+        else:
+            checkers.check_ip()
+    else:
+        pprint(results)
 
 
 def get_logger(debug_mode, log_to_file):
