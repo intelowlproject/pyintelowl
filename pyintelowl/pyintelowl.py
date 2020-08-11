@@ -11,7 +11,6 @@ logger = logging.getLogger(__name__)
 
 
 class IntelOwl:
-
     def __init__(self, token_file, certificate, instance, debug):
         self.token = APIToken(token_file, instance)
         self.certificate = certificate
@@ -23,31 +22,34 @@ class IntelOwl:
 
     @property
     def session(self):
-        if not hasattr(self, '_session'):
+        if not hasattr(self, "_session"):
             session = requests.Session()
             session.verify = self.certificate
-            session.headers.update({
-                'Authorization': 'Token {}'.format(str(self.token)),
-                'User-Agent': 'IntelOwlClient/1.1.0',
-            })
+            session.headers.update(
+                {
+                    "Authorization": "Token {}".format(str(self.token)),
+                    "User-Agent": "IntelOwlClient/1.2.0",
+                }
+            )
             self._session = session
 
         return self._session
 
-    def ask_analysis_availability(self, md5, analyzers_needed,
-                                  run_all_available_analyzers=False,
-                                  check_reported_analysis_too=False):
+    def ask_analysis_availability(
+        self,
+        md5,
+        analyzers_needed,
+        run_all_available_analyzers=False,
+        check_reported_analysis_too=False,
+    ):
         answer = {}
         errors = []
         try:
-            params = {
-                "md5": md5,
-                "analyzers_needed": analyzers_needed
-            }
+            params = {"md5": md5, "analyzers_needed": analyzers_needed}
             if run_all_available_analyzers:
-                params['run_all_available_analyzers'] = True
+                params["run_all_available_analyzers"] = True
             if not check_reported_analysis_too:
-                params['running_only'] = True
+                params["running_only"] = True
             url = self.instance + "/api/ask_analysis_availability"
             response = self.session.get(url, params=params)
             logger.debug(response.url)
@@ -57,9 +59,17 @@ class IntelOwl:
             errors.append(str(e))
         return {"errors": errors, "answer": answer}
 
-    def send_file_analysis_request(self, md5, analyzers_requested, filename, binary,
-                                   force_privacy=False, disable_external_analyzers=False,
-                                   run_all_available_analyzers=False):
+    def send_file_analysis_request(
+        self,
+        md5,
+        analyzers_requested,
+        filename,
+        binary,
+        force_privacy=False,
+        private_job=False,
+        disable_external_analyzers=False,
+        run_all_available_analyzers=False,
+    ):
         answer = {}
         errors = []
         try:
@@ -68,6 +78,7 @@ class IntelOwl:
                 "analyzers_requested": analyzers_requested,
                 "run_all_available_analyzers": run_all_available_analyzers,
                 "force_privacy": force_privacy,
+                "private": private_job,
                 "disable_external_analyzers": disable_external_analyzers,
                 "is_sample": True,
                 "file_name": filename,
@@ -82,9 +93,16 @@ class IntelOwl:
             errors.append(str(e))
         return {"errors": errors, "answer": answer}
 
-    def send_observable_analysis_request(self, md5, analyzers_requested, observable_name,
-                                         force_privacy=False, disable_external_analyzers=False,
-                                         run_all_available_analyzers=False):
+    def send_observable_analysis_request(
+        self,
+        md5,
+        analyzers_requested,
+        observable_name,
+        force_privacy=False,
+        private_job=False,
+        disable_external_analyzers=False,
+        run_all_available_analyzers=False,
+    ):
         answer = {}
         errors = []
         try:
@@ -93,10 +111,13 @@ class IntelOwl:
                 "analyzers_requested": analyzers_requested,
                 "run_all_available_analyzers": run_all_available_analyzers,
                 "force_privacy": force_privacy,
+                "private": private_job,
                 "disable_external_analyzers": disable_external_analyzers,
                 "is_sample": False,
                 "observable_name": observable_name,
-                "observable_classification": get_observable_classification(observable_name),
+                "observable_classification": get_observable_classification(
+                    observable_name
+                ),
             }
             url = self.instance + "/api/send_analysis_request"
             response = self.session.post(url, data=data)
@@ -111,9 +132,7 @@ class IntelOwl:
         answer = {}
         errors = []
         try:
-            params = {
-                "job_id": job_id
-            }
+            params = {"job_id": job_id}
             url = self.instance + "/api/ask_analysis_result"
             response = self.session.get(url, params=params)
             logger.debug(response.url)
@@ -143,16 +162,25 @@ def get_observable_classification(value):
     try:
         ipaddress.ip_address(value)
     except ValueError:
-        if re.match("^(?:ht|f)tps?://[a-z\d-]{1,63}(?:\.[a-z\d-]{1,63})+(?:/[a-z\d-]{1,63})*(?:\.\w+)?", value):
-            classification = 'url'
+        if re.match(
+            "^(?:ht|f)tps?://[a-z\d-]{1,63}(?:\.[a-z\d-]{1,63})+(?:/[a-z\d-]{1,63})*(?:\.\w+)?",
+            value,
+        ):
+            classification = "url"
         elif re.match("^(\.)?[a-z\d-]{1,63}(\.[a-z\d-]{1,63})+$", value):
-            classification = 'domain'
-        elif re.match("^[a-f\d]{32}$", value) or re.match("^[a-f\d]{40}$", value) or re.match("^[a-f\d]{64}$", value):
-            classification = 'hash'
+            classification = "domain"
+        elif (
+            re.match("^[a-f\d]{32}$", value)
+            or re.match("^[a-f\d]{40}$", value)
+            or re.match("^[a-f\d]{64}$", value)
+        ):
+            classification = "hash"
         else:
-            raise IntelOwlClientException("{} is neither a domain nor a URL nor a IP not a hash".format(value))
+            raise IntelOwlClientException(
+                f"{value} is neither a domain nor a URL nor a IP not a hash"
+            )
     else:
         # its a simple IP
-        classification = 'ip'
+        classification = "ip"
 
     return classification
