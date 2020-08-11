@@ -10,7 +10,7 @@ README = (HERE / "README.md").read_text()
 # This call to setup() does all the work
 setup(
     name="pyintelowl",
-    version="1.1.0",
+    version="1.2.0",
     description="Client and Library for Intel Owl",
     long_description=README,
     long_description_content_type="text/markdown",
@@ -21,7 +21,7 @@ setup(
         "Programming Language :: Python :: 3.6",
     ],
     packages=["pyintelowl"],
-    python_requires='~=3.6',
+    python_requires="~=3.6",
     include_package_data=True,
-    install_requires=["requests","geocoder"]
+    install_requires=["requests", "geocoder"],
 )
