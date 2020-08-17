@@ -835,17 +835,17 @@ class Hashes:
                 tags = self.text["attributes"]["tags"]
                 print("Tags:")
                 print("_" * 9 + "\n")
-                for i in tags:
+                for tag in tags:
                     print("\t\t====>".ljust(28), end=" ")
-                    print(MyColors.Foreground.orange, tags[i], MyColors.reset)
+                    print(MyColors.Foreground.orange, tag, MyColors.reset)
             if self.text["attributes"]["names"]:
                 names = self.text["attributes"]["names"]
                 print("-" * 120)
                 print("Name(s) of file:")
                 print("_" * 20 + "\n")
-                for i in names:
+                for name in names:
                     print("\t\t====>".ljust(28), end=" ")
-                    print(MyColors.Foreground.orange, names[i], MyColors.reset)
+                    print(MyColors.Foreground.orange, name, MyColors.reset)
             print("\n")
         except KeyError:
             pass
@@ -885,7 +885,7 @@ class Hashes:
                     print("\t\t====>".ljust(28), end=" ")
                     print(
                         MyColors.Foreground.orange,
-                        data[i]["context_attributes"]["url"],
+                        i["context_attributes"]["url"],
                         MyColors.reset,
                     )
                 print("\n")
@@ -906,7 +906,7 @@ class Hashes:
             try:
                 for i in data:
                     print("\t\t====>".ljust(28), end=" ")
-                    print(MyColors.Foreground.orange, data[i]["id"])
+                    print(MyColors.Foreground.orange, i["id"])
             except KeyError:
                 pass
         else:
