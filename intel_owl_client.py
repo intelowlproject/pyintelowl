@@ -107,9 +107,7 @@ def intel_owl_client():
     args = parser.parse_args()
 
     if not (args.api_token_file and os.path.isfile(args.api_token_file)):
-        print(
-            f"API token file:'{args.api_token_file}' is empty or does not exists."
-        )
+        print(f"API token file:'{args.api_token_file}' is empty or does not exists.")
         exit(1)
 
     if not args.get_configuration:
@@ -160,9 +158,7 @@ def _pyintelowl_logic(args, logger):
             api_request_result = pyintelowl_client.get_analyzer_configs()
             errors = api_request_result.get("errors", [])
             if errors:
-                logger.error(
-                    f"API get_analyzer_configs failed. Errors: {errors}"
-                )
+                logger.error(f"API get_analyzer_configs failed. Errors: {errors}")
             analyzers_config = api_request_result.get("answer", {})
             logger.info(f"extracted analyzer_configuration: {analyzers_config}")
             pprint(analyzers_config)
@@ -173,8 +169,7 @@ def _pyintelowl_logic(args, logger):
             job_id_to_get = None
             # first step: ask analysis availability
             logger.info(
-                "[STARTED] request ask_analysis_availability for md5: {}, analyzers: {}"
-                "".format(md5, args.analyzers_list)
+                f"[STARTED] request ask_analysis_availability for md5: {md5}, analyzers: {args.analyzers_list}"
             )
 
             api_request_result = pyintelowl_client.ask_analysis_availability(
@@ -200,8 +195,8 @@ def _pyintelowl_logic(args, logger):
                 job_id_to_get = answer.get("job_id", "")
                 if job_id_to_get:
                     logger.info(
-                        "[INFO] already existing Job(#{}, md5: {}, status: {}) with analyzers: {}"
-                        "".format(job_id_to_get, md5, status, args.analyzers_list)
+                        f"[INFO] already existing Job(#{job_id_to_get}, md5: {md5},"
+                        f" status: {status}) with analyzers: {args.analyzers_list}"
                     )
                 else:
                     raise IntelOwlClientException(
@@ -259,13 +254,13 @@ def _pyintelowl_logic(args, logger):
             warnings = answer.get("warnings", [])
             if job_id_to_get:
                 logger.info(
-                    "[STARTED] Job(#{}, md5: {}, status: {}) -> analyzers: {}. Warnings: {}"
-                    "".format(job_id_to_get, md5, status, analyzers_running, warnings)
+                    f"[STARTED] Job(#{job_id_to_get}, md5: {md5}, status: {status})"
+                    f" -> analyzers: {analyzers_running}. Warnings: {warnings}"
                 )
             else:
                 raise IntelOwlClientException(
-                    "API send_analysis_request gave result without job_id!?!?"
-                    "answer:{}".format(answer)
+                    f"API send_analysis_request gave result without job_id!?!?"
+                    f"answer:{answer}"
                 )
 
         # third step: at this moment we must have a job_id to check for results
@@ -278,39 +273,37 @@ def _pyintelowl_logic(args, logger):
             errors = api_request_result.get("errors", [])
             if errors:
                 raise IntelOwlClientException(
-                    "API ask_analysis_result failed. Errors: {}" "".format(errors)
+                    f"API ask_analysis_result failed. Errors: {errors}"
                 )
             answer = api_request_result.get("answer", {})
             status = answer.get("status", None)
             if not status:
                 raise IntelOwlClientException(
-                    "API ask_analysis_result gave result without status!?!? job_id:{} answer:{}"
-                    "".format(job_id_to_get, answer)
+                    f"API ask_analysis_result gave result without status!?!?"
+                    f" job_id:{job_id_to_get} answer:{answer}"
                 )
             if status in ["invalid_id", "not_available"]:
                 raise IntelOwlClientException(
-                    "API send_analysis_request gave status {}".format(status)
+                    f"API send_analysis_request gave status {status}"
                 )
             if status == "running":
                 continue
             if status == "pending":
                 logger.warning(
-                    "API ask_analysis_result check job in status 'pending'. Maybe it is stuck"
-                    "job_id:{} md5:{} analyzer_list:{}".format(
-                        job_id_to_get, md5, args.analyzers_list
-                    )
+                    f"API ask_analysis_result check job in status 'pending'. Maybe it is stuck"
+                    f"job_id:{job_id_to_get} md5:{md5} analyzer_list:{args.analyzers_list}"
                 )
             elif status in ["reported_without_fails", "reported_with_fails", "failed"]:
                 logger.info(
-                    "[FINISHED] Job(#{}, md5: {}, status: {}) -> analyzer_list:{}"
-                    .format(job_id_to_get, md5, status, args.analyzers_list)
+                    f"[FINISHED] Job(#{job_id_to_get}, md5: {md5}, status: {status})"
+                    f" -> analyzer_list:{args.analyzers_list}"
                 )
                 results = answer.get("results", [])
                 elapsed_time = answer.get("elapsed_time_in_seconds", [])
                 break
         if not results:
             raise IntelOwlClientException(
-                "[ENDED] Reached polling timeout without results. Job_id: {job_id_to_get}"
+                f"[ENDED] Reached polling timeout without results. Job_id: {job_id_to_get}"
             )
 
     except IntelOwlClientException as e:
