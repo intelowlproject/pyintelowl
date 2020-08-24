@@ -332,6 +332,8 @@ def _pyintelowl_logic(args, logger):
             checkers.check_domain()
         elif "hash" in observable:
             checkers.check_hash()
+        elif "url" in observable:
+            checkers.check_url()
         else:
             checkers.check_ip()
     else:
