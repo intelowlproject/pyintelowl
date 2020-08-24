@@ -28,7 +28,7 @@ class IntelOwl:
             session.headers.update(
                 {
                     "Authorization": "Token {}".format(str(self.token)),
-                    "User-Agent": "IntelOwlClient/1.2.1",
+                    "User-Agent": "IntelOwlClient/1.3.0",
                 }
             )
             self._session = session
@@ -69,7 +69,10 @@ class IntelOwl:
         private_job=False,
         disable_external_analyzers=False,
         run_all_available_analyzers=False,
+        additional_configuration=None,
     ):
+        if additional_configuration is None:
+            additional_configuration = {}
         answer = {}
         errors = []
         try:
@@ -83,6 +86,8 @@ class IntelOwl:
                 "is_sample": True,
                 "file_name": filename,
             }
+            if additional_configuration:
+                data["additional_configuration"] = additional_configuration
             files = {"file": (filename, binary)}
             url = self.instance + "/api/send_analysis_request"
             response = self.session.post(url, data=data, files=files)
@@ -102,7 +107,10 @@ class IntelOwl:
         private_job=False,
         disable_external_analyzers=False,
         run_all_available_analyzers=False,
+        additional_configuration=None,
     ):
+        if additional_configuration is None:
+            additional_configuration = {}
         answer = {}
         errors = []
         try:
@@ -119,6 +127,8 @@ class IntelOwl:
                     observable_name
                 ),
             }
+            if additional_configuration:
+                data["additional_configuration"] = additional_configuration
             url = self.instance + "/api/send_analysis_request"
             response = self.session.post(url, data=data)
             logger.debug(response.url)
