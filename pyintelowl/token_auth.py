@@ -37,15 +37,11 @@ class APIToken:
                     refresh = fp.read()
                 # make sure token does exist
                 if not refresh:
-                    logger.error(
-                        f"No API token specified in file: {self.token_file}"
-                    )
+                    logger.error(f"No API token specified in file: {self.token_file}")
                     return None
             except FileNotFoundError:
                 # No token file exists
-                logger.error(
-                    f"No token file exists with given name: {self.token_file}"
-                )
+                logger.error(f"No token file exists with given name: {self.token_file}")
                 return None
 
             # refresh given token
