@@ -49,9 +49,11 @@ class Checkers:
                     urls.vturl_check()
                 elif "VirusTotal_v3" in result["name"]:
                     print("-" * 120)
-                    print("[*] Try using VirusTotal_v2 for URLs"
-                          "instead of VirusTotal_v3!")
-                elif "HybridAnalysis" in result['name']:
+                    print(
+                        "[*] Try using VirusTotal_v2 for URLs"
+                        "instead of VirusTotal_v3!"
+                    )
+                elif "HybridAnalysis" in result["name"]:
                     urls = Hybrid(result["report"], self.value)
                     urls.ha_check()
                 elif "OTXQuery" in result["name"]:
@@ -69,9 +71,11 @@ class Checkers:
                     domains.vt_check()
                 elif "VirusTotal_v3" in result["name"]:
                     print("-" * 120)
-                    print("[*] Try using VirusTotal_v2 for domains"
-                          "instead of VirusTotal_v3!")
-                elif "HybridAnalysis" in result['name']:
+                    print(
+                        "[*] Try using VirusTotal_v2 for domains"
+                        "instead of VirusTotal_v3!"
+                    )
+                elif "HybridAnalysis" in result["name"]:
                     domains = Hybrid(result["report"], self.value)
                     domains.ha_check()
                 elif "OTXQuery" in result["name"]:
@@ -91,8 +95,9 @@ class Checkers:
                 hashes.vthash()
             elif "VirusTotal_v2_Get_Observable" in result["name"]:
                 print("-" * 120)
-                print("[*] Try using VirusTotal_v3 for hashes"
-                      "instead of VirusTotal_v2!")
+                print(
+                    "[*] Try using VirusTotal_v3 for hashes" "instead of VirusTotal_v2!"
+                )
             elif "OTXQuery" in result["name"]:
                 hashes = Hashes(result["report"], self.value)
                 hashes.otxhash()
@@ -107,8 +112,7 @@ class Checkers:
                 ips.vt_check()
             elif "VirusTotal_v3_Get_Observable" in result["name"]:
                 print("-" * 120)
-                print("[*] Try using VirusTotal_v2 for IPs"
-                      "instead of VirusTotal_v3!")
+                print("[*] Try using VirusTotal_v2 for IPs" "instead of VirusTotal_v3!")
             elif "OTXQuery" in result["name"]:
                 ips = Hybrid(result["report"], self.value)
                 ips.otx_check()
@@ -195,7 +199,7 @@ class Hybrid:
             if len(lst) < 6:
                 if "date" in j:
                     print("\t\t====>".ljust(28), end=" ")
-                    print("Scan date:\t{}".format(j["date"]), )
+                    print("Scan date:\t{}".format(j["date"]),)
                 print("\t\t====>".ljust(28), end=" ")
                 print(
                     "Detection:\t{0}{1}/{2}{3}{4}".format(
@@ -213,7 +217,7 @@ class Hybrid:
                 while num <= 6:
                     if "date" in j:
                         print("\t\t====>".ljust(28), end=" ")
-                        print("Scan date:\t{}".format(j["date"]), )
+                        print("Scan date:\t{}".format(j["date"]),)
                     print("\t\t====>".ljust(28), end=" ")
                     print(
                         "Detection:\t{0}{1}/{2}{3}{4}".format(
@@ -246,7 +250,7 @@ class Hybrid:
                 print("\t\t====>".ljust(28), end=" ")
                 print("URL:\t{}".format(j["url"]))
                 print("\t\t====>".ljust(28), end=" ")
-                print("Scan date:\t{}".format(j["scan_date"]), )
+                print("Scan date:\t{}".format(j["scan_date"]),)
                 print("\t\t====>".ljust(28), end=" ")
                 print(
                     "Detection:\t{0}{1}/{2}{3}{4}\n".format(
@@ -263,7 +267,7 @@ class Hybrid:
                     print("\t\t====>".ljust(28), end=" ")
                     print("URL:\t{}".format(j["url"]))
                     print("\t\t====>".ljust(28), end=" ")
-                    print("Scan date:\t{}".format(j["scan_date"]), )
+                    print("Scan date:\t{}".format(j["scan_date"]),)
                     print("\t\t====>".ljust(28), end=" ")
                     print(
                         "Detection:\t{0}{1}/{2}{3}{4}\n".format(
@@ -534,8 +538,11 @@ class Hybrid:
             pulses = self.text["pulses"]
             try:
                 print("-" * 120)
-                print(MyColors.Foreground.cyan, "\tReports found => {}\n".format(len(pulses)),
-                      MyColors.Foreground.lightgreen)
+                print(
+                    MyColors.Foreground.cyan,
+                    "\tReports found => {}\n".format(len(pulses)),
+                    MyColors.Foreground.lightgreen,
+                )
                 num = 0
                 for pulse in pulses:
                     if pulse.get("name"):
@@ -556,24 +563,24 @@ class Hybrid:
                         print("\t\t====>".ljust(28), end=" ")
                         print(
                             (
-                                    MyColors.Foreground.orange
-                                    + "Tags: {0}{1}{2}".format(
-                                MyColors.Foreground.lightred,
-                                pulse["tags"],
-                                MyColors.reset,
-                            )
+                                MyColors.Foreground.orange
+                                + "Tags: {0}{1}{2}".format(
+                                    MyColors.Foreground.lightred,
+                                    pulse["tags"],
+                                    MyColors.reset,
+                                )
                             )
                         )
                     if pulse.get("targeted_countries"):
                         print("\t\t====>".ljust(28), end=" ")
                         print(
                             (
-                                    MyColors.Foreground.orange
-                                    + "Targeted Countries: {0}{1}{2}".format(
-                                MyColors.Foreground.lightred,
-                                pulse["targeted_countries"],
-                                MyColors.reset,
-                            )
+                                MyColors.Foreground.orange
+                                + "Targeted Countries: {0}{1}{2}".format(
+                                    MyColors.Foreground.lightred,
+                                    pulse["targeted_countries"],
+                                    MyColors.reset,
+                                )
                             )
                         )
                     if pulse.get("references"):
@@ -668,8 +675,8 @@ class Hybrid:
         except ValueError:
             print(
                 (
-                        MyColors.Foreground.red
-                        + "Error while connecting to HybridAnalysis!\n"
+                    MyColors.Foreground.red
+                    + "Error while connecting to HybridAnalysis!\n"
                 )
             )
         except KeyError:
@@ -969,8 +976,11 @@ class Hashes:
         if self.text["pulses"]:
             pulses = self.text["pulses"]
             try:
-                print(MyColors.Foreground.cyan, "\tReports found => {}\n".format(len(pulses)),
-                      MyColors.Foreground.lightgreen)
+                print(
+                    MyColors.Foreground.cyan,
+                    "\tReports found => {}\n".format(len(pulses)),
+                    MyColors.Foreground.lightgreen,
+                )
                 num = 0
                 for pulse in pulses:
                     if pulse.get("name"):
@@ -991,24 +1001,24 @@ class Hashes:
                         print("\t\t====>".ljust(28), end=" ")
                         print(
                             (
-                                    MyColors.Foreground.orange
-                                    + "Tags: {0}{1}{2}".format(
-                                MyColors.Foreground.lightred,
-                                pulse["tags"],
-                                MyColors.reset,
-                            )
+                                MyColors.Foreground.orange
+                                + "Tags: {0}{1}{2}".format(
+                                    MyColors.Foreground.lightred,
+                                    pulse["tags"],
+                                    MyColors.reset,
+                                )
                             )
                         )
                     if pulse.get("targeted_countries"):
                         print("\t\t====>".ljust(28), end=" ")
                         print(
                             (
-                                    MyColors.Foreground.orange
-                                    + "Targeted Countries: {0}{1}{2}".format(
-                                MyColors.Foreground.lightred,
-                                pulse["targeted_countries"],
-                                MyColors.reset,
-                            )
+                                MyColors.Foreground.orange
+                                + "Targeted Countries: {0}{1}{2}".format(
+                                    MyColors.Foreground.lightred,
+                                    pulse["targeted_countries"],
+                                    MyColors.reset,
+                                )
                             )
                         )
                     if pulse.get("references"):
@@ -1200,10 +1210,8 @@ class Urls:
     def _vt_get_analysis_results(self):
         print("-" * 120)
         print("\n\n")
-        ct_malicious = MyColors.Foreground.lightred + str(
-            self.text["positives"]
-        )
-        ct_sources = MyColors.Foreground.lightgreen + str(self.text['total'])
+        ct_malicious = MyColors.Foreground.lightred + str(self.text["positives"])
+        ct_sources = MyColors.Foreground.lightgreen + str(self.text["total"])
         print(f"Detection {ct_malicious}{MyColors.reset}/{ct_sources}")
         print("_" * 20 + "\n")
         print(MyColors.reset)
@@ -1219,21 +1227,33 @@ class Urls:
                     )
 
     def _haus_general_info(self):
-        info = ['date_added', 'threat', 'reporter', 'url_status', 'urlhaus_reference']
+        info = ["date_added", "threat", "reporter", "url_status", "urlhaus_reference"]
         for x, y in self.text.items():
             if x in info:
-                print(MyColors.Foreground.lightgreen,
-                      x + ":\t", MyColors.Foreground.cyan,
-                      y, MyColors.reset)
+                print(
+                    MyColors.Foreground.lightgreen,
+                    x + ":\t",
+                    MyColors.Foreground.cyan,
+                    y,
+                    MyColors.reset,
+                )
 
     def _haus_payloads(self):
-        info = ["response_md5", "urlhaus_download", "file_type", "firstseen", "signature"]
+        info = [
+            "response_md5",
+            "urlhaus_download",
+            "file_type",
+            "firstseen",
+            "signature",
+        ]
 
         print("-" * 120)
-        print(MyColors.Foreground.lightcyan + "\nPayloads Found: {}"
-              .format(len(self.text['payloads'])))
+        print(
+            MyColors.Foreground.lightcyan
+            + "\nPayloads Found: {}".format(len(self.text["payloads"]))
+        )
         print("_" * 20)
-        payloads = self.text['payloads']
+        payloads = self.text["payloads"]
         num = 0
 
         for item in payloads:
@@ -1246,9 +1266,13 @@ class Urls:
             for x, y in item.items():
                 if x in info:
                     print("\t\t====>".ljust(28), end=" ")
-                    print(MyColors.Foreground.lightgreen, x + ":\t",
-                          MyColors.Foreground.orange, y,
-                          MyColors.reset)
+                    print(
+                        MyColors.Foreground.lightgreen,
+                        x + ":\t",
+                        MyColors.Foreground.orange,
+                        y,
+                        MyColors.reset,
+                    )
 
     def vturl_check(self):
         print(MyColors.Foreground.lightblue + MyColors.Background.lightgrey)
@@ -1262,7 +1286,8 @@ class Urls:
 
             except ValueError:
                 print(
-                    MyColors.Foreground.lightred + "Error while connecting to VirusTotal!\n"
+                    MyColors.Foreground.lightred
+                    + "Error while connecting to VirusTotal!\n"
                 )
         else:
             print(MyColors.Foreground.lightred + "No results found in VirusTotal!\n")
@@ -1278,7 +1303,8 @@ class Urls:
 
             except ValueError:
                 print(
-                    MyColors.Foreground.lightred + "Error while connecting to URLHAUS!\n"
+                    MyColors.Foreground.lightred
+                    + "Error while connecting to URLHAUS!\n"
                 )
         else:
             print(MyColors.Foreground.lightred + "\n\nNo results found in URLHAUS!\n")
