@@ -14,6 +14,8 @@ You can select which analyzers you want to run for every analysis you perform.
 
 > Note: To use this, you need a valid API token to interact with the IntelOwl server. Token should be created from the admin interface of [IntelOwl](https://github.com/intelowlproject/intelowl) and paste it into [api_token.txt](api_token.txt).
 
+For additional help, we suggest to check the ["How to use pyintelowl" Youtube Video](https://www.youtube.com/watch?v=fpd6Kt9EZdI) by [Kostas](https://github.com/tsale).
+
 ### Library
 `pip3 install pyintelowl`
 
