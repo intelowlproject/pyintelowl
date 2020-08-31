@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 class IntelOwl:
     def __init__(self, token_file, certificate, instance, debug):
-        self.token = APIToken(token_file, instance)
+        self.token = APIToken(token_file, certificate, instance)
         self.certificate = certificate
         self.instance = instance
         if debug:
@@ -107,10 +107,10 @@ class IntelOwl:
         private_job=False,
         disable_external_analyzers=False,
         run_all_available_analyzers=False,
-        additional_configuration=None,
+        runtime_configuration=None,
     ):
-        if additional_configuration is None:
-            additional_configuration = {}
+        if runtime_configuration is None:
+            runtime_configuration = {}
         answer = {}
         errors = []
         try:
@@ -127,8 +127,8 @@ class IntelOwl:
                     observable_name
                 ),
             }
-            if additional_configuration:
-                data["additional_configuration"] = additional_configuration
+            if runtime_configuration:
+                data["runtime_configuration"] = runtime_configuration
             url = self.instance + "/api/send_analysis_request"
             response = self.session.post(url, data=data)
             logger.debug(response.url)
