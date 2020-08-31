@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 class IntelOwl:
     def __init__(self, token_file, certificate, instance, debug):
-        self.token = APIToken(token_file, instance)
+        self.token = APIToken(token_file, certificate, instance)
         self.certificate = certificate
         self.instance = instance
         if debug:

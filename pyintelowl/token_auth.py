@@ -13,7 +13,7 @@ class APIToken:
     def __refresh_token(self, token):
         data = {"refresh": token}
         url = self.instance + "/api/auth/refresh-token"
-        resp = requests.post(url=url, json=data)
+        resp = requests.post(url=url, json=data, verify=self.certificate)
         resp_data = resp.json()
         if resp.status_code == 200:
             # Save new sets of token into token file.
@@ -64,8 +64,9 @@ class APIToken:
             "pyintelowl failed. API token is invalid."
         )
 
-    def __init__(self, token_file, instance):
+    def __init__(self, token_file, certificate, instance):
         self.token_file = token_file
         self.instance = instance
+        self.certificate = certificate
         logger.setLevel(logging.DEBUG)
         logger.addHandler(logging.StreamHandler(sys.stdout))
