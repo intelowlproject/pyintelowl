@@ -30,7 +30,7 @@ class IntelOwl:
             session.headers.update(
                 {
                     "Authorization": "Token {}".format(str(self.token)),
-                    "User-Agent": "IntelOwlClient/1.3.4",
+                    "User-Agent": "IntelOwlClient/1.3.5",
                 }
             )
             self._session = session
