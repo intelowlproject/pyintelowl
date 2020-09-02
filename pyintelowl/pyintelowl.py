@@ -4,6 +4,8 @@ import re
 import requests
 import sys
 
+from json import dumps as json_dumps
+
 from .exceptions import IntelOwlClientException
 from .token_auth import APIToken
 
@@ -87,7 +89,7 @@ class IntelOwl:
                 "file_name": filename,
             }
             if runtime_configuration:
-                data["runtime_configuration"] = runtime_configuration
+                data["runtime_configuration"] = json_dumps(runtime_configuration)
             files = {"file": (filename, binary)}
             url = self.instance + "/api/send_analysis_request"
             response = self.session.post(url, data=data, files=files)
@@ -128,7 +130,7 @@ class IntelOwl:
                 ),
             }
             if runtime_configuration:
-                data["runtime_configuration"] = runtime_configuration
+                data["runtime_configuration"] = json_dumps(runtime_configuration)
             url = self.instance + "/api/send_analysis_request"
             response = self.session.post(url, data=data)
             logger.debug(response.url)
