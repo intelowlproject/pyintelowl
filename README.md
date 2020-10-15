@@ -21,10 +21,10 @@ Keys should be created from the admin interface of [IntelOwl](https://github.com
 
 You can use the  with the parameter `-k <api_key>` from CLI
 
-##### (old auth method) JWT Token Authentication
+#### (old auth method) JWT Token Authentication
 > this auth was available in IntelOwl versions <1.8.0 and pyintelowl versions <2.0.0
 
-From the admin interface of IntelOwl, you can go in the *Outstanding tokens* section and generate a token there.
+From the admin interface of IntelOwl, you have to go in the *Outstanding tokens* section and generate a token there.
 
 You can use it by pasting it into the file [api_token.txt](api_token.txt).
 
