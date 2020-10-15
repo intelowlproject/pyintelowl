@@ -12,10 +12,6 @@ from pyintelowl.pyintelowl import (
     IntelOwlClientException,
     get_observable_classification,
 )
-from pyintelowl.token_auth import (
-    IntelOwlInvalidAPITokenException,
-    DEFAULT_TOKEN_FILE,
-)
 
 
 def intel_owl_client():
@@ -31,15 +27,8 @@ def intel_owl_client():
     )
     parser.add_argument(
         "-k",
-        "--api-token-file",
-        default=DEFAULT_TOKEN_FILE,
-        help=f"File containing IntelOwl's API token. Default: '{DEFAULT_TOKEN_FILE}'",
-    )
-    parser.add_argument(
-        "-t",
-        "--classic-token",
-        help="Alternative authentication with classic API Token"
-        " (less secure but better for concurrency requests)",
+        "--api_key",
+        help="API key to authenticate against a IntelOwl instance",
     )
     parser.add_argument(
         "-c", "--certificate", default=False, help="path to Intel Owl certificate"
@@ -113,24 +102,6 @@ def intel_owl_client():
 
     args = parser.parse_args()
 
-    if (
-        not (args.api_token_file and os.path.isfile(args.api_token_file))
-        and not args.classic_token
-    ):
-        print(
-            f"You must provide at least one form of authentication.\n"
-            f"API token file:'{args.api_token_file}' is empty or does not exists.\n"
-            f"Also a classic API token string was not specified (via -t)"
-        )
-        exit(1)
-
-    if os.path.isfile(args.api_token_file) and args.classic_token:
-        print(
-            f"You specified both a token file (-k default "
-            f"{DEFAULT_TOKEN_FILE}) and a token key (-t).\n"
-            f"We will use the token key"
-        )
-
     if not args.get_configuration:
         if not args.analyzers_list and not args.run_all_available_analyzers:
             print(
@@ -173,11 +144,10 @@ def _pyintelowl_logic(args, logger):
             )
 
         pyintelowl_client = IntelOwl(
-            args.api_token_file,
+            args.api_key,
             args.certificate,
             args.instance,
             args.debug,
-            args.classic_token,
         )
 
         if get_configuration_only:
@@ -341,9 +311,6 @@ def _pyintelowl_logic(args, logger):
         logger.error(f"Error: {e} md5: {md5}")
     except requests.exceptions.HTTPError as e:
         logger.exception(e)
-    except IntelOwlInvalidAPITokenException as e:
-        logger.exception(e)
-        exit(-1)
     except Exception as e:
         logger.exception(e)
 

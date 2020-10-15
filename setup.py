@@ -10,14 +10,15 @@ README = (HERE / "README.md").read_text()
 # This call to setup() does all the work
 setup(
     name="pyintelowl",
-    version="1.3.5",
+    version="2.0.0",
     description="Client and Library for Intel Owl",
     long_description=README,
     long_description_content_type="text/markdown",
     url="https://github.com/intelowlproject/pyintelowl",
     author="Matteo Lodi",
     classifiers=[
-        "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)",
+        "License :: OSI Approved :: GNU Affero General Public "
+        "License v3 or later (AGPLv3+)",
         "Programming Language :: Python :: 3.6",
     ],
     packages=["pyintelowl"],

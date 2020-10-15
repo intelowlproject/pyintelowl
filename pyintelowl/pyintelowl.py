@@ -7,18 +7,13 @@ import sys
 from json import dumps as json_dumps
 
 from .exceptions import IntelOwlClientException
-from .token_auth import APIToken
 
 logger = logging.getLogger(__name__)
 
 
 class IntelOwl:
-    def __init__(self, token_file, certificate, instance, debug, classic_token=""):
-        if classic_token:
-            self.token = classic_token
-        else:
-            self.token = APIToken(token_file, certificate, instance)
-        print(self.token)
+    def __init__(self, token, certificate, instance, debug):
+        self.token = token
         self.certificate = certificate
         self.instance = instance
         if debug:
@@ -33,8 +28,8 @@ class IntelOwl:
             session.verify = self.certificate
             session.headers.update(
                 {
-                    "Authorization": "Token {}".format(str(self.token)),
-                    "User-Agent": "IntelOwlClient/1.3.5",
+                    "Authorization": f"Token {self.token}",
+                    "User-Agent": "IntelOwlClient/2.0.0",
                 }
             )
             self._session = session
