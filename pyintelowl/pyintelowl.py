@@ -7,14 +7,13 @@ import sys
 from json import dumps as json_dumps
 
 from .exceptions import IntelOwlClientException
-from .token_auth import APIToken
 
 logger = logging.getLogger(__name__)
 
 
 class IntelOwl:
-    def __init__(self, token_file, certificate, instance, debug):
-        self.token = APIToken(token_file, certificate, instance)
+    def __init__(self, token, certificate, instance, debug):
+        self.token = token
         self.certificate = certificate
         self.instance = instance
         if debug:
@@ -29,8 +28,8 @@ class IntelOwl:
             session.verify = self.certificate
             session.headers.update(
                 {
-                    "Authorization": "Token {}".format(str(self.token)),
-                    "User-Agent": "IntelOwlClient/1.3.5",
+                    "Authorization": f"Token {self.token}",
+                    "User-Agent": "IntelOwlClient/2.0.0",
                 }
             )
             self._session = session
@@ -55,6 +54,7 @@ class IntelOwl:
             url = self.instance + "/api/ask_analysis_availability"
             response = self.session.get(url, params=params)
             logger.debug(response.url)
+            logger.debug(response.headers)
             response.raise_for_status()
             answer = response.json()
         except Exception as e:
@@ -175,7 +175,8 @@ def get_observable_classification(value):
         ipaddress.ip_address(value)
     except ValueError:
         if re.match(
-            "^(?:ht|f)tps?://[a-z\d-]{1,63}(?:\.[a-z\d-]{1,63})+(?:/[a-z\d-]{1,63})*(?:\.\w+)?",
+            "^(?:ht|f)tps?://[a-z\d-]{1,63}(?:\.[a-z\d-]{1,63})+"
+            "(?:/[a-z\d-]{1,63})*(?:\.\w+)?",
             value,
         ):
             classification = "url"
