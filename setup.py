@@ -17,8 +17,7 @@ setup(
     url="https://github.com/intelowlproject/pyintelowl",
     author="Matteo Lodi",
     classifiers=[
-        "License :: OSI Approved :: GNU Affero General Public "
-        "License v3 or later (AGPLv3+)",
+        "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)",
         "Programming Language :: Python :: 3.6",
     ],
     packages=["pyintelowl"],
