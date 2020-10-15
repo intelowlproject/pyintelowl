@@ -199,7 +199,9 @@ class Hybrid:
             if len(lst) < 6:
                 if "date" in j:
                     print("\t\t====>".ljust(28), end=" ")
-                    print("Scan date:\t{}".format(j["date"]),)
+                    print(
+                        "Scan date:\t{}".format(j["date"]),
+                    )
                 print("\t\t====>".ljust(28), end=" ")
                 print(
                     "Detection:\t{0}{1}/{2}{3}{4}".format(
@@ -217,7 +219,9 @@ class Hybrid:
                 while num <= 6:
                     if "date" in j:
                         print("\t\t====>".ljust(28), end=" ")
-                        print("Scan date:\t{}".format(j["date"]),)
+                        print(
+                            "Scan date:\t{}".format(j["date"]),
+                        )
                     print("\t\t====>".ljust(28), end=" ")
                     print(
                         "Detection:\t{0}{1}/{2}{3}{4}".format(
@@ -235,10 +239,14 @@ class Hybrid:
                     num += 1
 
                     if num > 6:
-                        url = f"https://www.virustotal.com/gui/domain/{self.value}/relations"
+                        url = (
+                            f"https://www.virustotal.com/gui/domain/"
+                            f"{self.value}/relations"
+                        )
                         print(MyColors.Foreground.lightred + "\n......", MyColors.reset)
                         print(
-                            f"\n*** Too many Detected samples... Check in browser: {url}"
+                            f"\n*** Too many Detected samples... "
+                            f"Check in browser: {url}"
                         )
                         print(MyColors.reset)
                         break
@@ -250,7 +258,9 @@ class Hybrid:
                 print("\t\t====>".ljust(28), end=" ")
                 print("URL:\t{}".format(j["url"]))
                 print("\t\t====>".ljust(28), end=" ")
-                print("Scan date:\t{}".format(j["scan_date"]),)
+                print(
+                    "Scan date:\t{}".format(j["scan_date"]),
+                )
                 print("\t\t====>".ljust(28), end=" ")
                 print(
                     "Detection:\t{0}{1}/{2}{3}{4}\n".format(
@@ -267,7 +277,9 @@ class Hybrid:
                     print("\t\t====>".ljust(28), end=" ")
                     print("URL:\t{}".format(j["url"]))
                     print("\t\t====>".ljust(28), end=" ")
-                    print("Scan date:\t{}".format(j["scan_date"]),)
+                    print(
+                        "Scan date:\t{}".format(j["scan_date"]),
+                    )
                     print("\t\t====>".ljust(28), end=" ")
                     print(
                         "Detection:\t{0}{1}/{2}{3}{4}\n".format(
@@ -283,10 +295,14 @@ class Hybrid:
                     num += 1
 
                     if num > 6:
-                        url = f"https://www.virustotal.com/gui/domain/{self.value}/relations"
+                        url = (
+                            f"https://www.virustotal.com/gui/domain/"
+                            f"{self.value}/relations"
+                        )
                         print(MyColors.Foreground.lightred + "\n......", MyColors.reset)
                         print(
-                            f"\n*** Too many Detected samples... Check in browser: {url}"
+                            f"\n*** Too many Detected samples... "
+                            f"Check in browser: {url}"
                         )
                         print(MyColors.reset)
                         break
@@ -400,13 +416,17 @@ class Hybrid:
                         print(f"(City:{geocoder.ip(resolve['ip_address']).city})")
                         num += 1
                         if num > 6:
-                            url = f"https://www.virustotal.com/gui/ip/{self.value}/details"
+                            url = (
+                                f"https://www.virustotal.com/gui/ip/"
+                                f"{self.value}/details"
+                            )
                             print(
                                 MyColors.Foreground.lightred + "\n......",
                                 MyColors.reset,
                             )
                             print(
-                                f"\n*** Too many Detected samples... Check in browser: {url}"
+                                f"\n*** Too many Detected samples... "
+                                f"Check in browser: {url}"
                             )
                             print(MyColors.reset)
                             break
@@ -418,13 +438,17 @@ class Hybrid:
                         print("Date: {}\n".format(resolve["last_resolved"]))
                         num += 1
                         if num > 6:
-                            url = f"https://www.virustotal.com/gui/ip-address/{self.value}/relations"
+                            url = (
+                                f"https://www.virustotal.com/gui/ip-address/"
+                                f"{self.value}/relations"
+                            )
                             print(
                                 MyColors.Foreground.lightred + "\n......",
                                 MyColors.reset,
                             )
                             print(
-                                f"\n*** Too many Detected samples... Check in browser: {url}"
+                                f"\n*** Too many Detected samples... "
+                                f"Check in browser: {url}"
                             )
                             print(MyColors.reset)
                             break
@@ -1068,13 +1092,15 @@ class Hashes:
                     print(
                         f"{MyColors.Foreground.lightgreen}{x}:".ljust(20),
                         "=>".ljust(10),
-                        f"{MyColors.Foreground.lightred}{y['results'].get('detection')}{MyColors.reset}",
+                        f"{MyColors.Foreground.lightred}"
+                        f"{y['results'].get('detection')}{MyColors.reset}",
                     )
                 elif "msdefender" in x:
                     print(
                         f"{MyColors.Foreground.lightgreen}{x}:".ljust(20),
                         "=>".ljust(10),
-                        f"{MyColors.Foreground.lightred}{y['results'].get('detection')}{MyColors.reset}",
+                        f"{MyColors.Foreground.lightred}"
+                        f"{y['results'].get('detection')}{MyColors.reset}",
                     )
 
     def _otx_get_strings(self):
@@ -1088,7 +1114,8 @@ class Hashes:
                         for i in range(0, len(y["results"])):
                             results = y["results"][i]
                             print(
-                                f"{MyColors.Foreground.lightgreen}=> {MyColors.Foreground.lightred}{results}"
+                                f"{MyColors.Foreground.lightgreen}=>"
+                                f" {MyColors.Foreground.lightred}{results}"
                             )
                             f.write(f"{results}\n")
                         print(
@@ -1279,7 +1306,7 @@ class Urls:
         print("\nVIRUSTOTAL SUMMARY")
         print("=" * 25, "\n", MyColors.reset)
 
-        if self.text["response_code"] is 1:
+        if self.text["response_code"] == 1:
             try:
                 self._vt_get_scan_date()
                 self._vt_get_analysis_results()

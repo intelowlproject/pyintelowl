@@ -1,0 +1,28 @@
+name: Pull request automation
+
+on:
+  pull_request:
+    branches: [ master, develop ]
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.6
+    - name: Install Dependencies
+      run: |
+        sudo apt-get update
+        pip3 install --upgrade pip
+        pip3 install -r test-requirements.txt
+
+    - name: Black formatter
+      run: |
+        black . --check --diff
+    - name: Lint with flake8 (PEP8 enforcer + linter)
+      run: |
+        flake8 . --config=.flake8 --show-source

@@ -26,13 +26,20 @@ def intel_owl_client():
         "--show-colors",
         action="store_true",
         default=False,
-        help="Show colorful and more user-friendly results. By default JSON raw results are shown",
+        help="Show colorful and more user-friendly results."
+        " By default JSON raw results are shown",
     )
     parser.add_argument(
         "-k",
         "--api-token-file",
         default=DEFAULT_TOKEN_FILE,
         help=f"File containing IntelOwl's API token. Default: '{DEFAULT_TOKEN_FILE}'",
+    )
+    parser.add_argument(
+        "-t",
+        "--classic-token",
+        help="Alternative authentication with classic API Token"
+        " (less secure but better for concurrency requests)",
     )
     parser.add_argument(
         "-c", "--certificate", default=False, help="path to Intel Owl certificate"
@@ -106,14 +113,29 @@ def intel_owl_client():
 
     args = parser.parse_args()
 
-    if not (args.api_token_file and os.path.isfile(args.api_token_file)):
-        print(f"API token file:'{args.api_token_file}' is empty or does not exists.")
+    if (
+        not (args.api_token_file and os.path.isfile(args.api_token_file))
+        and not args.classic_token
+    ):
+        print(
+            f"You must provide at least one form of authentication.\n"
+            f"API token file:'{args.api_token_file}' is empty or does not exists.\n"
+            f"Also a classic API token string was not specified (via -t)"
+        )
         exit(1)
+
+    if os.path.isfile(args.api_token_file) and args.classic_token:
+        print(
+            f"You specified both a token file (-k default "
+            f"{DEFAULT_TOKEN_FILE}) and a token key (-t).\n"
+            f"We will use the token key"
+        )
 
     if not args.get_configuration:
         if not args.analyzers_list and not args.run_all_available_analyzers:
             print(
-                "you must specify at least an analyzer (-a) or every available analyzer (--aa)"
+                "you must specify at least an analyzer (-a) or"
+                " every available analyzer (--aa)"
             )
             exit(2)
         if args.analyzers_list and args.run_all_available_analyzers:
@@ -151,7 +173,11 @@ def _pyintelowl_logic(args, logger):
             )
 
         pyintelowl_client = IntelOwl(
-            args.api_token_file, args.certificate, args.instance, args.debug
+            args.api_token_file,
+            args.certificate,
+            args.instance,
+            args.debug,
+            args.classic_token,
         )
 
         if get_configuration_only:
@@ -169,7 +195,8 @@ def _pyintelowl_logic(args, logger):
             job_id_to_get = None
             # first step: ask analysis availability
             logger.info(
-                f"[STARTED] request ask_analysis_availability for md5: {md5}, analyzers: {args.analyzers_list}"
+                f"[STARTED] request ask_analysis_availability for md5: {md5},"
+                f" analyzers: {args.analyzers_list}"
             )
 
             api_request_result = pyintelowl_client.ask_analysis_availability(
@@ -231,7 +258,8 @@ def _pyintelowl_logic(args, logger):
             else:
                 raise NotImplementedError()
 
-            # both cases share the same logic for the management of the result retrieved from the API
+            # both cases share the same logic for the management of
+            # the result retrieved from the API
             errors = api_request_result.get("errors", [])
             if errors:
                 raise IntelOwlClientException(
@@ -290,8 +318,10 @@ def _pyintelowl_logic(args, logger):
                 continue
             if status == "pending":
                 logger.warning(
-                    f"API ask_analysis_result check job in status 'pending'. Maybe it is stuck"
-                    f"job_id:{job_id_to_get} md5:{md5} analyzer_list:{args.analyzers_list}"
+                    f"API ask_analysis_result check job in status 'pending'."
+                    f" Maybe it is stuck"
+                    f"job_id:{job_id_to_get} md5:{md5}"
+                    f" analyzer_list:{args.analyzers_list}"
                 )
             elif status in ["reported_without_fails", "reported_with_fails", "failed"]:
                 logger.info(
@@ -303,7 +333,8 @@ def _pyintelowl_logic(args, logger):
                 break
         if not results:
             raise IntelOwlClientException(
-                f"[ENDED] Reached polling timeout without results. Job_id: {job_id_to_get}"
+                f"[ENDED] Reached polling timeout without results."
+                f" Job_id: {job_id_to_get}"
             )
 
     except IntelOwlClientException as e:

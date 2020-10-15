@@ -12,11 +12,32 @@ Simple Client for the [Intel Owl Project](https://github.com/intelowlproject/Int
 
 You can select which analyzers you want to run for every analysis you perform.
 
-> Note: To use this, you need a valid API token to interact with the IntelOwl server. Token should be created from the admin interface of [IntelOwl](https://github.com/intelowlproject/intelowl) and paste it into [api_token.txt](api_token.txt).
-
 For additional help, we suggest to check the ["How to use pyintelowl" Youtube Video](https://www.youtube.com/watch?v=fpd6Kt9EZdI) by [Kostas](https://github.com/tsale).
 
-### Library
+
+## Generate API token
+You need a valid API token to interact with the IntelOwl server. 
+Token should be created from the admin interface of [IntelOwl](https://github.com/intelowlproject/intelowl)
+
+You can leverage 2 types of tokens:
+
+##### Simple Token authentication
+> this mode is available only with IntelOwl versions >=1.8.0 and pyintelowl versions >=1.4.0
+
+From the admin interface of IntelOwl, you have to go in the *Tokens* section and generate a token there.
+
+You can use it with the parameter `-t <api_token>` from CLI
+
+This token is always valid and can be used for every kind of requests.
+
+##### JWT Token Authentication
+From the admin interface of IntelOwl, you can go in the *Outstanding tokens* section and generate a token there.
+
+You can use it by pasting it into the file [api_token.txt](api_token.txt).
+
+This method of authentication is more secure (token is refreshed at every request) but can bring problems when used by concurrent processes. We suggest to do not use this auth method when integrating IntelOwl with other applications.
+
+## Library
 `pip3 install pyintelowl`
 
 `from pyintelowl.pyintelowl import IntelOwl`
@@ -33,7 +54,7 @@ For additional help, we suggest to check the ["How to use pyintelowl" Youtube Vi
 `get_analyzer_configs` -> get the analyzers configuration
 
 
-### Command line Client
+## Command line Client
 
 #### Help
 
@@ -45,16 +66,16 @@ For additional help, we suggest to check the ["How to use pyintelowl" Youtube Vi
 ##### Sample
 Example:
 
-`python3 intel_owl_client.py -k <api_token_file> -i <url> -a PE_Info -a File_Info file -f <path_to_file>`
+`python3 intel_owl_client.py -t <api_token> -i <url> -a PE_Info -a File_Info file -f <path_to_file>`
 
 Run all available analyzers (some of them could fail if you did not implemented the required configuration in the IntelOwl server):
 
-`python3 intel_owl_client.py -k <api_token_file> -i <url> -aa file -f <path_to_file>`
+`python3 intel_owl_client.py -t <api_token> -i <url> -aa file -f <path_to_file>`
 
 ##### Observable
 Example:
 
-`python3 intel_owl_client.py -k <api_token_file> -i <url> -a AbuseIPDB -a OTXQuery observable -v google.com`
+`python3 intel_owl_client.py -t <api_token> -i <url> -a AbuseIPDB -a OTXQuery observable -v google.com`
 
 #### Get Analyzers Configuration
-`python3 intel_owl_client.py -k <api_token_file> -i <url> -gc`
+`python3 intel_owl_client.py -t <api_token> -i <url> -gc`

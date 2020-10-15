@@ -13,8 +13,12 @@ logger = logging.getLogger(__name__)
 
 
 class IntelOwl:
-    def __init__(self, token_file, certificate, instance, debug):
-        self.token = APIToken(token_file, certificate, instance)
+    def __init__(self, token_file, certificate, instance, debug, classic_token=""):
+        if classic_token:
+            self.token = classic_token
+        else:
+            self.token = APIToken(token_file, certificate, instance)
+        print(self.token)
         self.certificate = certificate
         self.instance = instance
         if debug:
@@ -55,6 +59,7 @@ class IntelOwl:
             url = self.instance + "/api/ask_analysis_availability"
             response = self.session.get(url, params=params)
             logger.debug(response.url)
+            logger.debug(response.headers)
             response.raise_for_status()
             answer = response.json()
         except Exception as e:
@@ -175,7 +180,8 @@ def get_observable_classification(value):
         ipaddress.ip_address(value)
     except ValueError:
         if re.match(
-            "^(?:ht|f)tps?://[a-z\d-]{1,63}(?:\.[a-z\d-]{1,63})+(?:/[a-z\d-]{1,63})*(?:\.\w+)?",
+            "^(?:ht|f)tps?://[a-z\d-]{1,63}(?:\.[a-z\d-]{1,63})+"
+            "(?:/[a-z\d-]{1,63})*(?:\.\w+)?",
             value,
         ):
             classification = "url"
