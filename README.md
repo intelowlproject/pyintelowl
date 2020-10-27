@@ -17,7 +17,7 @@ For additional help, we suggest to check the ["How to use pyintelowl" Youtube Vi
 
 ## Generate API key
 You need a valid API key to interact with the IntelOwl server. 
-Keys should be created from the admin interface of [IntelOwl](https://github.com/intelowlproject/intelowl): you have to go in the *Tokens* section and generate a key there.
+Keys should be created from the admin interface of [IntelOwl](https://github.com/intelowlproject/intelowl): you have to go in the *Durin* section (click on `Auth tokens`) and generate a key there.
 
 You can use the  with the parameter `-k <api_key>` from CLI
 
