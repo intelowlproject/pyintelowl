@@ -3,6 +3,9 @@ import logging
 import re
 import requests
 import sys
+import hashlib
+
+from typing import List, Dict
 
 from json import dumps as json_dumps
 
@@ -12,20 +15,34 @@ logger = logging.getLogger(__name__)
 
 
 class IntelOwl:
-    def __init__(self, token, certificate, instance, debug):
+    def __init__(
+        self,
+        token: str,
+        instance_url: str,
+        certificate: str = None,
+        debug: bool = False,
+    ):
         self.token = token
+        self.instance = instance_url
         self.certificate = certificate
-        self.instance = instance
-        if debug:
+        self.__debug__hndlr = logging.StreamHandler(sys.stdout)
+        self.debug(debug)
+
+    def debug(self, on: bool) -> None:
+        if on:
             # if debug add stdout logging
             logger.setLevel(logging.DEBUG)
-            logger.addHandler(logging.StreamHandler(sys.stdout))
+            logger.addHandler(self.__debug__hndlr)
+        else:
+            logger.setLevel(logging.INFO)
+            logger.removeHandler(self.__debug__hndlr)
 
     @property
     def session(self):
         if not hasattr(self, "_session"):
             session = requests.Session()
-            session.verify = self.certificate
+            if self.certificate:
+                session.verify = self.certificate
             session.headers.update(
                 {
                     "Authorization": f"Token {self.token}",
@@ -102,28 +119,28 @@ class IntelOwl:
 
     def send_observable_analysis_request(
         self,
-        md5,
-        analyzers_requested,
-        observable_name,
-        force_privacy=False,
-        private_job=False,
-        disable_external_analyzers=False,
-        run_all_available_analyzers=False,
-        runtime_configuration=None,
+        analyzers_requested: List[str],
+        observable_name: str,
+        md5: str = None,
+        force_privacy: bool = False,
+        private_job: bool = False,
+        disable_external_analyzers: bool = False,
+        run_all_available_analyzers: bool = False,
+        runtime_configuration: Dict = {},
     ):
-        if runtime_configuration is None:
-            runtime_configuration = {}
         answer = {}
         errors = []
+        if not md5:
+            md5 = hashlib.md5(observable_name.encode("utf-8")).hexdigest()
         try:
             data = {
+                "is_sample": False,
                 "md5": md5,
                 "analyzers_requested": analyzers_requested,
                 "run_all_available_analyzers": run_all_available_analyzers,
                 "force_privacy": force_privacy,
                 "private": private_job,
                 "disable_external_analyzers": disable_external_analyzers,
-                "is_sample": False,
                 "observable_name": observable_name,
                 "observable_classification": get_observable_classification(
                     observable_name
@@ -138,7 +155,7 @@ class IntelOwl:
             answer = response.json()
         except Exception as e:
             errors.append(str(e))
-        return {"errors": errors, "answer": answer}
+        return answer, errors
 
     def ask_analysis_result(self, job_id):
         answer = {}

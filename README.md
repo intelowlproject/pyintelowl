@@ -1,35 +1,50 @@
-# pyintelowl
+# PyIntelOwl
 
 [![PyPI version](https://badge.fury.io/py/pyintelowl.svg)](https://badge.fury.io/py/pyintelowl)
 [![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/intelowlproject/pyintelowl.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/mlodic/pyintelowl/context:python)
 [![CodeFactor](https://www.codefactor.io/repository/github/intelowlproject/pyintelowl/badge)](https://www.codefactor.io/repository/github/intelowlproject/pyintelowl)
 
-Simple Client for the [Intel Owl Project](https://github.com/intelowlproject/IntelOwl)
-
-2 ways to use it:
-* as a library
-* as a command line script
+Robust Python **SDK** and **Command Line Client** for interacting with [IntelOwl](https://github.com/intelowlproject/IntelOwl)'s API.
 
 You can select which analyzers you want to run for every analysis you perform.
 
 For additional help, we suggest to check the ["How to use pyintelowl" Youtube Video](https://www.youtube.com/watch?v=fpd6Kt9EZdI) by [Kostas](https://github.com/tsale).
 
 
-## Generate API key
-You need a valid API key to interact with the IntelOwl server. 
-Keys should be created from the admin interface of [IntelOwl](https://github.com/intelowlproject/intelowl): you have to go in the *Durin* section (click on `Auth tokens`) and generate a key there.
+## Installation
 
-You can use the  with the parameter `-k <api_key>` from CLI
+```bash
+$ pip3 install pyintelowl
+```
 
-#### (old auth method) JWT Token Authentication
-> this auth was available in IntelOwl versions <1.8.0 and pyintelowl versions <2.0.0
+For development/testing, `pip3 install pyintelowl[dev]`
 
-From the admin interface of IntelOwl, you have to go in the *Outstanding tokens* section and generate a token there.
+## Usage
 
-You can use it by pasting it into the file [api_token.txt](api_token.txt).
+### As Command Line Client
 
-## Library
-`pip3 install pyintelowl`
+```bash
+$ python3 cli.py -h
+Usage: cli.py [OPTIONS] COMMAND [ARGS]...
+
+Options:
+  -k, --api-key TEXT       API key to authenticate against a IntelOwl instance
+                           [required]
+
+  -u, --instance-url TEXT  IntelOwl instance URL  [required]
+  -c, --certificate PATH   Path to SSL client certificate file (.pem)
+  --debug / --no-debug     Set log level to DEBUG
+  -h, --help               Show this message and exit.
+
+Commands:
+  analyse              Send new analysis request
+  config               Set or view config variables
+  get-analyzer-config  Get current state of analyzer_config.json from the IntelOwl instance
+  jobs                 List jobs
+  tags                 List tags
+```
+
+## As a library / SDK
 
 `from pyintelowl.pyintelowl import IntelOwl`
 
@@ -45,28 +60,17 @@ You can use it by pasting it into the file [api_token.txt](api_token.txt).
 `get_analyzer_configs` -> get the analyzers configuration
 
 
-## Command line Client
+## FAQ
 
-#### Help
+### Generate API key
+You need a valid API key to interact with the IntelOwl server. 
+Keys should be created from the admin interface of [IntelOwl](https://github.com/intelowlproject/intelowl): you have to go in the *Durin* section (click on `Auth tokens`) and generate a key there.
 
-`python3 intel_owl_client.py -h`
+You can use the  with the parameter `-k <api_key>` from CLI
 
-#### Analyze
-2 Submodules: `file` and `observable`
+#### (old auth method) JWT Token Authentication
+> this auth was available in IntelOwl versions <1.8.0 and pyintelowl versions <2.0.0
 
-##### Sample
-Example:
+From the admin interface of IntelOwl, you have to go in the *Outstanding tokens* section and generate a token there.
 
-`python3 intel_owl_client.py -k <api_token> -i <url> -a PE_Info -a File_Info file -f <path_to_file>`
-
-Run all available analyzers (some of them could fail if you did not implemented the required configuration in the IntelOwl server):
-
-`python3 intel_owl_client.py -k <api_token> -i <url> -aa file -f <path_to_file>`
-
-##### Observable
-Example:
-
-`python3 intel_owl_client.py -k <api_token> -i <url> -a AbuseIPDB -a OTXQuery observable -v google.com`
-
-#### Get Analyzers Configuration
-`python3 intel_owl_client.py -k <api_token> -i <url> -gc`
+You can use it by pasting it into the file [api_token.txt](api_token.txt).
