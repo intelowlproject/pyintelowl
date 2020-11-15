@@ -184,6 +184,32 @@ class IntelOwl:
             errors.append(str(e))
         return {"errors": errors, "answer": answer}
 
+    def get_all_tags(self):
+        answer = []
+        errors = []
+        try:
+            url = self.instance + "/api/tags"
+            response = self.session.get(url)
+            logger.debug(response.url)
+            response.raise_for_status()
+            answer = response.json()
+        except Exception as e:
+            errors.append(str(e))
+        return answer, errors
+
+    def get_tag_by_id(self, tag_id):
+        answer = []
+        errors = []
+        try:
+            url = self.instance + "/api/tags/"
+            response = self.session.get(url + str(tag_id))
+            logger.debug(response.url)
+            response.raise_for_status()
+            answer.append(response.json())
+        except Exception as e:
+            errors.append(str(e))
+        return answer, errors
+
 
 def get_observable_classification(value):
     # only following types are supported:
