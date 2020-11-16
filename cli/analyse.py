@@ -1,5 +1,5 @@
 import click
-from ._utils import add_options
+from ._utils import add_options, ClickContext
 
 __analyse_options = [
     click.option(
@@ -68,7 +68,7 @@ def analyse():
 @add_options(__analyse_options)
 @click.pass_context
 def observable(
-    ctx,
+    ctx: ClickContext,
     value,
     analyzers_list,
     run_all_available_analyzers,
@@ -102,7 +102,7 @@ def observable(
 @add_options(__analyse_options)
 @click.pass_context
 def file(
-    ctx,
+    ctx: ClickContext,
     filename,
     analyzers_list,
     run_all_available_analyzers,
