@@ -173,7 +173,7 @@ class IntelOwl:
 
     def get_analyzer_configs(self):
         answer = None
-        error = None
+        errors = []
         try:
             url = self.instance + "/api/get_analyzer_configs"
             response = self.session.get(url)
@@ -181,11 +181,11 @@ class IntelOwl:
             response.raise_for_status()
             answer = response.json()
         except Exception as e:
-            error = e
-        return answer, error
+            errors.append(str(e))
+        return answer, errors
 
     def get_all_tags(self):
-        answer = []
+        answer = None
         errors = []
         try:
             url = self.instance + "/api/tags"
@@ -198,12 +198,12 @@ class IntelOwl:
         return answer, errors
 
     def get_all_jobs(self):
-        answer = []
+        answer = None
         errors = []
         try:
             url = self.instance + "/api/jobs"
             response = self.session.get(url)
-            logger.debug(response.url)
+            logger.debug(msg=(response.url, response.status_code))
             response.raise_for_status()
             answer = response.json()
         except Exception as e:
@@ -211,25 +211,26 @@ class IntelOwl:
         return answer, errors
 
     def get_tag_by_id(self, tag_id):
-        answer = []
+        answer = None
         errors = []
         try:
             url = self.instance + "/api/tags/"
             response = self.session.get(url + str(tag_id))
-            logger.debug(response.url)
+            logger.debug(msg=(response.url, response.status_code))
             response.raise_for_status()
-            answer.append(response.json())
+            answer = response.json()
         except Exception as e:
             errors.append(str(e))
         return answer, errors
-        
+
     def get_job_by_id(self, job_id):
-        answer = {}
+        answer = None
         errors = []
         try:
             url = self.instance + "/api/jobs/" + str(job_id)
             response = self.session.get(url)
-            logger.debug(response.url)
+            logger.debug(msg=(response.url, response.status_code))
+            response.raise_for_status()
             answer = response.json()
         except Exception as e:
             errors.append(str(e))

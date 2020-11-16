@@ -1,7 +1,8 @@
 import click
 from rich.console import Console
 from rich.table import Table
-from rich import box, rprint
+from rich.text import Text
+from rich import box, print as rprint
 
 from ._utils import ClickContext
 
@@ -18,6 +19,7 @@ def tags(ctx: ClickContext, id: int, all: bool):
         ans, errs = ctx.obj.get_all_tags()
     elif id:
         ans, errs = ctx.obj.get_tag_by_id(id)
+        ans = [ans]
     if errs:
         rprint(errs)
     else:
@@ -36,7 +38,7 @@ def _print_tags_table(data):
             table.add_row(
                 str(elem["id"]),
                 str(elem["label"]),
-                f"[{color}]{color}[/{color}]",
+                Text(color, style=f"on {color}")
             )
         console.print(table, justify="center")
     except Exception as e:

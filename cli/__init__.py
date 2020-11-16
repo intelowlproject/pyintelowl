@@ -8,10 +8,11 @@ from ._utils import ClickContext
 groups = [
     analyse,
     config,
+    jobs,
 ]
 
 
-cmds = [get_analyzer_config, jobs, tags]
+cmds = [get_analyzer_config, tags]
 
 
 __all__ = [ClickContext, groups, cmds]
