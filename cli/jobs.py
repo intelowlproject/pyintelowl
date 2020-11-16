@@ -31,40 +31,49 @@ def jobs(ctx, id, all):
 
 def display_single_job(data):
     console = Console()
-    style = "bold #31DDCF"
-    console.print(Text("Id: ", style=style, end=""), Text(str(data["id"])))
-    console.print(Text("Tags: ", style=style, end=""), Text(", ".join(data["tags"])))
-    console.print(Text("User: ", style=style, end=""), Text(data["source"]))
-    console.print(Text("MD5: ", style=style, end=""), Text(data["md5"]))
-    console.print(
-        Text("Name: ", style=style, end=""),
-        Text(data["observable_name"] if data["observable_name"] else data["file_name"]),
-    )
-    console.print(
-        Text("Classification: ", style=style, end=""),
-        Text(
-            data["observable_classification"]
-            if data["observable_classification"]
-            else data["file_mimetype"]
-        ),
-    )
-    console.print(Text("Status: ", style=style, end=""), job_status(data["status"]))
-
-    header_style = "bold blue"
-    table = Table(show_header=True)
-    table.add_column("Name", header_style=header_style)
-    table.add_column("Errors", header_style=header_style)
-    table.add_column("Report", header_style=header_style)
-    table.add_column("Status", header_style=header_style)
-
-    for element in data["analysis_reports"]:
-        table.add_row(
-            element["name"],
-            json_dumps(element["errors"], indent=2),
-            json_dumps(element["report"], indent=2),
-            str(element["success"]),
+    style = "bold  #31DDCF"
+    try:
+        console.print(Text("Id: ", style=style, end=""), Text(str(data["id"])))
+        console.print(
+            Text("Tags: ", style=style, end=""), Text(", ".join(data["tags"]))
         )
-    console.print(table)
+        console.print(Text("User: ", style=style, end=""), Text(data["source"]))
+        console.print(Text("MD5: ", style=style, end=""), Text(data["md5"]))
+        console.print(
+            Text("Name: ", style=style, end=""),
+            Text(
+                data["observable_name"]
+                if data["observable_name"]
+                else data["file_name"]
+            ),
+        )
+        console.print(
+            Text("Classification: ", style=style, end=""),
+            Text(
+                data["observable_classification"]
+                if data["observable_classification"]
+                else data["file_mimetype"]
+            ),
+        )
+        console.print(Text("Status: ", style=style, end=""), job_status(data["status"]))
+
+        header_style = "bold blue"
+        table = Table(show_header=True)
+        table.add_column("Name", header_style=header_style)
+        table.add_column("Errors", header_style=header_style)
+        table.add_column("Report", header_style=header_style)
+        table.add_column("Status", header_style=header_style)
+
+        for element in data["analysis_reports"]:
+            table.add_row(
+                element["name"],
+                json_dumps(element["errors"], indent=2),
+                json_dumps(element["report"], indent=2),
+                str(element["success"]),
+            )
+        console.print(table)
+    except Exception:
+        pprint(data)  # Mostly It contains the reason for error
 
 
 def job_status(status):

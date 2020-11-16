@@ -222,7 +222,7 @@ class IntelOwl:
         except Exception as e:
             errors.append(str(e))
         return answer, errors
-        
+
     def get_job_by_id(self, job_id):
         answer = {}
         errors = []
@@ -234,6 +234,7 @@ class IntelOwl:
         except Exception as e:
             errors.append(str(e))
         return (errors, answer)
+
 
 def get_observable_classification(value):
     # only following types are supported:
