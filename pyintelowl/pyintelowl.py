@@ -197,6 +197,19 @@ class IntelOwl:
             errors.append(str(e))
         return answer, errors
 
+    def get_all_jobs(self):
+        answer = []
+        errors = []
+        try:
+            url = self.instance + "/api/jobs"
+            response = self.session.get(url)
+            logger.debug(response.url)
+            response.raise_for_status()
+            answer = response.json()
+        except Exception as e:
+            errors.append(str(e))
+        return (errors, answer)
+
     def get_tag_by_id(self, tag_id):
         answer = []
         errors = []
@@ -209,7 +222,18 @@ class IntelOwl:
         except Exception as e:
             errors.append(str(e))
         return answer, errors
-
+        
+    def get_job_by_id(self, job_id):
+        answer = {}
+        errors = []
+        try:
+            url = self.instance + "/api/jobs/" + str(job_id)
+            response = self.session.get(url)
+            logger.debug(response.url)
+            answer = response.json()
+        except Exception as e:
+            errors.append(str(e))
+        return (errors, answer)
 
 def get_observable_classification(value):
     # only following types are supported:

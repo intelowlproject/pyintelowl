@@ -6,10 +6,11 @@ from .commands import get_analyzer_config
 
 groups = [
     analyse,
-    jobs,
     config,
 ]
 
-cmds = [get_analyzer_config, tags]
+
+cmds = [get_analyzer_config, jobs, tags]
+
 
 __all__ = [groups, cmds]
