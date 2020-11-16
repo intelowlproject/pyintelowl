@@ -28,7 +28,7 @@ def jobs(ctx: ClickContext, id: int, all: bool):
         if not errs:
             _display_single_job(ans)
     else:
-        print("Use -h or --help for help.")
+        rprint(ctx.get_usage())
     if errs:
         rprint(errs)
 

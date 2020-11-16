@@ -87,6 +87,7 @@ def observable(
                 err=True,
                 color="RED",
             )
+            raise click.Abort()
     ans, errs = ctx.obj.send_observable_analysis_request(
         analyzers_requested=analyzers_list,
         observable_name=value,
