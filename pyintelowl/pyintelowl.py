@@ -172,8 +172,8 @@ class IntelOwl:
         return {"errors": errors, "answer": answer}
 
     def get_analyzer_configs(self):
-        answer = {}
-        errors = []
+        answer = None
+        error = None
         try:
             url = self.instance + "/api/get_analyzer_configs"
             response = self.session.get(url)
@@ -181,8 +181,8 @@ class IntelOwl:
             response.raise_for_status()
             answer = response.json()
         except Exception as e:
-            errors.append(str(e))
-        return {"errors": errors, "answer": answer}
+            error = e
+        return answer, error
 
     def get_all_jobs(self):
         answer = []
