@@ -184,6 +184,19 @@ class IntelOwl:
             error = e
         return answer, error
 
+    def get_all_tags(self):
+        answer = []
+        errors = []
+        try:
+            url = self.instance + "/api/tags"
+            response = self.session.get(url)
+            logger.debug(response.url)
+            response.raise_for_status()
+            answer = response.json()
+        except Exception as e:
+            errors.append(str(e))
+        return answer, errors
+
     def get_all_jobs(self):
         answer = []
         errors = []
@@ -195,16 +208,32 @@ class IntelOwl:
             answer = response.json()
         except Exception as e:
             errors.append(str(e))
-        return {"errors": errors, "answer": answer}
+        return answer, errors
 
+    def get_tag_by_id(self, tag_id):
+        answer = []
+        errors = []
+        try:
+            url = self.instance + "/api/tags/"
+            response = self.session.get(url + str(tag_id))
+            logger.debug(response.url)
+            response.raise_for_status()
+            answer.append(response.json())
+        except Exception as e:
+            errors.append(str(e))
+        return answer, errors
+        
     def get_job_by_id(self, job_id):
         answer = {}
         errors = []
-        url = self.instance + "/api/jobs/" + str(job_id)
-        response = self.session.get(url)
-        logger.debug(response.url)
-        answer = response.json()
-        return {"errors": errors, "answer": answer}
+        try:
+            url = self.instance + "/api/jobs/" + str(job_id)
+            response = self.session.get(url)
+            logger.debug(response.url)
+            answer = response.json()
+        except Exception as e:
+            errors.append(str(e))
+        return answer, errors
 
 
 def get_observable_classification(value):

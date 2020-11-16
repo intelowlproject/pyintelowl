@@ -1,27 +1,32 @@
 import click
+import json
 from rich.console import Console
 from rich.table import Table
 from rich.text import Text
-from rich import box, print
-from json import dumps as json_dumps
+from rich import box, print as rprint
 
 from ._utils import ClickContext, get_status_text
 
 
-@click.command(short_help="Info about Jobs")
+@click.command(short_help="Manage Jobs")
 @click.option("-a", "--all", is_flag=True, help="List all jobs")
-@click.option("--id", help="Retrieve Job details by ID")
+@click.option("--id", type=int, default=0, help="Retrieve Job details by ID")
 @click.pass_context
-def jobs(ctx: ClickContext, id, all):
+def jobs(ctx: ClickContext, id, all: bool):
     """
-    List jobs
+    Manage Jobs
     """
     if all:
-        res = ctx.obj.get_all_jobs()
-        display_all_jobs(res["answer"])
+        ans, errs = ctx.obj.get_all_jobs()
     elif id:
-        res = ctx.obj.get_job_by_id(id)
-        display_single_job(res["answer"])
+        ans, errs = ctx.obj.get_job_by_id(id)
+    else:
+        rprint("Specify either one of --all or --id {id}")
+        return
+    if not errs:
+        display_single_job(ans)
+    else:
+        rprint(errs)
 
 
 def display_single_job(data):
@@ -56,10 +61,11 @@ def display_single_job(data):
     for element in data["analysis_reports"]:
         table.add_row(
             element["name"],
-            json_dumps(element["errors"], indent=2),
-            json_dumps(element["report"], indent=2),
+            json.dumps(element["errors"], indent=2),
+            json.dumps(element["report"], indent=2),
             str(element["success"]),
         )
+
     console.print(table)
 
 
@@ -91,4 +97,4 @@ def display_all_jobs(data):
             )
         console.print(table, justify="center")
     except Exception as e:
-        print(e)
+        rprint(e)
