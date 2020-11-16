@@ -9,7 +9,7 @@ from json import dumps as json_dumps
 @click.command(short_help="Info about Jobs")
 @click.option("-a", "--all", is_flag=True, help="List all jobs")
 @click.pass_context
-@click.option("--id", help="Id of jobs required")
+@click.option("--id", help="Retrieve Job details by ID") 
 def jobs(ctx, id, all):
     """
     List jobs
