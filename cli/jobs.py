@@ -2,10 +2,12 @@ import click
 import click_spinner
 from rich.console import Console
 from rich.table import Table
-from rich.text import Text
+from rich.panel import Panel
+from rich.console import RenderGroup
 from rich import box, print as rprint
 
-from ._utils import ClickContext, get_status_text, get_success_text, get_json_syntax
+from pyintelowl.exceptions import IntelOwlAPIException
+from ._utils import ClickContext, get_status_text, get_success_text, get_json_syntax, get_tags_str
 
 
 @click.group("jobs", short_help="Manage Jobs", invoke_without_command=True)
@@ -16,21 +18,21 @@ def jobs(ctx: ClickContext, id: int, all: bool):
     """
     Manage Jobs
     """
-    errs = None
-    if all:
-        with click_spinner.spinner():
-            ans, errs = ctx.obj.get_all_jobs()
-        if not errs:
+    try:
+        if all:
+            ctx.obj.logger.info("Requesting list of jobs..")
+            with click_spinner.spinner():
+                ans = ctx.obj.get_all_jobs()
             _display_all_jobs(ans)
-    elif id:
-        with click_spinner.spinner():
-            ans, errs = ctx.obj.get_job_by_id(id)
-        if not errs:
+        elif id:
+            ctx.obj.logger.info(f"Requesting Job [underline blue]#{id}[/]..")
+            with click_spinner.spinner():
+                ans = ctx.obj.get_job_by_id(id)
             _display_single_job(ans)
-    else:
-        rprint(ctx.get_usage())
-    if errs:
-        rprint(errs)
+        else:
+            click.echo(ctx.get_usage())
+    except IntelOwlAPIException as e:
+        ctx.obj.logger.fatal(str(e))
 
 
 @jobs.command("poll", short_help="HTTP poll a currently running job's details")
@@ -57,30 +59,28 @@ def poll(ctx: ClickContext, max_tries: int, interval: int):
 
 def _display_single_job(data):
     console = Console()
-    style = "bold #31DDCF"
+    style = "[bold #31DDCF]"
     headers = ["Name", "Status", "Report", "Errors"]
     with console.pager(styles=True):
         # print job attributes
-        console.print(Text("Id: ", style=style, end=""), Text(str(data["id"])))
-        tags = ", ".join([t["label"] for t in data["tags"]])
-        console.print(Text("Tags: ", style=style, end=""), Text(tags))
-        console.print(Text("User: ", style=style, end=""), Text(data["source"]))
-        console.print(Text("MD5: ", style=style, end=""), Text(data["md5"]))
-        console.print(
-            Text("Name: ", style=style, end=""),
-            (data["observable_name"] if data["observable_name"] else data["file_name"]),
+        tags = get_tags_str(data["tags"])
+        status = get_status_text(data["status"])
+        name = data["observable_name"] if data["observable_name"] else data["file_name"]
+        clsfn = (
+            data["observable_classification"]
+            if data["observable_classification"]
+            else data["file_mimetype"]
         )
-        console.print(
-            Text("Classification: ", style=style, end=""),
-            (
-                data["observable_classification"]
-                if data["observable_classification"]
-                else data["file_mimetype"]
-            ),
+        r = RenderGroup(
+            f"{style}Job ID:[/] {str(data['id'])}",
+            f"{style}User:[/] {data['source']}",
+            f"{style}MD5:[/] {data['md5']}",
+            f"{style}Name:[/] {name}",
+            f"{style}Classification:[/] {clsfn}",
+            f"{style}Tags:[/] {tags}",
+            f"{style}Status:[/] {status}",
         )
-        console.print(
-            Text("Status: ", style=style, end=""), get_status_text(data["status"])
-        )
+        console.print(Panel(r, title="Job attributes"))
 
         # construct job analysis table
 
@@ -94,12 +94,12 @@ def _display_single_job(data):
         for h in headers:
             table.add_column(h, header_style="bold blue")
         # add rows
-        for element in data["analysis_reports"]:
+        for el in data["analysis_reports"]:
             table.add_row(
-                element["name"],
-                get_success_text((element["success"])),
-                get_json_syntax(element["report"]) if element["report"] else None,
-                get_json_syntax(element["errors"]) if element["errors"] else None,
+                el["name"],
+                get_success_text((el["success"])),
+                get_json_syntax(el["report"]) if el["report"] else None,
+                get_json_syntax(el["errors"]) if el["errors"] else None,
             )
         console.print(table)
 

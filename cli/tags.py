@@ -2,7 +2,9 @@ import click
 from rich.console import Console
 from rich.table import Table
 from rich.text import Text
-from rich import box, print as rprint
+from rich import box
+
+from pyintelowl.exceptions import IntelOwlAPIException
 
 from ._utils import ClickContext
 
@@ -15,31 +17,30 @@ def tags(ctx: ClickContext, id: int, all: bool):
     """
     Manage tags
     """
-    if all:
-        ans, errs = ctx.obj.get_all_tags()
-    elif id:
-        ans, errs = ctx.obj.get_tag_by_id(id)
-        ans = [ans]
-    if errs:
-        rprint(errs)
-    else:
-        _print_tags_table(ans)
+    try:
+        if all:
+            ans = ctx.obj.get_all_tags()
+        elif id:
+            ans = ctx.obj.get_tag_by_id(id)
+            ans = [ans]
+        _print_tags_table(ctx, ans)
+    except IntelOwlAPIException as e:
+        ctx.obj.logger.fatal(str(e))
 
 
-def _print_tags_table(data):
+def _print_tags_table(ctx, rows):
     console = Console()
     table = Table(show_header=True, title="List of tags", box=box.DOUBLE_EDGE)
-    table.add_column("Id", no_wrap=True, header_style="bold blue")
-    table.add_column("Label", no_wrap=True, header_style="bold blue")
-    table.add_column("Color", no_wrap=True, header_style="bold blue")
+    for h in ["Id", "Label", "Color"]:
+        table.add_column(h, no_wrap=True, header_style="bold blue")
     try:
-        for elem in data:
-            color = str(elem["color"]).lower()
+        for row in rows:
+            color = str(row["color"]).lower()
             table.add_row(
-                str(elem["id"]),
-                str(elem["label"]),
+                str(row["id"]),
+                str(row["label"]),
                 Text(color, style=f"on {color}")
             )
         console.print(table, justify="center")
     except Exception as e:
-        rprint(e)
+        ctx.obj.logger.fatal(str(e))

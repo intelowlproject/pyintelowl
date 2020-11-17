@@ -1,7 +1,7 @@
 import click
 from rich import print as rprint
 
-from ._utils import get_netrc_obj
+from ._utils import get_netrc_obj, ClickContext
 
 
 @click.group("config")
@@ -47,7 +47,8 @@ def config_get():
     type=click.Path(exists=True),
     help="Path to SSL client certificate file (.pem)",
 )
-def config_set(api_key, instance_url, certificate):
+@click.pass_context
+def config_set(ctx: ClickContext, api_key, instance_url, certificate):
     """
     Set/Edit config variables
     """
@@ -60,3 +61,4 @@ def config_set(api_key, instance_url, certificate):
         netrc["pyintelowl"]["login"] = certificate
     # finally save
     netrc.save()
+    ctx.obj.logger.info("Succesfully saved config variables!")
