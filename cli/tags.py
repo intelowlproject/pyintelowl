@@ -36,9 +36,7 @@ def _print_tags_table(data):
         for elem in data:
             color = str(elem["color"]).lower()
             table.add_row(
-                str(elem["id"]),
-                str(elem["label"]),
-                Text(color, style=f"on {color}")
+                str(elem["id"]), str(elem["label"]), Text(color, style=f"on {color}")
             )
         console.print(table, justify="center")
     except Exception as e:

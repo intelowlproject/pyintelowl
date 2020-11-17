@@ -7,9 +7,7 @@ from cli import groups, cmds, ClickContext
 @click.group(context_settings=dict(help_option_names=["-h", "--help"]))
 @click.option("-d", "--debug", is_flag=True, help="Set log level to DEBUG")
 @click.pass_context
-def cli(
-    ctx: ClickContext, debug: bool
-):
+def cli(ctx: ClickContext, debug: bool):
     netrc = Netrc()
     host = netrc["pyintelowl"]
     api_key, url, cert = host["password"], host["account"], host["login"]

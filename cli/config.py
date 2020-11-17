@@ -18,11 +18,13 @@ def config_get():
     Pretty Print config variables
     """
     _, host = get_netrc_obj()
-    rprint({
-        "api_key": host["password"],
-        "instance_url": host["account"],
-        "certificate": host["login"],
-    })
+    rprint(
+        {
+            "api_key": host["password"],
+            "instance_url": host["account"],
+            "certificate": host["login"],
+        }
+    )
 
 
 @config.command("set")
