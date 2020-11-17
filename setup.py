@@ -21,6 +21,7 @@ requirements = [
     "click==7.1.2",
     "rich==9.2.0",
     "click-spinner==0.1.10",
+    "click_completion",
     "tinynetrc==1.3.0",
 ]
 
@@ -71,4 +72,9 @@ setup(
         "dev": ["black==20.8b1", "flake8"] + requirements,
         "test": ["black==20.8b1", "flake8"] + requirements,
     },
+    # pip install --editable . 
+    entry_points="""
+        [console_scripts]
+        pyintelowl=cli:cli
+    """,
 )

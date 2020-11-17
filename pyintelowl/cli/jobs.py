@@ -7,7 +7,13 @@ from rich.console import RenderGroup
 from rich import box, print as rprint
 
 from pyintelowl.exceptions import IntelOwlAPIException
-from ._utils import ClickContext, get_status_text, get_success_text, get_json_syntax, get_tags_str
+from ._utils import (
+    ClickContext,
+    get_status_text,
+    get_success_text,
+    get_json_syntax,
+    get_tags_str,
+)
 
 
 @click.group("jobs", short_help="Manage Jobs", invoke_without_command=True)
