@@ -1,5 +1,6 @@
 import click
 from ._utils import add_options, ClickContext
+from .jobs import _display_single_job
 
 __analyse_options = [
     click.option(
@@ -16,6 +17,7 @@ __analyse_options = [
     click.option(
         "-aa",
         "--run-all-available-analyzers",
+        "run_all",
         is_flag=True,
         help="""
     Run all available and compatible analyzers. Should not be used with
@@ -45,6 +47,7 @@ __analyse_options = [
         "--check",
         type=click.Choice(["reported", "running", "force-new"], case_sensitive=False),
         default="reported",
+        show_choices=True,
         show_default=True,
         help="""\n
     1. 'reported': analysis won't be repeated if already exists as running or failed.\n
@@ -71,30 +74,48 @@ def observable(
     ctx: ClickContext,
     value,
     analyzers_list,
-    run_all_available_analyzers,
+    run_all,
     force_privacy,
     private_job,
     disable_external_analyzers,
     check,
 ):
-    if not analyzers_list:
-        if not run_all_available_analyzers:
-            click.echo(
-                """
-                One of --analyzers-list,
-                --run-all-available-analyzers should be specified
-                """,
-                err=True,
-                color="RED",
-            )
-            raise click.Abort()
-    ans, errs = ctx.obj.send_observable_analysis_request(
+    if analyzers_list and run_all:
+        logger.warn(
+            """
+            Can't use -al and -aa options together. See usage with -h.
+            """
+        )
+        ctx.exit(-1)
+    if not (analyzers_list or run_all):
+        logger.warn(
+            """
+            Either one of -al, -aa must be specified. See usage with -h.
+            """,
+        )
+        ctx.exit(-1)
+    analyzers = analyzers_list if analyzers_list else "all available analyzers"
+    ctx.obj.logger.info(
+        f"""Requesting analysis..
+        observable: [bold blue underline]{value}[/]
+        analyzers: [italic green]{analyzers}[/]
+        """,
+    )
+    # first step: ask analysis availability
+    ans = ctx.obj.send_observable_analysis_request(
         analyzers_requested=analyzers_list,
         observable_name=value,
         force_privacy=force_privacy,
         private_job=private_job,
         disable_external_analyzers=disable_external_analyzers,
-        run_all_available_analyzers=run_all_available_analyzers,
+        run_all_available_analyzers=run_all,
+    )
+    warnings = ans["warnings"]
+    ctx.obj.logger.info(
+        f"""New Job running..
+        ID: {ans['job_id']} | Status: [underline pink]{ans['status']}[/].
+        Got {len(warnings)} warnings: [italic red]{warnings if warnings else None}[/]
+    """
     )
 
 
@@ -106,7 +127,7 @@ def file(
     ctx: ClickContext,
     filename,
     analyzers_list,
-    run_all_available_analyzers,
+    run_all,
     force_privacy,
     private_job,
     disable_external_analyzers,

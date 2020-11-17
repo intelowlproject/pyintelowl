@@ -1,3 +1,7 @@
+class IntelOwlAPIException(Exception):
+    pass
+
+
 class IntelOwlClientException(Exception):
     pass
 

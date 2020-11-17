@@ -1,5 +1,6 @@
 import ipaddress
 import logging
+import pathlib
 import re
 import requests
 import sys
@@ -9,12 +10,14 @@ from typing import List, Dict
 
 from json import dumps as json_dumps
 
-from .exceptions import IntelOwlClientException
+from .exceptions import IntelOwlClientException, IntelOwlAPIException
 
 logger = logging.getLogger(__name__)
 
 
 class IntelOwl:
+    logger: logging.Logger
+
     def __init__(
         self,
         token: str,
@@ -46,7 +49,7 @@ class IntelOwl:
             session.headers.update(
                 {
                     "Authorization": f"Token {self.token}",
-                    "User-Agent": "IntelOwlClient/2.0.0",
+                    "User-Agent": "IntelOwlClient/3.0.0",
                 }
             )
             self._session = session
@@ -60,8 +63,7 @@ class IntelOwl:
         run_all_available_analyzers=False,
         check_reported_analysis_too=False,
     ):
-        answer = {}
-        errors = []
+        answer = None
         try:
             params = {"md5": md5, "analyzers_needed": analyzers_needed}
             if run_all_available_analyzers:
@@ -75,8 +77,8 @@ class IntelOwl:
             response.raise_for_status()
             answer = response.json()
         except Exception as e:
-            errors.append(str(e))
-        return {"errors": errors, "answer": answer}
+            raise IntelOwlAPIException(e)
+        return answer
 
     def send_file_analysis_request(
         self,
@@ -92,8 +94,7 @@ class IntelOwl:
     ):
         if runtime_configuration is None:
             runtime_configuration = {}
-        answer = {}
-        errors = []
+        answer = None
         try:
             data = {
                 "md5": md5,
@@ -114,8 +115,8 @@ class IntelOwl:
             response.raise_for_status()
             answer = response.json()
         except Exception as e:
-            errors.append(str(e))
-        return {"errors": errors, "answer": answer}
+            raise IntelOwlAPIException(e)
+        return answer
 
     def send_observable_analysis_request(
         self,
@@ -128,10 +129,9 @@ class IntelOwl:
         run_all_available_analyzers: bool = False,
         runtime_configuration: Dict = {},
     ):
-        answer = {}
-        errors = []
+        answer = None
         if not md5:
-            md5 = hashlib.md5(observable_name.encode("utf-8")).hexdigest()
+            md5 = self.get_md5(observable_name, type_="observable")
         try:
             data = {
                 "is_sample": False,
@@ -154,12 +154,11 @@ class IntelOwl:
             response.raise_for_status()
             answer = response.json()
         except Exception as e:
-            errors.append(str(e))
-        return answer, errors
+            raise IntelOwlAPIException(e)
+        return answer
 
     def ask_analysis_result(self, job_id):
-        answer = {}
-        errors = []
+        answer = None
         try:
             params = {"job_id": job_id}
             url = self.instance + "/api/ask_analysis_result"
@@ -168,25 +167,23 @@ class IntelOwl:
             response.raise_for_status()
             answer = response.json()
         except Exception as e:
-            errors.append(str(e))
-        return {"errors": errors, "answer": answer}
+            raise IntelOwlAPIException(e)
+        return answer
 
     def get_analyzer_configs(self):
         answer = None
-        errors = []
         try:
             url = self.instance + "/api/get_analyzer_configs"
             response = self.session.get(url)
-            logger.debug(response.url)
+            logger.debug(msg=(response.url, response.status_code))
             response.raise_for_status()
             answer = response.json()
         except Exception as e:
-            errors.append(str(e))
-        return answer, errors
+            raise IntelOwlAPIException(e)
+        return answer
 
     def get_all_tags(self):
         answer = None
-        errors = []
         try:
             url = self.instance + "/api/tags"
             response = self.session.get(url)
@@ -194,12 +191,11 @@ class IntelOwl:
             response.raise_for_status()
             answer = response.json()
         except Exception as e:
-            errors.append(str(e))
-        return answer, errors
+            raise IntelOwlAPIException(e)
+        return answer
 
     def get_all_jobs(self):
         answer = None
-        errors = []
         try:
             url = self.instance + "/api/jobs"
             response = self.session.get(url)
@@ -207,12 +203,11 @@ class IntelOwl:
             response.raise_for_status()
             answer = response.json()
         except Exception as e:
-            errors.append(str(e))
-        return answer, errors
+            raise IntelOwlAPIException(e)
+        return answer
 
     def get_tag_by_id(self, tag_id):
         answer = None
-        errors = []
         try:
             url = self.instance + "/api/tags/"
             response = self.session.get(url + str(tag_id))
@@ -220,12 +215,11 @@ class IntelOwl:
             response.raise_for_status()
             answer = response.json()
         except Exception as e:
-            errors.append(str(e))
-        return answer, errors
+            raise IntelOwlAPIException(e)
+        return answer
 
     def get_job_by_id(self, job_id):
         answer = None
-        errors = []
         try:
             url = self.instance + "/api/jobs/" + str(job_id)
             response = self.session.get(url)
@@ -233,8 +227,49 @@ class IntelOwl:
             response.raise_for_status()
             answer = response.json()
         except Exception as e:
-            errors.append(str(e))
-        return answer, errors
+            raise IntelOwlAPIException(e)
+        return answer
+
+    def __check_existing(
+        self, md5: str, analyzers_list, run_all: bool, check_reported: bool
+    ):
+        ans = self.ask_analysis_availability(
+            md5,
+            analyzers_list,
+            run_all,
+            check_reported,
+        )
+        status = ans.get("status", None)
+        if not status:
+            raise IntelOwlClientException(
+                "API ask_analysis_availability gave result without status!?!?"
+                f" Answer: {ans}"
+            )
+        if status != "not_available":
+            job_id_to_get = ans.get("job_id", None)
+            if job_id_to_get:
+                logger.info(
+                    f"[INFO] already existing Job(#{job_id_to_get}, md5: {md5},"
+                    f" status: {status}) with analyzers: {analyzers_list}"
+                )
+            else:
+                raise IntelOwlClientException(
+                    "API ask_analysis_availability gave result without job_id!?!?"
+                    f" Answer: {ans}"
+                )
+        return status != ("not_available")
+
+    @staticmethod
+    def get_md5(to_hash, type_="observable"):
+        if type_ == "observable":
+            md5 = hashlib.md5(str(to_hash).lower().encode("utf-8")).hexdigest()
+        else:
+            path = pathlib.Path(to_hash)
+            if not path.exists():
+                raise IntelOwlClientException(f"{to_hash} does not exists")
+            binary = path.read_bytes()
+            md5 = hashlib.md5(binary).hexdigest()
+        return md5
 
 
 def get_observable_classification(value):
