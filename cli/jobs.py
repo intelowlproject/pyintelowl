@@ -120,15 +120,17 @@ def _display_all_jobs(data):
     )
     table.add_column(header="Status", header_style=header_style)
     try:
-        for element in data:
+        for el in data:
             table.add_row(
-                str(element["id"]),
-                element["observable_name"],
-                element["observable_classification"],
-                ", ".join([t["label"] for t in element["tags"]]),
-                element["no_of_analyzers_executed"],
-                str(element["process_time"]),
-                get_status_text(element["status"]),
+                str(el["id"]),
+                el["observable_name"] if el["observable_name"] else el["file_name"],
+                el["observable_classification"]
+                if el["observable_classification"]
+                else el["file_mimetype"],
+                ", ".join([t["label"] for t in el["tags"]]),
+                el["no_of_analyzers_executed"],
+                str(el["process_time"]),
+                get_status_text(el["status"]),
             )
         console.print(table, justify="center")
     except Exception as e:
