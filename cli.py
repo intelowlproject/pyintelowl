@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import click
 from pyintelowl.pyintelowl import IntelOwl
 from cli import groups, cmds
