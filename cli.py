@@ -1,7 +1,7 @@
 import click
-from tinynetrc import Netrc
 from pyintelowl.pyintelowl import IntelOwl
-from cli import groups, cmds, ClickContext
+from cli import groups, cmds
+from cli._utils import get_logger, ClickContext, get_netrc_obj
 
 
 @click.group(context_settings=dict(help_option_names=["-h", "--help"]))
@@ -10,13 +10,13 @@ from cli import groups, cmds, ClickContext
 def cli(
     ctx: ClickContext, debug: bool
 ):
-    netrc = Netrc()
-    host = netrc["pyintelowl"]
+    netrc, host = get_netrc_obj()
     api_key, url, cert = host["password"], host["account"], host["login"]
     if not api_key or not url:
         click.echo("Hint: Use `config set` to set config variables!")
     else:
         ctx.obj = IntelOwl(api_key, url, cert, debug)
+        ctx.obj.logger = get_logger()
 
 
 # Compile all groups and commands
