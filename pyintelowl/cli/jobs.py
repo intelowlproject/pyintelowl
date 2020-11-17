@@ -6,8 +6,14 @@ from rich.panel import Panel
 from rich.console import RenderGroup
 from rich import box, print as rprint
 
-from pyintelowl.exceptions import IntelOwlAPIException
-from ._utils import ClickContext, get_status_text, get_success_text, get_json_syntax, get_tags_str
+from pyintelowl.exceptions import IntelOwlClientException
+from _utils import (
+    ClickContext,
+    get_status_text,
+    get_success_text,
+    get_json_syntax,
+    get_tags_str,
+)
 
 
 @click.group("jobs", short_help="Manage Jobs", invoke_without_command=True)
@@ -31,7 +37,7 @@ def jobs(ctx: ClickContext, id: int, all: bool):
             _display_single_job(ans)
         else:
             click.echo(ctx.get_usage())
-    except IntelOwlAPIException as e:
+    except IntelOwlClientException as e:
         ctx.obj.logger.fatal(str(e))
 
 

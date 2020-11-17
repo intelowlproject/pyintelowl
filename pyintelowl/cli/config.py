@@ -1,7 +1,7 @@
 import click
 from rich import print as rprint
 
-from ._utils import get_netrc_obj, ClickContext
+from _utils import get_netrc_obj, ClickContext
 
 
 @click.group("config")

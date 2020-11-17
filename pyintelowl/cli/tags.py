@@ -4,9 +4,9 @@ from rich.table import Table
 from rich.text import Text
 from rich import box
 
-from pyintelowl.exceptions import IntelOwlAPIException
+from pyintelowl.exceptions import IntelOwlClientException
 
-from ._utils import ClickContext
+from _utils import ClickContext
 
 
 @click.command(short_help="Manage tags")
@@ -24,7 +24,7 @@ def tags(ctx: ClickContext, id: int, all: bool):
             ans = ctx.obj.get_tag_by_id(id)
             ans = [ans]
         _print_tags_table(ctx, ans)
-    except IntelOwlAPIException as e:
+    except IntelOwlClientException as e:
         ctx.obj.logger.fatal(str(e))
 
 
@@ -37,9 +37,7 @@ def _print_tags_table(ctx, rows):
         for row in rows:
             color = str(row["color"]).lower()
             table.add_row(
-                str(row["id"]),
-                str(row["label"]),
-                Text(color, style=f"on {color}")
+                str(row["id"]), str(row["label"]), Text(color, style=f"on {color}")
             )
         console.print(table, justify="center")
     except Exception as e:

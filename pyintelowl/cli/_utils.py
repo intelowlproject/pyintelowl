@@ -66,10 +66,7 @@ def get_netrc_obj():
 
 def get_tags_str(tags):
     tags_str = ", ".join(
-        [
-            "[on {0}]{1}[/]".format(str(t["color"]).lower(), t["label"])
-            for t in tags
-        ]
+        ["[on {0}]{1}[/]".format(str(t["color"]).lower(), t["label"]) for t in tags]
     )
     return tags_str
 

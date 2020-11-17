@@ -1,11 +1,11 @@
 import click
 import re
-from ._utils import ClickContext, get_success_text, get_json_syntax
+from _utils import ClickContext, get_success_text, get_json_syntax
 from rich.console import Console
 from rich.table import Table
 from rich import box
 
-from pyintelowl.pyintelowl import IntelOwlAPIException
+from pyintelowl.pyintelowl import IntelOwlClientException
 
 
 @click.command(
@@ -28,7 +28,7 @@ def get_analyzer_config(ctx: ClickContext, re_match: str, json: bool, text: bool
         if re_match:
             pat = re.compile(re_match)
             res = {k: v for k, v in res.items() if pat.match(k) is not None}
-    except IntelOwlAPIException as e:
+    except IntelOwlClientException as e:
         ctx.obj.logger.fatal(str(e))
         ctx.exit(0)
     if json:
