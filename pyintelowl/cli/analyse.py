@@ -1,11 +1,12 @@
 import click
-from ._utils import add_options, ClickContext
-from .jobs import _display_single_job
+
+from _utils import add_options, ClickContext
+
 
 __analyse_options = [
     click.option(
-        "-al",
-        "--analyzers-list",
+        "-a",
+        "--analyzers",
         multiple=True,
         type=str,
         default=(),
@@ -73,64 +74,48 @@ def analyse():
 def observable(
     ctx: ClickContext,
     value,
-    analyzers_list,
+    analyzers,
     run_all,
     force_privacy,
     private_job,
     disable_external_analyzers,
     check,
 ):
-    if analyzers_list and run_all:
-        logger.warn(
-            """
-            Can't use -al and -aa options together. See usage with -h.
-            """
-        )
-        ctx.exit(-1)
-    if not (analyzers_list or run_all):
-        logger.warn(
-            """
-            Either one of -al, -aa must be specified. See usage with -h.
-            """,
-        )
-        ctx.exit(-1)
-    analyzers = analyzers_list if analyzers_list else "all available analyzers"
-    ctx.obj.logger.info(
-        f"""Requesting analysis..
-        observable: [bold blue underline]{value}[/]
-        analyzers: [italic green]{analyzers}[/]
-        """,
-    )
-    # first step: ask analysis availability
-    ans = ctx.obj.send_observable_analysis_request(
-        analyzers_requested=analyzers_list,
-        observable_name=value,
-        force_privacy=force_privacy,
-        private_job=private_job,
-        disable_external_analyzers=disable_external_analyzers,
-        run_all_available_analyzers=run_all,
-    )
-    warnings = ans["warnings"]
-    ctx.obj.logger.info(
-        f"""New Job running..
-        ID: {ans['job_id']} | Status: [underline pink]{ans['status']}[/].
-        Got {len(warnings)} warnings: [italic red]{warnings if warnings else None}[/]
-    """
+    ctx.obj._new_analysis_cli(
+        ctx,
+        value,
+        "observable",
+        analyzers,
+        run_all,
+        force_privacy,
+        private_job,
+        disable_external_analyzers,
+        check,
     )
 
 
 @analyse.command(short_help="Send analysis request for a file")
-@click.argument("filename", type=click.Path(exists=True))
+@click.argument("filepath", type=click.Path(exists=True))
 @add_options(__analyse_options)
 @click.pass_context
 def file(
     ctx: ClickContext,
-    filename,
-    analyzers_list,
+    filepath: click.Path,
+    analyzers,
     run_all,
     force_privacy,
     private_job,
     disable_external_analyzers,
     check,
 ):
-    pass
+    ctx.obj._new_analysis_cli(
+        ctx,
+        filepath,
+        "observable",
+        analyzers,
+        run_all,
+        force_privacy,
+        private_job,
+        disable_external_analyzers,
+        check,
+    )
