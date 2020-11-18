@@ -5,7 +5,7 @@ import re
 import requests
 import hashlib
 
-from typing import List, Dict
+from typing import List, Dict, Any
 
 from json import dumps as json_dumps
 
@@ -107,19 +107,7 @@ class IntelOwl:
             if runtime_configuration:
                 data["runtime_configuration"] = json_dumps(runtime_configuration)
             files = {"file": (filename, binary)}
-            url = self.instance + "/api/send_analysis_request"
-            response = self.session.post(url, data=data, files=files)
-            self.logger.debug(msg=(response.url, response.status_code))
-            response.raise_for_status()
-            answer = response.json()
-            warnings = answer["warnings"]
-            self.logger.info(
-                f"""New Job running..
-                ID: {answer['job_id']} | Status: [underline pink]{answer['status']}[/].
-                Got {len(warnings)} warnings:
-                [italic red]{warnings if warnings else None}[/]
-            """
-            )
+            answer = self.__send_analysis_request(data=data, files=files)
         except Exception as e:
             raise IntelOwlClientException(e)
         return answer
@@ -151,21 +139,39 @@ class IntelOwl:
             }
             if runtime_configuration:
                 data["runtime_configuration"] = json_dumps(runtime_configuration)
-            url = self.instance + "/api/send_analysis_request"
-            response = self.session.post(url, data=data)
-            self.logger.debug(msg=(response.url, response.status_code))
-            response.raise_for_status()
-            answer = response.json()
-            warnings = answer["warnings"]
-            self.logger.info(
-                f"""New Job running..
-                ID: {answer['job_id']} | Status: [underline pink]{answer['status']}[/].
-                Got {len(warnings)} warnings:
-                [italic red]{warnings if warnings else None}[/]
-            """
-            )
+            answer = self.__send_analysis_request(data=data, files=None)
         except Exception as e:
             raise IntelOwlClientException(e)
+        return answer
+
+    def __send_analysis_request(self, data=None, files=None):
+        url = self.instance + "/api/send_analysis_request"
+        response = self.session.post(url, data=data, files=files)
+        self.logger.debug(
+            msg={
+                "url": response.url,
+                "code": response.status_code,
+                "headers": response.headers,
+                "body": response.json(),
+            }
+        )
+        answer = response.json()
+        if answer.get("error", "") == "814":
+            err = """
+            Request failed..
+            Error: [i yellow]After the filter, no analyzers can be run.
+                Try with other analyzers.[/]
+            """
+            raise IntelOwlClientException(err)
+        warnings = answer.get("warnings", [])
+        self.logger.info(
+            f"""New Job running..
+            ID: {answer['job_id']} | Status: [u blue]{answer['status']}[/].
+            Got {len(warnings)} warnings:
+            [i yellow]{warnings if warnings else None}[/]
+        """
+        )
+        response.raise_for_status()
         return answer
 
     def ask_analysis_result(self, job_id):
@@ -242,7 +248,7 @@ class IntelOwl:
         return answer
 
     @staticmethod
-    def get_md5(to_hash, type_="observable"):
+    def get_md5(to_hash: Any, type_="observable"):
         md5 = None
         if type_ == "observable":
             md5 = hashlib.md5(str(to_hash).lower().encode("utf-8")).hexdigest()
@@ -283,11 +289,10 @@ class IntelOwl:
             )
             return
         analyzers = analyzers_list if analyzers_list else "all available analyzers"
-        val = obj if type_ == "observable" else obj.name
         self.logger.info(
             f"""Requesting analysis..
-            {type_}: [bold blue underline]{val}[/]
-            analyzers: [italic green]{analyzers}[/]
+            {type_}: [blue]{obj}[/]
+            analyzers: [i green]{analyzers}[/]
             """
         )
         # 1st step: ask analysis availability
@@ -297,19 +302,19 @@ class IntelOwl:
         )
         status, job_id = resp.get("status", None), resp.get("job_id", None)
         if status != "not_available":
-            self.logger(
+            self.logger.info(
                 f"""Found existing analysis!
-                    Job: #{job_id}
-                    status: [underlined pink]{status}[/]
+            Job: #{job_id}
+            status: [u blue]{status}[/]
 
-                [i]Hint: use --check force-new to perform new scan anyway[/]
+            [i]Hint: use [#854442]--check force-new[/] to perform new scan anyway[/]
                 """
             )
             return
         # 2nd step: send new analysis request
         if type_ == "observable":
             _ = self.send_observable_analysis_request(
-                analyzers_requested=analyzers,
+                analyzers_requested=analyzers_list,
                 observable_name=obj,
                 force_privacy=force_privacy,
                 private_job=private_job,
@@ -317,12 +322,11 @@ class IntelOwl:
                 run_all_available_analyzers=run_all,
             )
         else:
-            fname = obj.name
-            binary = pathlib.Path(obj).read_bytes()
+            path = pathlib.Path(obj)
             _ = self.send_file_analysis_request(
-                analyzers_requested=analyzers,
-                filename=fname,
-                binary=binary,
+                analyzers_requested=analyzers_list,
+                filename=path.name,
+                binary=path.read_bytes(),
                 force_privacy=force_privacy,
                 private_job=private_job,
                 disable_external_analyzers=disable_external_analyzers,
