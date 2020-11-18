@@ -6,13 +6,12 @@ from ..cli._utils import add_options, ClickContext
 
 __analyse_options = [
     click.option(
-        "-a",
-        "--analyzers",
-        multiple=True,
+        "-al",
+        "--analyzers-list",
         type=str,
         default=(),
         help="""
-    List of analyzer names to invoke. Should not be used with
+    Comma seperated list of analyzer names to invoke. Should not be used with
     --run-all-available-analyzers
     """,
     ),
@@ -75,18 +74,19 @@ def analyse():
 def observable(
     ctx: ClickContext,
     value,
-    analyzers,
+    analyzers_list: str,
     run_all,
     force_privacy,
     private_job,
     disable_external_analyzers,
     check,
 ):
+    analyzers_list = analyzers_list.split(",")
     try:
         ctx.obj._new_analysis_cli(
             value,
             "observable",
-            analyzers,
+            analyzers_list,
             run_all,
             force_privacy,
             private_job,
@@ -104,18 +104,19 @@ def observable(
 def file(
     ctx: ClickContext,
     filepath: str,
-    analyzers,
+    analyzers_list: str,
     run_all,
     force_privacy,
     private_job,
     disable_external_analyzers,
     check,
 ):
+    analyzers_list = analyzers_list.split(",")
     try:
         ctx.obj._new_analysis_cli(
             filepath,
             "file",
-            analyzers,
+            analyzers_list,
             run_all,
             force_privacy,
             private_job,
