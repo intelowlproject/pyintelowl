@@ -1,6 +1,8 @@
 import click
+import pathlib
 from ._utils import add_options, ClickContext
-from .jobs import _display_single_job
+from pyintelowl.exceptions import IntelOwlClientException
+from json import load as json_load
 
 __analyse_options = [
     click.option(
@@ -55,6 +57,12 @@ __analyse_options = [
     3. 'force_new': force new analysis
     """,
     ),
+    click.option(
+        "-r",
+        "--runtime-config",
+        type=str,
+        help="Json File Path with runtime configuration.",
+    ),
 ]
 
 
@@ -79,16 +87,17 @@ def observable(
     private_job,
     disable_external_analyzers,
     check,
+    runtime_config,
 ):
     if analyzers_list and run_all:
-        logger.warn(
+        ctx.obj.logger.warn(
             """
             Can't use -al and -aa options together. See usage with -h.
             """
         )
         ctx.exit(-1)
     if not (analyzers_list or run_all):
-        logger.warn(
+        ctx.obj.logger.warn(
             """
             Either one of -al, -aa must be specified. See usage with -h.
             """,
@@ -102,6 +111,11 @@ def observable(
         """,
     )
     # first step: ask analysis availability
+    path = pathlib.Path(runtime_config)
+    if path.exists():
+        runtime_config = json_load(open(runtime_config))
+    else:
+        runtime_config = {}
     ans = ctx.obj.send_observable_analysis_request(
         analyzers_requested=analyzers_list,
         observable_name=value,
@@ -109,12 +123,14 @@ def observable(
         private_job=private_job,
         disable_external_analyzers=disable_external_analyzers,
         run_all_available_analyzers=run_all,
+        runtime_configuration=runtime_config,
     )
     warnings = ans["warnings"]
     ctx.obj.logger.info(
         f"""New Job running..
         ID: {ans['job_id']} | Status: [underline pink]{ans['status']}[/].
-        Got {len(warnings)} warnings: [italic red]{warnings if warnings else None}[/]
+        Received {len(warnings)} warnings: [italic red]
+        {warnings if warnings else None}[/]
     """
     )
 
@@ -122,15 +138,74 @@ def observable(
 @analyse.command(short_help="Send analysis request for a file")
 @click.argument("filename", type=click.Path(exists=True))
 @add_options(__analyse_options)
+@click.option(
+    "-b",
+    "--binary",
+    type=bool,
+    default=True,
+    help="True if File is Binary False otherwise",
+)
 @click.pass_context
 def file(
     ctx: ClickContext,
     filename,
+    binary,
     analyzers_list,
     run_all,
     force_privacy,
     private_job,
     disable_external_analyzers,
     check,
+    runtime_config,
 ):
-    pass
+    if analyzers_list and run_all:
+        ctx.obj.logger.warn(
+            """
+            Can't use -al and -aa options together. See usage with -h.
+            """
+        )
+        ctx.exit(-1)
+    if not (analyzers_list or run_all):
+        ctx.obj.logger.warn(
+            """
+            Either one of -al, -aa must be specified. See usage with -h.
+            """,
+        )
+        ctx.exit(-1)
+    analyzers = analyzers_list if analyzers_list else "all available analyzers"
+    ctx.obj.logger.info(
+        f"""Requesting analysis..
+        file: [bold blue underline]{filename}[/]
+        analyzers: [italic green]{analyzers}[/]
+        """,
+    )
+    # first step: ask analysis availability
+    read_mode = "rb" if binary else "r"
+    path = pathlib.Path(runtime_config)
+    if path.exists():
+        runtime_config = json_load(open(runtime_config))
+    else:
+        runtime_config = {}
+    path = pathlib.Path(filename)
+    if path.exists():
+        ans = ctx.obj.send_file_analysis_request(
+            md5=ctx.obj.get_md5(to_hash=filename, type_="file"),
+            analyzers_requested=analyzers_list,
+            filename=filename,
+            binary=open(filename, read_mode),
+            run_all_available_analyzers=run_all,
+            force_privacy=force_privacy,
+            private_job=private_job,
+            disable_external_analyzers=disable_external_analyzers,
+            runtime_configuration=runtime_config,
+        )
+        warnings = ans["warnings"]
+        ctx.obj.logger.info(
+            f"""New Job running..
+            ID: {ans['job_id']} | Status: [underline pink]{ans['status']}[/].
+            Received {len(warnings)} warnings: [italic red]
+            {warnings if warnings else None}[/]
+        """
+        )
+    else:
+        raise IntelOwlClientException(f"{filename} doesn't exist.")

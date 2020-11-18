@@ -7,14 +7,23 @@ from rich.console import RenderGroup
 from rich import box, print as rprint
 
 from pyintelowl.exceptions import IntelOwlAPIException
-from ._utils import ClickContext, get_status_text, get_success_text, get_json_syntax, get_tags_str
+from ._utils import (
+    ClickContext,
+    get_status_text,
+    get_success_text,
+    get_json_syntax,
+    get_tags_str,
+)
 
 
 @click.group("jobs", short_help="Manage Jobs", invoke_without_command=True)
 @click.option("-a", "--all", is_flag=True, help="List all jobs")
 @click.option("--id", type=int, default=0, help="Retrieve Job details by ID")
+@click.option(
+    "--status", type=str, help="List jobs with given status (Only use with --all)"
+)
 @click.pass_context
-def jobs(ctx: ClickContext, id: int, all: bool):
+def jobs(ctx: ClickContext, id: int, all: bool, status: str):
     """
     Manage Jobs
     """
@@ -23,6 +32,9 @@ def jobs(ctx: ClickContext, id: int, all: bool):
             ctx.obj.logger.info("Requesting list of jobs..")
             with click_spinner.spinner():
                 ans = ctx.obj.get_all_jobs()
+            if status:
+                ans = [el for el in ans if el["status"] == status]
+
             _display_all_jobs(ans)
         elif id:
             ctx.obj.logger.info(f"Requesting Job [underline blue]#{id}[/]..")
