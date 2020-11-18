@@ -1,5 +1,6 @@
 import click
 
+from pyintelowl.exceptions import IntelOwlClientException
 from ..cli._utils import add_options, ClickContext
 
 
@@ -81,26 +82,28 @@ def observable(
     disable_external_analyzers,
     check,
 ):
-    ctx.obj._new_analysis_cli(
-        ctx,
-        value,
-        "observable",
-        analyzers,
-        run_all,
-        force_privacy,
-        private_job,
-        disable_external_analyzers,
-        check,
-    )
+    try:
+        ctx.obj._new_analysis_cli(
+            value,
+            "observable",
+            analyzers,
+            run_all,
+            force_privacy,
+            private_job,
+            disable_external_analyzers,
+            check,
+        )
+    except IntelOwlClientException as e:
+        ctx.obj.logger.fatal(str(e))
 
 
 @analyse.command(help="Send analysis request for a file")
-@click.argument("filepath", type=click.Path(exists=True))
+@click.argument("filepath", type=click.Path(exists=True, resolve_path=True))
 @add_options(__analyse_options)
 @click.pass_context
 def file(
     ctx: ClickContext,
-    filepath: click.Path,
+    filepath: str,
     analyzers,
     run_all,
     force_privacy,
@@ -108,14 +111,16 @@ def file(
     disable_external_analyzers,
     check,
 ):
-    ctx.obj._new_analysis_cli(
-        ctx,
-        filepath,
-        "observable",
-        analyzers,
-        run_all,
-        force_privacy,
-        private_job,
-        disable_external_analyzers,
-        check,
-    )
+    try:
+        ctx.obj._new_analysis_cli(
+            filepath,
+            "file",
+            analyzers,
+            run_all,
+            force_privacy,
+            private_job,
+            disable_external_analyzers,
+            check,
+        )
+    except IntelOwlClientException as e:
+        ctx.obj.logger.fatal(str(e))

@@ -283,6 +283,7 @@ class IntelOwl:
             )
             return
         analyzers = analyzers_list if analyzers_list else "all available analyzers"
+        val = obj if type_ == "observable" else obj.name
         self.logger.info(
             f"""Requesting analysis..
             {type_}: [bold blue underline]{val}[/]
