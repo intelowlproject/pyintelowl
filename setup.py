@@ -58,7 +58,7 @@ setup(
     include_package_data=True,
     install_requires=requirements,
     project_urls={
-        "Documentation": "https://django-rest-durin.readthedocs.io/",
+        "Documentation": GITHUB_URL,
         "Funding": "https://liberapay.com/IntelOwlProject/",
         "Source": GITHUB_URL,
         "Tracker": "{}/issues".format(GITHUB_URL),
