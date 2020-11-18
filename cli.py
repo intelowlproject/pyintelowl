@@ -19,8 +19,8 @@ def cli(ctx: ClickContext, debug: bool):
     if not api_key or not url:
         click.echo("Hint: Use `config set` to set config variables!")
     else:
-        ctx.obj = IntelOwl(api_key, url, cert, debug)
-        ctx.obj.logger = get_logger()
+        logger = get_logger("DEBUG" if debug else "INFO")
+        ctx.obj = IntelOwl(api_key, url, cert, logger)
 
 
 # Compile all groups and commands
