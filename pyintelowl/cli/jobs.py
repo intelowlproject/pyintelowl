@@ -32,7 +32,7 @@ from ._utils import (
         case_sensitive=False,
     ),
     show_choices=True,
-    help="Only use with --all (Case Insensitive)",
+    help="Filter jobs with a particular status. Should be used with --all."
 )
 @click.pass_context
 def jobs(ctx: ClickContext, id: int, all: bool, status: str):
