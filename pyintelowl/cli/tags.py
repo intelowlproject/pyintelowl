@@ -6,10 +6,10 @@ from rich import box
 
 from pyintelowl.exceptions import IntelOwlClientException
 
-from _utils import ClickContext
+from ..cli._utils import ClickContext
 
 
-@click.command(short_help="Manage tags")
+@click.command(help="Manage tags")
 @click.option("-a", "--all", is_flag=True, help="List all tags")
 @click.option("--id", type=int, default=0, help="Retrieve tag details by ID")
 @click.pass_context

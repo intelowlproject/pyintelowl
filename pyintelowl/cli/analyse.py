@@ -1,6 +1,6 @@
 import click
 
-from _utils import add_options, ClickContext
+from ..cli._utils import add_options, ClickContext
 
 
 __analyse_options = [
@@ -67,7 +67,7 @@ def analyse():
     pass
 
 
-@analyse.command(short_help="Send analysis request for an observable")
+@analyse.command(help="Send analysis request for an observable")
 @click.argument("value")
 @add_options(__analyse_options)
 @click.pass_context
@@ -94,7 +94,7 @@ def observable(
     )
 
 
-@analyse.command(short_help="Send analysis request for a file")
+@analyse.command(help="Send analysis request for a file")
 @click.argument("filepath", type=click.Path(exists=True))
 @add_options(__analyse_options)
 @click.pass_context

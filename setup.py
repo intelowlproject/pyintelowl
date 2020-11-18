@@ -72,7 +72,7 @@ setup(
         "dev": ["black==20.8b1", "flake8"] + requirements,
         "test": ["black==20.8b1", "flake8"] + requirements,
     },
-    # pip install --editable . 
+    # pip install --editable .
     entry_points="""
         [console_scripts]
         pyintelowl=cli:cli

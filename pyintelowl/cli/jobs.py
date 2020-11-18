@@ -7,7 +7,7 @@ from rich.console import RenderGroup
 from rich import box, print as rprint
 
 from pyintelowl.exceptions import IntelOwlClientException
-from _utils import (
+from ..cli._utils import (
     ClickContext,
     get_status_text,
     get_success_text,
@@ -16,7 +16,7 @@ from _utils import (
 )
 
 
-@click.group("jobs", short_help="Manage Jobs", invoke_without_command=True)
+@click.group("jobs", help="Manage Jobs", invoke_without_command=True)
 @click.option("-a", "--all", is_flag=True, help="List all jobs")
 @click.option("--id", type=int, default=0, help="Retrieve Job details by ID")
 @click.option(
@@ -32,7 +32,7 @@ from _utils import (
         case_sensitive=False,
     ),
     show_choices=True,
-    help="Filter jobs with a particular status. Should be used with --all."
+    help="Filter jobs with a particular status. Should be used with --all.",
 )
 @click.pass_context
 def jobs(ctx: ClickContext, id: int, all: bool, status: str):
@@ -58,7 +58,7 @@ def jobs(ctx: ClickContext, id: int, all: bool, status: str):
         ctx.obj.logger.fatal(str(e))
 
 
-@jobs.command("poll", short_help="HTTP poll a currently running job's details")
+@jobs.command("poll", help="HTTP poll a currently running job's details")
 @click.option(
     "-t",
     "--max-tries",

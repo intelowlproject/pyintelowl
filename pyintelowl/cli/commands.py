@@ -1,15 +1,15 @@
 import click
 import re
-from _utils import ClickContext, get_success_text, get_json_syntax
 from rich.console import Console
 from rich.table import Table
 from rich import box
 
+from ..cli._utils import ClickContext, get_success_text, get_json_syntax
 from pyintelowl.pyintelowl import IntelOwlClientException
 
 
 @click.command(
-    short_help="Get current state of `analyzer_config.json` from the IntelOwl instance",
+    help="Get current state of `analyzer_config.json` from the IntelOwl instance",
 )
 @click.option(
     "-m",
