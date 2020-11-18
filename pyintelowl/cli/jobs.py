@@ -19,8 +19,23 @@ from ._utils import (
 @click.group("jobs", short_help="Manage Jobs", invoke_without_command=True)
 @click.option("-a", "--all", is_flag=True, help="List all jobs")
 @click.option("--id", type=int, default=0, help="Retrieve Job details by ID")
+@click.option(
+    "--status",
+    type=click.Choice(
+        [
+            "pending",
+            "running",
+            "reported_without_fails",
+            "reported_with_fails",
+            "failed",
+        ],
+        case_sensitive=False,
+    ),
+    show_choices=True,
+    help="Only use with --all (Case Insensitive)",
+)
 @click.pass_context
-def jobs(ctx: ClickContext, id: int, all: bool):
+def jobs(ctx: ClickContext, id: int, all: bool, status: str):
     """
     Manage Jobs
     """
@@ -29,6 +44,8 @@ def jobs(ctx: ClickContext, id: int, all: bool):
             ctx.obj.logger.info("Requesting list of jobs..")
             with click_spinner.spinner():
                 ans = ctx.obj.get_all_jobs()
+            if status:
+                ans = [el for el in ans if el["status"].lower() == status.lower()]
             _display_all_jobs(ans)
         elif id:
             ctx.obj.logger.info(f"Requesting Job [underline blue]#{id}[/]..")
