@@ -78,3 +78,10 @@ def get_logger(level: str = "INFO"):
     )
     logger = logging.getLogger("rich")
     return logger
+
+
+def get_json_data(filepath):
+    obj = None
+    with open(filepath) as fp:
+        obj = json.load(fp)
+    return obj

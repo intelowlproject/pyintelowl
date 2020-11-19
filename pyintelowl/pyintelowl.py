@@ -272,6 +272,7 @@ class IntelOwl:
         private_job,
         disable_external_analyzers,
         check,
+        runtime_configuration: Dict = {},
     ):
         # CLI sanity checks
         if analyzers_list and run_all:
@@ -320,6 +321,7 @@ class IntelOwl:
                 private_job=private_job,
                 disable_external_analyzers=disable_external_analyzers,
                 run_all_available_analyzers=run_all,
+                runtime_configuration=runtime_configuration,
             )
         else:
             path = pathlib.Path(obj)
@@ -331,6 +333,7 @@ class IntelOwl:
                 private_job=private_job,
                 disable_external_analyzers=disable_external_analyzers,
                 run_all_available_analyzers=run_all,
+                runtime_configuration=runtime_configuration,
             )
         # 3rd step: poll for result
         # todo
