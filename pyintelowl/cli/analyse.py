@@ -1,7 +1,7 @@
 import click
 
 from pyintelowl.exceptions import IntelOwlClientException
-from ..cli._utils import add_options, ClickContext
+from ..cli._utils import add_options, ClickContext, get_json_data
 
 
 __analyse_options = [
@@ -56,6 +56,12 @@ __analyse_options = [
     3. 'force_new': force new analysis
     """,
     ),
+    click.option(
+        "-r",
+        "--runtime-config",
+        help="Path to JSON file which contains runtime_configuration.",
+        type=click.Path(exists=True, resolve_path=True),
+    ),
 ]
 
 
@@ -80,8 +86,14 @@ def observable(
     private_job,
     disable_external_analyzers,
     check,
+    runtime_config,
 ):
-    analyzers_list = analyzers_list.split(",")
+    if not run_all:
+        analyzers_list = analyzers_list.split(",")
+    if runtime_config:
+        runtime_config = get_json_data(runtime_config)
+    else:
+        runtime_config = {}
     try:
         ctx.obj._new_analysis_cli(
             value,
@@ -92,6 +104,7 @@ def observable(
             private_job,
             disable_external_analyzers,
             check,
+            runtime_config,
         )
     except IntelOwlClientException as e:
         ctx.obj.logger.fatal(str(e))
@@ -110,8 +123,14 @@ def file(
     private_job,
     disable_external_analyzers,
     check,
+    runtime_config,
 ):
-    analyzers_list = analyzers_list.split(",")
+    if not run_all:
+        analyzers_list = analyzers_list.split(",")
+    if runtime_config:
+        runtime_config = get_json_data(runtime_config)
+    else:
+        runtime_config = {}
     try:
         ctx.obj._new_analysis_cli(
             filepath,
@@ -122,6 +141,7 @@ def file(
             private_job,
             disable_external_analyzers,
             check,
+            runtime_config,
         )
     except IntelOwlClientException as e:
         ctx.obj.logger.fatal(str(e))
