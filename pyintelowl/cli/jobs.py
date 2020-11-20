@@ -1,3 +1,4 @@
+import time
 import click
 import click_spinner
 from rich.console import Console
@@ -5,7 +6,6 @@ from rich.table import Table
 from rich.panel import Panel
 from rich.console import RenderGroup
 from rich import box, print as rprint
-
 from pyintelowl.exceptions import IntelOwlClientException
 from ..cli._utils import (
     ClickContext,
@@ -59,6 +59,7 @@ def jobs(ctx: ClickContext, id: int, all: bool, status: str):
 
 
 @jobs.command("poll", help="HTTP poll a currently running job's details")
+@click.option("--id", type=int, required=True, help="HTTP poll a job for live updates")
 @click.option(
     "-t",
     "--max-tries",
@@ -76,8 +77,25 @@ def jobs(ctx: ClickContext, id: int, all: bool, status: str):
     help="sleep interval before subsequent requests (in sec)",
 )
 @click.pass_context
-def poll(ctx: ClickContext, max_tries: int, interval: int):
-    pass
+def poll(ctx: ClickContext, id: int, max_tries: int, interval: int):
+    ctx.obj.logger.info(f"Polling Job [underline blue]#{id}[/]..")
+    with click_spinner.spinner():
+        poll_for_job(ctx, id, max_tries, interval)
+
+
+def poll_for_job(ctx: ClickContext, id: int, max_tries: int, interval: int):
+    poll_result = {}
+    try:
+        for i in range(max_tries):
+            ans = ctx.obj.get_job_by_id(id)
+            if ans["status"].lower() not in ["running", "pending"]:
+                break
+            _display_single_job(ans)
+            Console().clear()
+            time.sleep(interval)
+    except Exception as e:
+        ctx.obj.logger.error(f"Error in retrieving job: {str(e)}")
+    return poll_result
 
 
 def _display_single_job(data):
