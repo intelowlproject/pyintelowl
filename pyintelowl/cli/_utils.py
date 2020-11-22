@@ -1,5 +1,6 @@
 import click
 import logging
+import csv
 import json
 from tinynetrc import Netrc
 from rich.emoji import Emoji
@@ -82,6 +83,13 @@ def get_logger(level: str = "INFO"):
 
 def get_json_data(filepath):
     obj = None
-    with open(filepath) as fp:
-        obj = json.load(fp)
+    with open(filepath) as _tmp:
+        line = _tmp.readline()
+        if line[0] in "[{":
+            with open(filepath) as fp:
+                obj = json.load(fp)
+        else:
+            with open(filepath) as fp:
+                reader = csv.DictReader(fp)
+                obj = [dict(row) for row in reader]
     return obj

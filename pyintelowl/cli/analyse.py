@@ -145,3 +145,25 @@ def file(
         )
     except IntelOwlClientException as e:
         ctx.obj.logger.fatal(str(e))
+
+
+@analyse.command(
+    help="Send multiple analysis requests. Reads file (csv or json) for inputs."
+)
+@click.argument("filepath", type=click.Path(exists=True, resolve_path=True))
+@click.pass_context
+def batch(
+    ctx: ClickContext,
+    filepath: str,
+):
+    rows = get_json_data(filepath)
+    flags = ["run_all", "force_privacy", "private_job", "disable_external_analyzers"]
+    for row in rows:
+        for flag in flags:
+            row[flag] = (row.get(flag, False).lower() == "true") | (
+                row.get(flag, False) == True
+            )
+    try:
+        ctx.obj.send_analysis_batch(rows)
+    except IntelOwlClientException as e:
+        ctx.obj.logger.fatal(str(e))
