@@ -1,13 +1,12 @@
 import ipaddress
 import logging
 import pathlib
+import json
 import re
 import requests
 import hashlib
 
 from typing import List, Dict, Any
-
-from json import dumps as json_dumps
 
 from .exceptions import IntelOwlClientException
 
@@ -105,7 +104,7 @@ class IntelOwl:
                 "file_name": filename,
             }
             if runtime_configuration:
-                data["runtime_configuration"] = json_dumps(runtime_configuration)
+                data["runtime_configuration"] = json.dumps(runtime_configuration)
             files = {"file": (filename, binary)}
             answer = self.__send_analysis_request(data=data, files=files)
         except Exception as e:
@@ -138,11 +137,35 @@ class IntelOwl:
                 ),
             }
             if runtime_configuration:
-                data["runtime_configuration"] = json_dumps(runtime_configuration)
+                data["runtime_configuration"] = json.dumps(runtime_configuration)
             answer = self.__send_analysis_request(data=data, files=None)
         except Exception as e:
             raise IntelOwlClientException(e)
         return answer
+
+    def send_analysis_batch(self, rows: List = []):
+        for obj in rows:
+            try:
+                if obj.get("runtime_config", None):
+                    with open(obj["runtime_config"]) as fp:
+                        obj["runtime_config"] = json.load(fp)
+
+                if not (obj.get("run_all", False)):
+                    obj["analyzers_list"] = obj["analyzers_list"].split(",")
+
+                self._new_analysis_cli(
+                    obj["value"],
+                    obj["type"],
+                    obj.get("analyzers_list", None),
+                    obj.get("run_all", False),
+                    obj.get("force_privacy", False),
+                    obj.get("private_job", False),
+                    obj.get("disable_external_analyzers", False),
+                    obj.get("check", None),
+                    obj.get("runtime_config", {}),
+                )
+            except IntelOwlClientException as e:
+                self.logger.fatal(str(e))
 
     def __send_analysis_request(self, data=None, files=None):
         url = self.instance + "/api/send_analysis_request"
