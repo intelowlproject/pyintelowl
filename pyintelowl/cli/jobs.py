@@ -36,7 +36,7 @@ def jobs():
 @add_options(json_flag_option)
 @click.pass_context
 def ls(ctx: ClickContext, status: str, as_json: bool):
-    # ctx.obj.logger.info("Requesting list of jobs..")
+    ctx.obj.logger.info("Requesting list of jobs..")
     try:
         ans = ctx.obj.get_all_jobs()
         if status:
@@ -63,7 +63,7 @@ def ls(ctx: ClickContext, status: str, as_json: bool):
 @add_options(json_flag_option)
 @click.pass_context
 def view(ctx: ClickContext, job_id: int, categorize: bool, as_json: bool):
-    # ctx.obj.logger.info(f"Requesting Job [underline blue]#{job_id}[/]..")
+    ctx.obj.logger.info(f"Requesting Job [underline blue]#{job_id}[/]..")
     if as_json and categorize:
         raise click.Abort("Cannot use the -c and -j options together")
     try:

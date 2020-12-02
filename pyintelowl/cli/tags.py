@@ -20,6 +20,7 @@ def tags():
 @add_options(json_flag_option)
 @click.pass_context
 def ls(ctx: ClickContext, as_json: bool):
+    ctx.obj.logger.info("Requesting list of tags..")
     try:
         ans = ctx.obj.get_all_tags()
         if as_json:
@@ -35,6 +36,7 @@ def ls(ctx: ClickContext, as_json: bool):
 @add_options(json_flag_option)
 @click.pass_context
 def view(ctx: ClickContext, tag_id: int, as_json: bool):
+    ctx.obj.logger.info(f"Requesting Tag [underline blue]#{tag_id}[/]..")
     try:
         ans = ctx.obj.get_tag_by_id(tag_id)
         if as_json:
