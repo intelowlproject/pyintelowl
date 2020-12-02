@@ -1,23 +1,23 @@
-import time
 import click
 import json
-import click_spinner
+from rich import print as rprint
 from rich.console import Console
-from rich.table import Table
-from rich import box, print as rprint
-from rich.progress import track
 from pyintelowl.exceptions import IntelOwlClientException
-from ..cli._utils import ClickContext, get_status_text
+from ..cli._utils import ClickContext, add_options, json_flag_option
 from ..cli._jobs_utils import (
+    _display_all_jobs,
     _display_single_job,
-    _render_job_attributes,
-    _render_job_analysis_table,
+    _result_filter_and_tabular_print,
+    _poll_for_job_cli,
 )
 
 
-@click.group("jobs", help="Manage Jobs", invoke_without_command=True)
-@click.option("-a", "--all", is_flag=True, help="List all jobs")
-@click.option("--id", type=int, default=0, help="Retrieve Job details by ID")
+@click.group("jobs", help="Manage Jobs")
+def jobs():
+    pass
+
+
+@jobs.command(help="List all jobs")
 @click.option(
     "--status",
     type=click.Choice(
@@ -31,47 +31,72 @@ from ..cli._jobs_utils import (
         case_sensitive=False,
     ),
     show_choices=True,
-    help="Filter jobs with a particular status. Should be used with --all.",
+    help="Only show jobs having a particular status",
 )
+@add_options(json_flag_option)
 @click.pass_context
-def jobs(ctx: ClickContext, id: int, all: bool, status: str):
-    """
-    Manage Jobs
-    """
+def ls(ctx: ClickContext, status: str, as_json: bool):
+    # ctx.obj.logger.info("Requesting list of jobs..")
     try:
-        if all:
-            ctx.obj.logger.info("Requesting list of jobs..")
-            with click_spinner.spinner():
-                ans = ctx.obj.get_all_jobs()
-            if status:
-                ans = [el for el in ans if el["status"].lower() == status.lower()]
-            _display_all_jobs(ans)
-        elif id:
-            ctx.obj.logger.info(f"Requesting Job [underline blue]#{id}[/]..")
-            with click_spinner.spinner():
-                ans = ctx.obj.get_job_by_id(id)
-            _display_single_job(ans)
+        ans = ctx.obj.get_all_jobs()
+        if status:
+            ans = [el for el in ans if el["status"].lower() == status.lower()]
+        if as_json:
+            rprint(json.dumps(ans, indent=4))
         else:
-            if not ctx.invoked_subcommand:
-                click.echo(ctx.get_usage())
+            _display_all_jobs(ctx.obj.logger, ans)
     except IntelOwlClientException as e:
         ctx.obj.logger.fatal(str(e))
 
 
-@jobs.command("poll", help="HTTP poll a currently running job's details")
-@click.option("--id", type=int, required=True, help="HTTP poll a job for live updates")
+@jobs.command(help="Tabular print job attributes and results for a job ID")
+@click.argument("id", type=int)
 @click.option(
-    "-o",
-    "--output",
-    type=click.Path(exists=False, resolve_path=True),
-    required=True,
-    help="File to save results",
+    "-c",
+    "--categorize",
+    is_flag=True,
+    help="""
+    Categorize results according to type and analyzer.
+    Only works for observable analysis.
+    """,
 )
+@add_options(json_flag_option)
+@click.pass_context
+def view(ctx: ClickContext, id: int, categorize: bool, as_json: bool):
+    # ctx.obj.logger.info(f"Requesting Job [underline blue]#{id}[/]..")
+    if as_json and categorize:
+        raise click.Abort("Cannot use the -c and -j options together")
+    try:
+        ans = ctx.obj.get_job_by_id(id)
+        if as_json:
+            rprint(json.dumps(ans, indent=4))
+        elif categorize:
+            if ans["is_sample"]:
+                raise click.Abort("Cannot use the -c option for a file analysis")
+            _result_filter_and_tabular_print(
+                ans["analysis_reports"],
+                ans["observable_name"],
+                ans["observable_classification"],
+            )
+        else:
+            _display_single_job(ans)
+    except IntelOwlClientException as e:
+        ctx.obj.logger.fatal(str(e))
+
+
+@jobs.command(
+    "poll",
+    help="""
+    HTTP poll a running job's details until
+    it finishes and save result into a file.
+    """,
+)
+@click.argument("id", type=int)
 @click.option(
     "-t",
     "--max-tries",
     type=int,
-    default=0,
+    default=5,
     show_default=True,
     help="maximum number of tries",
 )
@@ -83,72 +108,20 @@ def jobs(ctx: ClickContext, id: int, all: bool, status: str):
     show_default=True,
     help="sleep interval between subsequent requests (in sec)",
 )
+@click.option(
+    "-o",
+    "--output-file",
+    type=click.Path(exists=False, resolve_path=True),
+    required=True,
+    help="Path to JSON file to save result to",
+)
 @click.pass_context
-def poll(ctx: ClickContext, id: int, max_tries: int, interval: int, output: str):
-    console = Console()
-    poll_result = {}
+def poll(ctx: ClickContext, id: int, max_tries: int, interval: int, output_file: str):
     try:
-        for i in track(
-            range(max_tries),
-            description=f"Polling Job [underline blue]#{id}[/]..",
-            console=console,
-        ):
-            if i != 0:
-                console.print(f"sleeping for {interval} seconds before next request..")
-                time.sleep(interval)
-            ans = ctx.obj.get_job_by_id(id)
-            poll_result[f"Try {i+1}"] = ans
-            status = ans["status"].lower()
-            if i == 0:
-                console.print(_render_job_attributes(ans))
-
-            if status not in ["running", "pending"]:
-                console.print(
-                    "\nPolling stopped because job has finished with status: ",
-                    get_status_text(status),
-                    end="",
-                )
-                break
-            console.clear()
-            console.print(
-                _render_job_analysis_table(ans["analysis_reports"], verbose=False),
-                justify="center",
-            )
-        with open(output, "w") as outfile:
-            json.dump(poll_result, outfile, indent=4)
-
+        ans = _poll_for_job_cli(id, max_tries, interval)
+        if ans:
+            with open(output_file, "w") as fp:
+                json.dump(ans, fp, indent=4)
+            Console().print(f"Result saved into [u red]{output_file}[/]")
     except Exception as e:
-        ctx.obj.logger.error(f"Error in retrieving job: {str(e)}")
-
-
-def _display_all_jobs(data):
-    console = Console()
-    table = Table(show_header=True, title="List of Jobs", box=box.DOUBLE_EDGE)
-    header_style = "bold blue"
-    table.add_column(header="Id", header_style=header_style)
-    table.add_column(header="Name", header_style=header_style)
-    table.add_column(header="Type", header_style=header_style)
-    table.add_column(header="Tags", header_style=header_style)
-    table.add_column(
-        header="Analyzers\nCalled", justify="center", header_style=header_style
-    )
-    table.add_column(
-        header="Process\nTime(s)", justify="center", header_style=header_style
-    )
-    table.add_column(header="Status", header_style=header_style)
-    try:
-        for el in data:
-            table.add_row(
-                str(el["id"]),
-                el["observable_name"] if el["observable_name"] else el["file_name"],
-                el["observable_classification"]
-                if el["observable_classification"]
-                else el["file_mimetype"],
-                ", ".join([t["label"] for t in el["tags"]]),
-                el["no_of_analyzers_executed"],
-                str(el["process_time"]),
-                get_status_text(el["status"]),
-            )
-        console.print(table, justify="center")
-    except Exception as e:
-        rprint(e)
+        ctx.obj.logger.fatal(f"Error in retrieving job: {str(e)}")

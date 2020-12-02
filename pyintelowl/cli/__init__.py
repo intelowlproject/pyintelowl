@@ -8,7 +8,8 @@ groups = [
     analyse,
     config,
     jobs,
+    tags,
 ]
 
 
-cmds = [get_analyzer_config, tags]
+cmds = [get_analyzer_config]

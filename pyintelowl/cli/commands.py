@@ -1,10 +1,17 @@
 import click
+import json
 import re
 from rich.console import Console
 from rich.table import Table
 from rich import box
 
-from ..cli._utils import ClickContext, get_success_text, get_json_syntax
+from ..cli._utils import (
+    ClickContext,
+    get_success_text,
+    get_json_syntax,
+    add_options,
+    json_flag_option,
+)
 from pyintelowl.pyintelowl import IntelOwlClientException
 
 
@@ -16,10 +23,12 @@ from pyintelowl.pyintelowl import IntelOwlClientException
     "--re-match",
     help="RegEx Pattern to filter analyzer names against",
 )
-@click.option("-j", "--json", is_flag=True, help="Pretty print as JSON")
-@click.option("-t", "--text", is_flag=True, help="Print analyzer names as CSV")
+@add_options(json_flag_option)
+@click.option(
+    "-t", "--text", "as_text", is_flag=True, help="Print analyzer names as CSV"
+)
 @click.pass_context
-def get_analyzer_config(ctx: ClickContext, re_match: str, json: bool, text: bool):
+def get_analyzer_config(ctx: ClickContext, re_match: str, as_json: bool, as_text: bool):
     console = Console()
     ctx.obj.logger.info("Requesting [italic blue]analyzer_config.json[/]..")
     try:
@@ -31,10 +40,10 @@ def get_analyzer_config(ctx: ClickContext, re_match: str, json: bool, text: bool
     except IntelOwlClientException as e:
         ctx.obj.logger.fatal(str(e))
         ctx.exit(0)
-    if json:
+    if as_json:
         with console.pager(styles=True):
-            console.print(res)
-    elif text:
+            console.print(json.dumps(res, indent=4))
+    elif as_text:
         click.echo(", ".join(res.keys()))
     else:
         # otherwise, print full table
