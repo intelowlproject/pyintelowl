@@ -1,6 +1,10 @@
 import geocoder
-from datetime import datetime
 import os
+from datetime import datetime
+from rich.console import Console
+
+console = Console()
+print = console.print
 
 
 class MyColors:
@@ -40,6 +44,15 @@ class Checkers:
     def __init__(self, results, value):
         self.results = results
         self.value = value
+
+    @property
+    def func_map(self):
+        return {
+            "domain": self.check_domain,
+            "hash": self.check_hash,
+            "url": self.check_url,
+            "ip": self.check_ip,
+        }
 
     def check_url(self):
         for result in self.results:
