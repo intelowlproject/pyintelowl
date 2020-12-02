@@ -31,12 +31,12 @@ def ls(ctx: ClickContext, as_json: bool):
 
 
 @tags.command(help="Retrieve tag details by ID")
-@click.argument("id", type=int)
+@click.argument("tag_id", type=int)
 @add_options(json_flag_option)
 @click.pass_context
-def view(ctx: ClickContext, id: int, as_json: bool):
+def view(ctx: ClickContext, tag_id: int, as_json: bool):
     try:
-        ans = ctx.obj.get_tag_by_id(id)
+        ans = ctx.obj.get_tag_by_id(tag_id)
         if as_json:
             rprint(json.dumps(ans, indent=4))
         else:

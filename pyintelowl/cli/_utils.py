@@ -10,6 +10,16 @@ from rich.logging import RichHandler
 
 from pyintelowl.pyintelowl import IntelOwl
 
+json_flag_option = [
+    click.option(
+        "-j",
+        "--json",
+        "as_json",
+        is_flag=True,
+        help="output as raw JSON",
+    ),
+]
+
 
 class ClickContext(click.Context):
     obj: IntelOwl

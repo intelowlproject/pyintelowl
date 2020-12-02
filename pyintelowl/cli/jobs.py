@@ -50,7 +50,7 @@ def ls(ctx: ClickContext, status: str, as_json: bool):
 
 
 @jobs.command(help="Tabular print job attributes and results for a job ID")
-@click.argument("id", type=int)
+@click.argument("job_id", type=int)
 @click.option(
     "-c",
     "--categorize",
@@ -62,12 +62,12 @@ def ls(ctx: ClickContext, status: str, as_json: bool):
 )
 @add_options(json_flag_option)
 @click.pass_context
-def view(ctx: ClickContext, id: int, categorize: bool, as_json: bool):
-    # ctx.obj.logger.info(f"Requesting Job [underline blue]#{id}[/]..")
+def view(ctx: ClickContext, job_id: int, categorize: bool, as_json: bool):
+    # ctx.obj.logger.info(f"Requesting Job [underline blue]#{job_id}[/]..")
     if as_json and categorize:
         raise click.Abort("Cannot use the -c and -j options together")
     try:
-        ans = ctx.obj.get_job_by_id(id)
+        ans = ctx.obj.get_job_by_id(job_id)
         if as_json:
             rprint(json.dumps(ans, indent=4))
         elif categorize:
@@ -91,7 +91,7 @@ def view(ctx: ClickContext, id: int, categorize: bool, as_json: bool):
     it finishes and save result into a file.
     """,
 )
-@click.argument("id", type=int)
+@click.argument("job_id", type=int)
 @click.option(
     "-t",
     "--max-tries",
@@ -116,9 +116,11 @@ def view(ctx: ClickContext, id: int, categorize: bool, as_json: bool):
     help="Path to JSON file to save result to",
 )
 @click.pass_context
-def poll(ctx: ClickContext, id: int, max_tries: int, interval: int, output_file: str):
+def poll(
+    ctx: ClickContext, job_id: int, max_tries: int, interval: int, output_file: str
+):
     try:
-        ans = _poll_for_job_cli(id, max_tries, interval)
+        ans = _poll_for_job_cli(job_id, max_tries, interval)
         if ans:
             with open(output_file, "w") as fp:
                 json.dump(ans, fp, indent=4)
