@@ -30,7 +30,7 @@ class IntelOwl:
             self.logger = logging.getLogger(__name__)
 
     @property
-    def session(self):
+    def session(self) -> requests.Session:
         if not hasattr(self, "_session"):
             session = requests.Session()
             if self.certificate:
@@ -51,7 +51,7 @@ class IntelOwl:
         analyzers_needed: List[str],
         run_all_available_analyzers: bool = False,
         check_reported_analysis_too: bool = False,
-    ):
+    ) -> Dict:
         answer = None
         try:
             params = {"md5": md5, "analyzers_needed": analyzers_needed}
@@ -90,7 +90,7 @@ class IntelOwl:
         disable_external_analyzers: bool = False,
         run_all_available_analyzers: bool = False,
         runtime_configuration: Dict = {},
-    ):
+    ) -> Dict:
         answer = None
         try:
             data = {
@@ -120,7 +120,7 @@ class IntelOwl:
         disable_external_analyzers: bool = False,
         run_all_available_analyzers: bool = False,
         runtime_configuration: Dict = {},
-    ):
+    ) -> Dict:
         answer = None
         try:
             data = {
@@ -143,12 +143,16 @@ class IntelOwl:
             raise IntelOwlClientException(e)
         return answer
 
-    def send_analysis_batch(self, rows: List = []):
+    def send_analysis_batch(self, rows: List):
+        """
+        Send multiple analysis requests.
+        """
         for obj in rows:
             try:
-                if obj.get("runtime_config", None):
-                    with open(obj["runtime_config"]) as fp:
-                        obj["runtime_config"] = json.load(fp)
+                runtime_config = obj.get("runtime_config", {})
+                if runtime_config:
+                    with open(runtime_config) as fp:
+                        runtime_config = json.load(fp)
 
                 if not (obj.get("run_all", False)):
                     obj["analyzers_list"] = obj["analyzers_list"].split(",")
@@ -162,7 +166,7 @@ class IntelOwl:
                     obj.get("private_job", False),
                     obj.get("disable_external_analyzers", False),
                     obj.get("check", None),
-                    obj.get("runtime_config", {}),
+                    runtime_config,
                 )
             except IntelOwlClientException as e:
                 self.logger.fatal(str(e))
@@ -246,7 +250,7 @@ class IntelOwl:
             raise IntelOwlClientException(e)
         return answer
 
-    def get_tag_by_id(self, tag_id):
+    def get_tag_by_id(self, tag_id) -> Dict:
         answer = None
         try:
             url = self.instance + "/api/tags/"
@@ -258,7 +262,7 @@ class IntelOwl:
             raise IntelOwlClientException(e)
         return answer
 
-    def get_job_by_id(self, job_id):
+    def get_job_by_id(self, job_id) -> Dict:
         answer = None
         try:
             url = self.instance + "/api/jobs/" + str(job_id)
@@ -271,8 +275,8 @@ class IntelOwl:
         return answer
 
     @staticmethod
-    def get_md5(to_hash: Any, type_="observable"):
-        md5 = None
+    def get_md5(to_hash: Any, type_="observable") -> str:
+        md5 = ""
         if type_ == "observable":
             md5 = hashlib.md5(str(to_hash).lower().encode("utf-8")).hexdigest()
         elif type_ == "binary":
@@ -296,6 +300,7 @@ class IntelOwl:
         disable_external_analyzers,
         check,
         runtime_configuration: Dict = {},
+        should_poll: bool = False,
     ):
         # CLI sanity checks
         if analyzers_list and run_all:
@@ -320,24 +325,25 @@ class IntelOwl:
             """
         )
         # 1st step: ask analysis availability
-        md5 = self.get_md5(obj, type_=type_)
-        resp = self.ask_analysis_availability(
-            md5, analyzers_list, run_all, True if check == "reported" else False
-        )
-        status, job_id = resp.get("status", None), resp.get("job_id", None)
-        if status != "not_available":
-            self.logger.info(
-                f"""Found existing analysis!
-            Job: #{job_id}
-            status: [u blue]{status}[/]
-
-            [i]Hint: use [#854442]--check force-new[/] to perform new scan anyway[/]
-                """
+        if check != "force-new":
+            md5 = self.get_md5(obj, type_=type_)
+            resp = self.ask_analysis_availability(
+                md5, analyzers_list, run_all, True if check == "reported" else False
             )
-            return
+            status, job_id = resp.get("status", None), resp.get("job_id", None)
+            if status != "not_available":
+                self.logger.info(
+                    f"""Found existing analysis!
+                Job: #{job_id}
+                status: [u blue]{status}[/]
+
+                [i]Hint: use [#854442]--check force-new[/] to perform new scan anyway[/]
+                    """
+                )
+                return
         # 2nd step: send new analysis request
         if type_ == "observable":
-            _ = self.send_observable_analysis_request(
+            resp2 = self.send_observable_analysis_request(
                 analyzers_requested=analyzers_list,
                 observable_name=obj,
                 force_privacy=force_privacy,
@@ -348,7 +354,7 @@ class IntelOwl:
             )
         else:
             path = pathlib.Path(obj)
-            _ = self.send_file_analysis_request(
+            resp2 = self.send_file_analysis_request(
                 analyzers_requested=analyzers_list,
                 filename=path.name,
                 binary=path.read_bytes(),
@@ -359,10 +365,23 @@ class IntelOwl:
                 runtime_configuration=runtime_configuration,
             )
         # 3rd step: poll for result
-        # todo
+        if should_poll:
+            if resp2["status"] != "accepted":
+                self.logger.fatal("Can't poll a failed job")
+            # import poll function
+            from .cli._jobs_utils import _poll_for_job_cli
+
+            job_id = resp2["job_id"]
+            _ = _poll_for_job_cli(self, job_id)
+            self.logger.info(
+                f"""
+        Polling finished.
+        Execute [i blue]pyintelowl jobs view {job_id}[/] to view the result
+                """
+            )
 
     @staticmethod
-    def _get_observable_classification(value):
+    def _get_observable_classification(value) -> str:
         # only following types are supported:
         # ip - domain - url - hash (md5, sha1, sha256)
         try:

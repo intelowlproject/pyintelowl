@@ -3,7 +3,6 @@ import click
 from pyintelowl.exceptions import IntelOwlClientException
 from ..cli._utils import add_options, ClickContext, get_json_data
 
-
 __analyse_options = [
     click.option(
         "-al",
@@ -62,6 +61,12 @@ __analyse_options = [
         help="Path to JSON file which contains runtime_configuration.",
         type=click.Path(exists=True, resolve_path=True),
     ),
+    click.option(
+        "--poll",
+        "should_poll",
+        is_flag=True,
+        help="HTTP poll for the job result and notify when it's finished",
+    ),
 ]
 
 
@@ -87,6 +92,7 @@ def observable(
     disable_external_analyzers,
     check,
     runtime_config,
+    should_poll: bool,
 ):
     if not run_all:
         analyzers_list = analyzers_list.split(",")
@@ -105,6 +111,7 @@ def observable(
             disable_external_analyzers,
             check,
             runtime_config,
+            should_poll,
         )
     except IntelOwlClientException as e:
         ctx.obj.logger.fatal(str(e))
@@ -124,6 +131,7 @@ def file(
     disable_external_analyzers,
     check,
     runtime_config,
+    should_poll: bool,
 ):
     if not run_all:
         analyzers_list = analyzers_list.split(",")
@@ -142,6 +150,7 @@ def file(
             disable_external_analyzers,
             check,
             runtime_config,
+            should_poll,
         )
     except IntelOwlClientException as e:
         ctx.obj.logger.fatal(str(e))
