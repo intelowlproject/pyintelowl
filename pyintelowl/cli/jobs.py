@@ -120,7 +120,7 @@ def poll(
     ctx: ClickContext, job_id: int, max_tries: int, interval: int, output_file: str
 ):
     try:
-        ans = _poll_for_job_cli(job_id, max_tries, interval)
+        ans = _poll_for_job_cli(ctx.obj, job_id, max_tries, interval)
         if ans:
             with open(output_file, "w") as fp:
                 json.dump(ans, fp, indent=4)
