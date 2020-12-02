@@ -18,7 +18,7 @@ class ClickContext(click.Context):
     """
 
 
-def get_status_text(status: str):
+def get_status_text(status: str, as_text=True):
     styles = {
         "pending": ("#CE5C00", str(Emoji("gear"))),
         "running": ("#CE5C00", str(Emoji("gear"))),
@@ -27,7 +27,8 @@ def get_status_text(status: str):
         "failed": ("#CC0000", str(Emoji("cross_mark"))),
     }
     color, emoji = styles[status]
-    return Text(status + " " + emoji, style=color)
+    s = f"[{color}]{status} {emoji}[/]"
+    return Text(status + " " + emoji, style=color) if as_text else s
 
 
 def get_success_text(success):

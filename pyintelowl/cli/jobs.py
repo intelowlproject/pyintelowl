@@ -1,18 +1,17 @@
+import time
 import click
+import json
 import click_spinner
 from rich.console import Console
 from rich.table import Table
-from rich.panel import Panel
-from rich.console import RenderGroup
 from rich import box, print as rprint
-
+from rich.progress import track
 from pyintelowl.exceptions import IntelOwlClientException
-from ..cli._utils import (
-    ClickContext,
-    get_status_text,
-    get_success_text,
-    get_json_syntax,
-    get_tags_str,
+from ..cli._utils import ClickContext, get_status_text
+from ..cli._jobs_utils import (
+    _display_single_job,
+    _render_job_attributes,
+    _render_job_analysis_table,
 )
 
 
@@ -53,19 +52,28 @@ def jobs(ctx: ClickContext, id: int, all: bool, status: str):
                 ans = ctx.obj.get_job_by_id(id)
             _display_single_job(ans)
         else:
-            click.echo(ctx.get_usage())
+            if not ctx.invoked_subcommand:
+                click.echo(ctx.get_usage())
     except IntelOwlClientException as e:
         ctx.obj.logger.fatal(str(e))
 
 
 @jobs.command("poll", help="HTTP poll a currently running job's details")
+@click.option("--id", type=int, required=True, help="HTTP poll a job for live updates")
+@click.option(
+    "-o",
+    "--output",
+    type=click.Path(exists=False, resolve_path=True),
+    required=True,
+    help="File to save results",
+)
 @click.option(
     "-t",
     "--max-tries",
     type=int,
     default=0,
     show_default=True,
-    help="maximum number of tries (in sec)",
+    help="maximum number of tries",
 )
 @click.option(
     "-i",
@@ -73,58 +81,44 @@ def jobs(ctx: ClickContext, id: int, all: bool, status: str):
     type=int,
     default=5,
     show_default=True,
-    help="sleep interval before subsequent requests (in sec)",
+    help="sleep interval between subsequent requests (in sec)",
 )
 @click.pass_context
-def poll(ctx: ClickContext, max_tries: int, interval: int):
-    pass
-
-
-def _display_single_job(data):
+def poll(ctx: ClickContext, id: int, max_tries: int, interval: int, output: str):
     console = Console()
-    style = "[bold #31DDCF]"
-    headers = ["Name", "Status", "Report", "Errors"]
-    with console.pager(styles=True):
-        # print job attributes
-        tags = get_tags_str(data["tags"])
-        status = get_status_text(data["status"])
-        name = data["observable_name"] if data["observable_name"] else data["file_name"]
-        clsfn = (
-            data["observable_classification"]
-            if data["observable_classification"]
-            else data["file_mimetype"]
-        )
-        r = RenderGroup(
-            f"{style}Job ID:[/] {str(data['id'])}",
-            f"{style}User:[/] {data['source']}",
-            f"{style}MD5:[/] {data['md5']}",
-            f"{style}Name:[/] {name}",
-            f"{style}Classification:[/] {clsfn}",
-            f"{style}Tags:[/] {tags}",
-            f"{style}Status:[/] {status}",
-        )
-        console.print(Panel(r, title="Job attributes"))
+    poll_result = {}
+    try:
+        for i in track(
+            range(max_tries),
+            description=f"Polling Job [underline blue]#{id}[/]..",
+            console=console,
+        ):
+            if i != 0:
+                console.print(f"sleeping for {interval} seconds before next request..")
+                time.sleep(interval)
+            ans = ctx.obj.get_job_by_id(id)
+            poll_result[f"Try {i+1}"] = ans
+            status = ans["status"].lower()
+            if i == 0:
+                console.print(_render_job_attributes(ans))
 
-        # construct job analysis table
-
-        table = Table(
-            show_header=True,
-            title="Analysis Data",
-            box=box.DOUBLE_EDGE,
-            show_lines=True,
-        )
-        # add headers
-        for h in headers:
-            table.add_column(h, header_style="bold blue")
-        # add rows
-        for el in data["analysis_reports"]:
-            table.add_row(
-                el["name"],
-                get_success_text((el["success"])),
-                get_json_syntax(el["report"]) if el["report"] else None,
-                get_json_syntax(el["errors"]) if el["errors"] else None,
+            if status not in ["running", "pending"]:
+                console.print(
+                    "\nPolling stopped because job has finished with status: ",
+                    get_status_text(status),
+                    end="",
+                )
+                break
+            console.clear()
+            console.print(
+                _render_job_analysis_table(ans["analysis_reports"], verbose=False),
+                justify="center",
             )
-        console.print(table)
+        with open(output, "w") as outfile:
+            json.dump(poll_result, outfile, indent=4)
+
+    except Exception as e:
+        ctx.obj.logger.error(f"Error in retrieving job: {str(e)}")
 
 
 def _display_all_jobs(data):
