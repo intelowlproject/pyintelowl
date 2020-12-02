@@ -20,7 +20,6 @@ requirements = [
     "geocoder==1.38.1",
     "click==7.1.2",
     "rich==9.2.0",
-    "click-spinner==0.1.10",
     "click_completion",
     "tinynetrc==1.3.0",
 ]
