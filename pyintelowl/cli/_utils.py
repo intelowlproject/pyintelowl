@@ -107,3 +107,8 @@ def get_json_data(filepath):
                 reader = csv.DictReader(fp)
                 obj = [dict(row) for row in reader]
     return obj
+
+
+def get_version_number() -> str:
+    f = pathlib.Path(__file__).joinpath("../../../version.txt").resolve()
+    return f.read_text()
