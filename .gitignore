@@ -8,3 +8,4 @@ test_files/
 __pycache__
 .vscode
 api_token_value.txt
+docs/_build/
