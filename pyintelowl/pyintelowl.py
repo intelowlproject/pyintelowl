@@ -5,8 +5,7 @@ import json
 import re
 import requests
 import hashlib
-
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Union, AnyStr
 
 from .exceptions import IntelOwlClientException
 
@@ -31,6 +30,9 @@ class IntelOwl:
 
     @property
     def session(self) -> requests.Session:
+        """
+        Internal use only.
+        """
         if not hasattr(self, "_session"):
             session = requests.Session()
             if self.certificate:
@@ -52,6 +54,23 @@ class IntelOwl:
         run_all_available_analyzers: bool = False,
         check_reported_analysis_too: bool = False,
     ) -> Dict:
+        """Search for already available analysis.\n
+        Endpoint: ``/api/ask_analysis_availability``
+
+        Args:
+            md5 (str): md5sum of the observable or file
+            analyzers_needed (List[str]): list of analyzers to invoke
+            run_all_available_analyzers (bool, optional):
+            If True, runs all compatible analyzers. Defaults to ``False``.
+            check_reported_analysis_too (bool, optional):
+            Check against all existing jobs. Defaults to ``False``.
+
+        Raises:
+            IntelOwlClientException: on client/HTTP error
+
+        Returns:
+            Dict: JSON body
+        """
         answer = None
         try:
             params = {"md5": md5, "analyzers_needed": analyzers_needed}
@@ -91,6 +110,33 @@ class IntelOwl:
         run_all_available_analyzers: bool = False,
         runtime_configuration: Dict = {},
     ) -> Dict:
+        """Send analysis request for a file.\n
+        Endpoint: ``/api/send_analysis_request``
+
+        Args:
+            analyzers_requested (List[str]):
+                List of analyzers to invoke
+            filename (str):
+                Filename
+            binary (bytes):
+                File contents as bytes
+            force_privacy (bool, optional):
+                Disable analyzers that can leak info. Defaults to ``False``.
+            private_job (bool, optional):
+                Limit view permissions to your groups . Defaults to ``False``.
+            disable_external_analyzers (bool, optional):
+                Disable analyzers that use external services. Defaults to ``False``.
+            run_all_available_analyzers (bool, optional):
+                If True, runs all compatible analyzers. Defaults to ``False``.
+            runtime_configuration (Dict, optional):
+                Overwrite configuration for analyzers. Defaults to ``{}``.
+
+        Raises:
+            IntelOwlClientException: on client/HTTP error
+
+        Returns:
+            Dict: JSON body
+        """
         answer = None
         try:
             data = {
@@ -121,6 +167,31 @@ class IntelOwl:
         run_all_available_analyzers: bool = False,
         runtime_configuration: Dict = {},
     ) -> Dict:
+        """Send analysis request for an observable.\n
+        Endpoint: ``/api/send_analysis_request``
+
+        Args:
+            analyzers_requested (List[str]):
+                List of analyzers to invoke
+            observable_name (str):
+                Observable value
+            force_privacy (bool, optional):
+                Disable analyzers that can leak info. Defaults to ``False``.
+            private_job (bool, optional):
+                Limit view permissions to your groups . Defaults to ``False``.
+            disable_external_analyzers (bool, optional):
+                Disable analyzers that use external services. Defaults to ``False``.
+            run_all_available_analyzers (bool, optional):
+                If True, runs all compatible analyzers. Defaults to ``False``.
+            runtime_configuration (Dict, optional):
+                Overwrite configuration for analyzers. Defaults to ``{}``.
+
+        Raises:
+            IntelOwlClientException: on client/HTTP error
+
+        Returns:
+            Dict: JSON body
+        """
         answer = None
         try:
             data = {
@@ -143,9 +214,19 @@ class IntelOwl:
             raise IntelOwlClientException(e)
         return answer
 
-    def send_analysis_batch(self, rows: List):
+    def send_analysis_batch(self, rows: List[Dict]):
         """
         Send multiple analysis requests.
+        Can be mix of observable or file analysis requests.
+
+        Used by the pyintelowl CLI.
+
+        Args:
+            rows (List[Dict]):
+                Each row should be a dictionary with keys,
+                `value`, `type`, `analyzers_list`, `run_all`
+                `force_privacy`, `private_job`, `disable_external_analyzers`,
+                `check`.
         """
         for obj in rows:
             try:
@@ -172,6 +253,9 @@ class IntelOwl:
                 self.logger.fatal(str(e))
 
     def __send_analysis_request(self, data=None, files=None):
+        """
+        Internal use only.
+        """
         url = self.instance + "/api/send_analysis_request"
         response = self.session.post(url, data=data, files=files)
         self.logger.debug(
@@ -202,6 +286,10 @@ class IntelOwl:
         return answer
 
     def ask_analysis_result(self, job_id):
+        """
+        will be deprecated soon. Use `get_job_by_id` function instead.\n
+        Endpoint: ``/api/ask_analysis_result``
+        """
         answer = None
         try:
             params = {"job_id": job_id}
@@ -215,6 +303,10 @@ class IntelOwl:
         return answer
 
     def get_analyzer_configs(self):
+        """
+        Get current state of `analyzer_config.json` from the IntelOwl instance.\n
+        Endpoint: ``/api/get_analyzer_configs``
+        """
         answer = None
         try:
             url = self.instance + "/api/get_analyzer_configs"
@@ -226,7 +318,17 @@ class IntelOwl:
             raise IntelOwlClientException(e)
         return answer
 
-    def get_all_tags(self):
+    def get_all_tags(self) -> List[Dict[str, str]]:
+        """
+        Fetch list of all tags.\n
+        Endpoint: ``/api/tags``
+
+        Raises:
+            IntelOwlClientException: on client/HTTP error
+
+        Returns:
+            List[Dict[str, str]]: List of tags
+        """
         answer = None
         try:
             url = self.instance + "/api/tags"
@@ -238,7 +340,17 @@ class IntelOwl:
             raise IntelOwlClientException(e)
         return answer
 
-    def get_all_jobs(self):
+    def get_all_jobs(self) -> List[Dict[str, Any]]:
+        """
+        Fetch list of all jobs.\n
+        Endpoint: ``/api/jobs``
+
+        Raises:
+            IntelOwlClientException: on client/HTTP error
+
+        Returns:
+            List[Dict[str, Any]]: List of jobs
+        """
         answer = None
         try:
             url = self.instance + "/api/jobs"
@@ -250,7 +362,19 @@ class IntelOwl:
             raise IntelOwlClientException(e)
         return answer
 
-    def get_tag_by_id(self, tag_id) -> Dict:
+    def get_tag_by_id(self, tag_id: Union[int, str]) -> Dict[str, str]:
+        """Fetch tag info by ID.\n
+        Endpoint: ``/api/tag/{tag_id}``
+
+        Args:
+            tag_id (Union[int, str]): Tag ID
+
+        Raises:
+            IntelOwlClientException: on client/HTTP error
+
+        Returns:
+            Dict[str, str]: Dict with 3 keys: `id`, `label` and `color`.
+        """
         answer = None
         try:
             url = self.instance + "/api/tags/"
@@ -262,7 +386,19 @@ class IntelOwl:
             raise IntelOwlClientException(e)
         return answer
 
-    def get_job_by_id(self, job_id) -> Dict:
+    def get_job_by_id(self, job_id: Union[int, str]) -> Dict[str, Any]:
+        """Fetch job info by ID.
+        Endpoint: ``/api/job/{job_id}``
+
+        Args:
+            job_id (Union[int, str]): Job ID
+
+        Raises:
+            IntelOwlClientException: on client/HTTP error
+
+        Returns:
+            Dict[str, Any]: JSON body.
+        """
         answer = None
         try:
             url = self.instance + "/api/jobs/" + str(job_id)
@@ -275,7 +411,24 @@ class IntelOwl:
         return answer
 
     @staticmethod
-    def get_md5(to_hash: Any, type_="observable") -> str:
+    def get_md5(
+        to_hash: AnyStr,
+        type_: Union["observable", "binary", "file"] = "observable",
+    ) -> str:
+        """Returns md5sum of given observable or file object.
+
+        Args:
+            to_hash (AnyStr):
+                either an observable string, file contents as bytes or path to a file
+            type_ (Union["observable", "binary", "file"], optional):
+                `observable`, `binary`, `file`. Defaults to "observable".
+
+        Raises:
+            IntelOwlClientException: on client/HTTP error
+
+        Returns:
+            str: md5sum
+        """
         md5 = ""
         if type_ == "observable":
             md5 = hashlib.md5(str(to_hash).lower().encode("utf-8")).hexdigest()
@@ -301,7 +454,10 @@ class IntelOwl:
         check,
         runtime_configuration: Dict = {},
         should_poll: bool = False,
-    ):
+    ) -> None:
+        """
+        For internal use by the pyintelowl CLI.
+        """
         # CLI sanity checks
         if analyzers_list and run_all:
             self.logger.warn(
@@ -381,9 +537,22 @@ class IntelOwl:
             )
 
     @staticmethod
-    def _get_observable_classification(value) -> str:
-        # only following types are supported:
-        # ip - domain - url - hash (md5, sha1, sha256)
+    def _get_observable_classification(value: str) -> str:
+        """Returns observable classification for the given value.\n
+        Only following types are supported:
+        ip, domain, url, hash (md5, sha1, sha256)
+
+        Args:
+            value (str):
+                observable value
+
+        Raises:
+            IntelOwlClientException:
+                if value type is not recognized
+
+        Returns:
+            str: one of `ip`, `url`, `domain` or `hash`.
+        """
         try:
             ipaddress.ip_address(value)
         except ValueError:
