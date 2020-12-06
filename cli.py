@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import click
-from pyintelowl.pyintelowl import IntelOwl
+from pyintelowl import IntelOwl
 from pyintelowl.cli import groups, cmds
 from pyintelowl.cli._utils import (
     get_logger,

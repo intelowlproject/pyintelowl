@@ -75,7 +75,6 @@ def analyse():
     """
     Send new analysis request
     """
-    pass
 
 
 @analyse.command(help="Send analysis request for an observable")
@@ -166,12 +165,16 @@ def batch(
     filepath: str,
 ):
     rows = get_json_data(filepath)
-    flags = ["run_all", "force_privacy", "private_job", "disable_external_analyzers"]
+    # parse boolean columns
+    bool_flags = [
+        "run_all",
+        "force_privacy",
+        "private_job",
+        "disable_external_analyzers",
+    ]
     for row in rows:
-        for flag in flags:
-            row[flag] = (row.get(flag, False).lower() == "true") | (
-                row.get(flag, False) == True
-            )
+        for flag in bool_flags:
+            row[flag] = row.get(flag, False) in ["true", True]
     try:
         ctx.obj.send_analysis_batch(rows)
     except IntelOwlClientException as e:

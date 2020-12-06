@@ -9,7 +9,7 @@ from rich.text import Text
 from rich.syntax import Syntax
 from rich.logging import RichHandler
 
-from pyintelowl.pyintelowl import IntelOwl
+from pyintelowl import IntelOwl
 
 json_flag_option = [
     click.option(
