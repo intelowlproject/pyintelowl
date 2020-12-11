@@ -108,7 +108,7 @@ class IntelOwl:
         private_job: bool = False,
         disable_external_analyzers: bool = False,
         run_all_available_analyzers: bool = False,
-        runtime_configuration: Dict = {},
+        runtime_configuration: Dict = None,
     ) -> Dict:
         """Send analysis request for a file.\n
         Endpoint: ``/api/send_analysis_request``
@@ -139,6 +139,8 @@ class IntelOwl:
         """
         answer = None
         try:
+            if not runtime_configuration:
+                runtime_configuration = {}
             data = {
                 "is_sample": True,
                 "md5": self.get_md5(binary, type_="binary"),
@@ -165,7 +167,7 @@ class IntelOwl:
         private_job: bool = False,
         disable_external_analyzers: bool = False,
         run_all_available_analyzers: bool = False,
-        runtime_configuration: Dict = {},
+        runtime_configuration: Dict = None,
     ) -> Dict:
         """Send analysis request for an observable.\n
         Endpoint: ``/api/send_analysis_request``
@@ -194,6 +196,8 @@ class IntelOwl:
         """
         answer = None
         try:
+            if not runtime_configuration:
+                runtime_configuration = {}
             data = {
                 "is_sample": False,
                 "md5": self.get_md5(observable_name, type_="observable"),
@@ -413,7 +417,7 @@ class IntelOwl:
     @staticmethod
     def get_md5(
         to_hash: AnyStr,
-        type_: Union["observable", "binary", "file"] = "observable",
+        type_="observable",
     ) -> str:
         """Returns md5sum of given observable or file object.
 
@@ -452,22 +456,24 @@ class IntelOwl:
         private_job,
         disable_external_analyzers,
         check,
-        runtime_configuration: Dict = {},
+        runtime_configuration: Dict = None,
         should_poll: bool = False,
     ) -> None:
         """
         For internal use by the pyintelowl CLI.
         """
+        if not runtime_configuration:
+            runtime_configuration = {}
         # CLI sanity checks
         if analyzers_list and run_all:
-            self.logger.warn(
+            self.logger.warning(
                 """
                 Can't use -al and -aa options together. See usage with -h.
                 """
             )
             return
         if not (analyzers_list or run_all):
-            self.logger.warn(
+            self.logger.warning(
                 """
                 Either one of -al, -aa must be specified. See usage with -h.
                 """,
@@ -536,8 +542,7 @@ class IntelOwl:
                 """
             )
 
-    @staticmethod
-    def _get_observable_classification(value: str) -> str:
+    def _get_observable_classification(self, value: str) -> str:
         """Returns observable classification for the given value.\n
         Only following types are supported:
         ip, domain, url, hash (md5, sha1, sha256)
@@ -571,7 +576,8 @@ class IntelOwl:
             ):
                 classification = "hash"
             else:
-                raise IntelOwlClientException(
+                classification = "general"
+                self.logger.warning(
                     f"{value} is neither a domain nor a URL nor a IP not a hash"
                 )
         else:

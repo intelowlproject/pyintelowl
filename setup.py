@@ -25,7 +25,7 @@ requirements = [
     "tinynetrc==1.3.0",
 ]
 
-requirements_test = ["black==20.8b1", "flake8==3.7.9", "pre-commit==2.7.1"]
+requirements_test = ["black==20.8b1", "flake8==3.7.9", "pre-commit==2.9.2"]
 
 # This call to setup() does all the work
 setup(
@@ -65,7 +65,7 @@ setup(
         "Source": GITHUB_URL,
         "Tracker": "{}/issues".format(GITHUB_URL),
     },
-    keywords="intelowl sdk python command line osint threat intel",
+    keywords="intelowl sdk python command line osint threat intel malware",
     # List additional groups of dependencies here (e.g. development
     # dependencies). You can install these using the following syntax,
     # for example:

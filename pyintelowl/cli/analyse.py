@@ -10,7 +10,7 @@ __analyse_options = [
         type=str,
         default=(),
         help="""
-    Comma seperated list of analyzer names to invoke. Should not be used with
+    Comma separated list of analyzer names to invoke. Should not be used with
     --run-all-available-analyzers
     """,
     ),
