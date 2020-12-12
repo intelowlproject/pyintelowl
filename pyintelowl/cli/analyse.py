@@ -15,6 +15,13 @@ __analyse_options = [
     """,
     ),
     click.option(
+        "-tl",
+        "--tags-list",
+        type=str,
+        default=(),
+        help="Comma separated list of tag indices for respective job.",
+    ),
+    click.option(
         "-aa",
         "--run-all-available-analyzers",
         "run_all",
@@ -85,6 +92,7 @@ def observable(
     ctx: ClickContext,
     value,
     analyzers_list: str,
+    tags_list: str,
     run_all,
     force_privacy,
     private_job,
@@ -95,6 +103,7 @@ def observable(
 ):
     if not run_all:
         analyzers_list = analyzers_list.split(",")
+    tags_list = list(map(int, tags_list.split(",")))
     if runtime_config:
         runtime_config = get_json_data(runtime_config)
     else:
@@ -104,6 +113,7 @@ def observable(
             value,
             "observable",
             analyzers_list,
+            tags_list,
             run_all,
             force_privacy,
             private_job,
@@ -124,6 +134,7 @@ def file(
     ctx: ClickContext,
     filepath: str,
     analyzers_list: str,
+    tags_list: str,
     run_all,
     force_privacy,
     private_job,
@@ -134,6 +145,7 @@ def file(
 ):
     if not run_all:
         analyzers_list = analyzers_list.split(",")
+    tags_list = list(map(int, tags_list.split(",")))
     if runtime_config:
         runtime_config = get_json_data(runtime_config)
     else:
@@ -143,6 +155,7 @@ def file(
             filepath,
             "file",
             analyzers_list,
+            tags_list,
             run_all,
             force_privacy,
             private_job,
