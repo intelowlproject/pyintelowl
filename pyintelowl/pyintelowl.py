@@ -109,6 +109,7 @@ class IntelOwl:
         disable_external_analyzers: bool = False,
         run_all_available_analyzers: bool = False,
         runtime_configuration: Dict = None,
+        tags: List[int] = [],
     ) -> Dict:
         """Send analysis request for a file.\n
         Endpoint: ``/api/send_analysis_request``
@@ -126,6 +127,8 @@ class IntelOwl:
                 Limit view permissions to your groups . Defaults to ``False``.
             disable_external_analyzers (bool, optional):
                 Disable analyzers that use external services. Defaults to ``False``.
+            tags (List[int]):
+                List of tags associated with this job
             run_all_available_analyzers (bool, optional):
                 If True, runs all compatible analyzers. Defaults to ``False``.
             runtime_configuration (Dict, optional):
@@ -145,6 +148,7 @@ class IntelOwl:
                 "is_sample": True,
                 "md5": self.get_md5(binary, type_="binary"),
                 "analyzers_requested": analyzers_requested,
+                "tags_id": tags,
                 "run_all_available_analyzers": run_all_available_analyzers,
                 "force_privacy": force_privacy,
                 "private": private_job,
@@ -168,6 +172,7 @@ class IntelOwl:
         disable_external_analyzers: bool = False,
         run_all_available_analyzers: bool = False,
         runtime_configuration: Dict = None,
+        tags: List[int] = [],
     ) -> Dict:
         """Send analysis request for an observable.\n
         Endpoint: ``/api/send_analysis_request``
@@ -183,6 +188,8 @@ class IntelOwl:
                 Limit view permissions to your groups . Defaults to ``False``.
             disable_external_analyzers (bool, optional):
                 Disable analyzers that use external services. Defaults to ``False``.
+            tags (List[int]):
+                List of tags associated with this job
             run_all_available_analyzers (bool, optional):
                 If True, runs all compatible analyzers. Defaults to ``False``.
             runtime_configuration (Dict, optional):
@@ -202,6 +209,7 @@ class IntelOwl:
                 "is_sample": False,
                 "md5": self.get_md5(observable_name, type_="observable"),
                 "analyzers_requested": analyzers_requested,
+                "tags_id": tags,
                 "run_all_available_analyzers": run_all_available_analyzers,
                 "force_privacy": force_privacy,
                 "private": private_job,
@@ -451,6 +459,7 @@ class IntelOwl:
         obj: str,
         type_: str,
         analyzers_list: List[str],
+        tags_list: List[int],
         run_all: bool,
         force_privacy,
         private_job,
@@ -511,6 +520,7 @@ class IntelOwl:
                 force_privacy=force_privacy,
                 private_job=private_job,
                 disable_external_analyzers=disable_external_analyzers,
+                tags=tags_list,
                 run_all_available_analyzers=run_all,
                 runtime_configuration=runtime_configuration,
             )
@@ -523,6 +533,7 @@ class IntelOwl:
                 force_privacy=force_privacy,
                 private_job=private_job,
                 disable_external_analyzers=disable_external_analyzers,
+                tags=tags_list,
                 run_all_available_analyzers=run_all,
                 runtime_configuration=runtime_configuration,
             )
