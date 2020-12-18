@@ -110,5 +110,6 @@ def get_json_data(filepath):
 
 
 def get_version_number() -> str:
-    f = pathlib.Path(__file__).joinpath("../../../version.txt").resolve()
-    return f.read_text()
+    # f = pathlib.Path(__file__).joinpath("../../../version.txt").resolve()
+    # return f.read_text()
+    return "3.0.0"

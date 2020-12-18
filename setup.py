@@ -5,7 +5,7 @@ Robust Python SDK and CLI for interacting with IntelOwl's API.
 """
 
 import pathlib
-from setuptools import setup
+from setuptools import setup, find_packages
 
 # The directory containing this file
 HERE = pathlib.Path(__file__).parent
@@ -25,7 +25,7 @@ requirements = [
     "tinynetrc==1.3.0",
 ]
 
-requirements_test = ["black==20.8b1", "flake8==3.7.9", "pre-commit==2.9.2"]
+requirements_test = ["black==20.8b1", "flake8==3.7.9", "pre-commit==2.7.1"]
 
 # This call to setup() does all the work
 setup(
@@ -55,7 +55,7 @@ setup(
         "Programming Language :: Python :: 3.9",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
-    packages=["pyintelowl"],
+    packages=find_packages(),
     python_requires=">=3.6",
     include_package_data=True,
     install_requires=requirements,
@@ -65,7 +65,7 @@ setup(
         "Source": GITHUB_URL,
         "Tracker": "{}/issues".format(GITHUB_URL),
     },
-    keywords="intelowl sdk python command line osint threat intel malware",
+    keywords="intelowl sdk python command line osint threat intel",
     # List additional groups of dependencies here (e.g. development
     # dependencies). You can install these using the following syntax,
     # for example:
@@ -77,6 +77,6 @@ setup(
     # pip install --editable .
     entry_points="""
         [console_scripts]
-        pyintelowl=cli:cli
+        pyintelowl=pyintelowl.main:cli
     """,
 )
