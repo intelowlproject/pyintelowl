@@ -16,6 +16,10 @@ Robust Python **SDK** and **Command Line Client** for interacting with [IntelOwl
 - List all tags or view one tag in a prettified tabular form.
 - Tabular view of the `analyzer_config.json` from IntelOwl with RegEx matching capabilities.
 
+## Demo
+
+[![pyintelowl asciicast](https://asciinema.org/a/z7L93lsIzOQ0Scve7hMl30mJJ.svg)](https://asciinema.org/a/z7L93lsIzOQ0Scve7hMl30mJJ?t=5)
+
 ## Installation
 
 ```bash

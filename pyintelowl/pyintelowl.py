@@ -40,7 +40,7 @@ class IntelOwl:
             session.headers.update(
                 {
                     "Authorization": f"Token {self.token}",
-                    "User-Agent": "IntelOwlClient/3.0.0",
+                    "User-Agent": "IntelOwlClient/3.0.1",
                 }
             )
             self._session = session
@@ -108,7 +108,8 @@ class IntelOwl:
         private_job: bool = False,
         disable_external_analyzers: bool = False,
         run_all_available_analyzers: bool = False,
-        runtime_configuration: Dict = {},
+        runtime_configuration: Dict = None,
+        tags: List[int] = [],
     ) -> Dict:
         """Send analysis request for a file.\n
         Endpoint: ``/api/send_analysis_request``
@@ -126,6 +127,8 @@ class IntelOwl:
                 Limit view permissions to your groups . Defaults to ``False``.
             disable_external_analyzers (bool, optional):
                 Disable analyzers that use external services. Defaults to ``False``.
+            tags (List[int]):
+                List of tags associated with this job
             run_all_available_analyzers (bool, optional):
                 If True, runs all compatible analyzers. Defaults to ``False``.
             runtime_configuration (Dict, optional):
@@ -139,10 +142,13 @@ class IntelOwl:
         """
         answer = None
         try:
+            if not runtime_configuration:
+                runtime_configuration = {}
             data = {
                 "is_sample": True,
                 "md5": self.get_md5(binary, type_="binary"),
                 "analyzers_requested": analyzers_requested,
+                "tags_id": tags,
                 "run_all_available_analyzers": run_all_available_analyzers,
                 "force_privacy": force_privacy,
                 "private": private_job,
@@ -165,7 +171,8 @@ class IntelOwl:
         private_job: bool = False,
         disable_external_analyzers: bool = False,
         run_all_available_analyzers: bool = False,
-        runtime_configuration: Dict = {},
+        runtime_configuration: Dict = None,
+        tags: List[int] = [],
     ) -> Dict:
         """Send analysis request for an observable.\n
         Endpoint: ``/api/send_analysis_request``
@@ -181,6 +188,8 @@ class IntelOwl:
                 Limit view permissions to your groups . Defaults to ``False``.
             disable_external_analyzers (bool, optional):
                 Disable analyzers that use external services. Defaults to ``False``.
+            tags (List[int]):
+                List of tags associated with this job
             run_all_available_analyzers (bool, optional):
                 If True, runs all compatible analyzers. Defaults to ``False``.
             runtime_configuration (Dict, optional):
@@ -194,10 +203,13 @@ class IntelOwl:
         """
         answer = None
         try:
+            if not runtime_configuration:
+                runtime_configuration = {}
             data = {
                 "is_sample": False,
                 "md5": self.get_md5(observable_name, type_="observable"),
                 "analyzers_requested": analyzers_requested,
+                "tags_id": tags,
                 "run_all_available_analyzers": run_all_available_analyzers,
                 "force_privacy": force_privacy,
                 "private": private_job,
@@ -283,6 +295,45 @@ class IntelOwl:
         """
         )
         response.raise_for_status()
+        return answer
+
+    def create_tag(self, label: str, color: str):
+        """Creates new tag by sending a POST Request
+        Endpoint: ``/api/tags``
+
+        Args:
+            label ([str]): [Label of the tag to be created]
+            color ([str]): [Color of the tag to be created]
+        """
+        try:
+            url = self.instance + "/api/tags"
+            data = {"label": label, "color": color}
+            response = self.session.post(url, data=data)
+            self.logger.debug(msg=(response.url, response.status_code))
+            response.raise_for_status()
+            answer = response.json()
+        except Exception as e:
+            raise IntelOwlClientException(e)
+        return answer
+
+    def edit_tag(self, tag_id: Union[int, str], label: str, color: str):
+        """Edits existing tag by sending PUT request
+        Endpoint: ``api/tags``
+
+        Args:
+            id ([int]): [Id of the existing tag]
+            label ([str]): [Label of the tag to be created]
+            color ([str]): [Color of the tag to be created]
+        """
+        try:
+            url = self.instance + "/api/tags/" + str(tag_id)
+            data = {"label": label, "color": color}
+            response = self.session.put(url, data=data)
+            self.logger.debug(response.url)
+            response.raise_for_status()
+            answer = response.json()
+        except Exception as e:
+            raise IntelOwlClientException(e)
         return answer
 
     def ask_analysis_result(self, job_id):
@@ -413,7 +464,7 @@ class IntelOwl:
     @staticmethod
     def get_md5(
         to_hash: AnyStr,
-        type_: Union["observable", "binary", "file"] = "observable",
+        type_="observable",
     ) -> str:
         """Returns md5sum of given observable or file object.
 
@@ -447,27 +498,30 @@ class IntelOwl:
         obj: str,
         type_: str,
         analyzers_list: List[str],
+        tags_list: List[int],
         run_all: bool,
         force_privacy,
         private_job,
         disable_external_analyzers,
         check,
-        runtime_configuration: Dict = {},
+        runtime_configuration: Dict = None,
         should_poll: bool = False,
     ) -> None:
         """
         For internal use by the pyintelowl CLI.
         """
+        if not runtime_configuration:
+            runtime_configuration = {}
         # CLI sanity checks
         if analyzers_list and run_all:
-            self.logger.warn(
+            self.logger.warning(
                 """
                 Can't use -al and -aa options together. See usage with -h.
                 """
             )
             return
         if not (analyzers_list or run_all):
-            self.logger.warn(
+            self.logger.warning(
                 """
                 Either one of -al, -aa must be specified. See usage with -h.
                 """,
@@ -505,6 +559,7 @@ class IntelOwl:
                 force_privacy=force_privacy,
                 private_job=private_job,
                 disable_external_analyzers=disable_external_analyzers,
+                tags=tags_list,
                 run_all_available_analyzers=run_all,
                 runtime_configuration=runtime_configuration,
             )
@@ -517,6 +572,7 @@ class IntelOwl:
                 force_privacy=force_privacy,
                 private_job=private_job,
                 disable_external_analyzers=disable_external_analyzers,
+                tags=tags_list,
                 run_all_available_analyzers=run_all,
                 runtime_configuration=runtime_configuration,
             )
@@ -536,8 +592,7 @@ class IntelOwl:
                 """
             )
 
-    @staticmethod
-    def _get_observable_classification(value: str) -> str:
+    def _get_observable_classification(self, value: str) -> str:
         """Returns observable classification for the given value.\n
         Only following types are supported:
         ip, domain, url, hash (md5, sha1, sha256)
@@ -571,7 +626,8 @@ class IntelOwl:
             ):
                 classification = "hash"
             else:
-                raise IntelOwlClientException(
+                classification = "general"
+                self.logger.warning(
                     f"{value} is neither a domain nor a URL nor a IP not a hash"
                 )
         else:

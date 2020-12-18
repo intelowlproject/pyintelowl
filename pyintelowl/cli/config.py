@@ -63,4 +63,4 @@ def config_set(ctx: ClickContext, api_key, instance_url, certificate):
         netrc["pyintelowl"]["login"] = certificate
     # finally save
     netrc.save()
-    ctx.obj.logger.info("Succesfully saved config variables!")
+    ctx.obj.logger.info("Successfully saved config variables!")
