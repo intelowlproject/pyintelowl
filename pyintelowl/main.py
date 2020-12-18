@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 import click
-from pyintelowl import IntelOwl
-from pyintelowl.cli import groups, cmds
-from pyintelowl.cli._utils import (
+from .pyintelowl import IntelOwl
+from .cli import groups, cmds
+from .cli._utils import (
     get_logger,
     ClickContext,
     get_netrc_obj,

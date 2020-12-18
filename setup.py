@@ -4,8 +4,9 @@ Robust Python SDK and CLI for interacting with IntelOwl's API.
 ## Docs & Example Usage: https://github.com/intelowlproject/pyintelowl
 """
 
+import os
 import pathlib
-from setuptools import setup
+from setuptools import setup, find_packages
 
 # The directory containing this file
 HERE = pathlib.Path(__file__).parent
@@ -13,7 +14,8 @@ HERE = pathlib.Path(__file__).parent
 # The text of the README file
 README = (HERE / "README.md").read_text()
 
-VERSION = (HERE / "version.txt").read_text()
+with open(os.path.join("pyintelowl", "version.py"), "r") as f:
+    exec(f.read())
 
 GITHUB_URL = "https://github.com/intelowlproject/pyintelowl"
 
@@ -30,7 +32,6 @@ requirements_test = ["black==20.8b1", "flake8==3.7.9", "pre-commit==2.9.2"]
 # This call to setup() does all the work
 setup(
     name="pyintelowl",
-    version=VERSION,
     description="Robust Python SDK and CLI for IntelOwl's API",
     long_description=README,
     long_description_content_type="text/markdown",
@@ -55,7 +56,7 @@ setup(
         "Programming Language :: Python :: 3.9",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
-    packages=["pyintelowl"],
+    packages=find_packages(),
     python_requires=">=3.6",
     include_package_data=True,
     install_requires=requirements,
@@ -77,6 +78,6 @@ setup(
     # pip install --editable .
     entry_points="""
         [console_scripts]
-        pyintelowl=cli:cli
+        pyintelowl=pyintelowl.main:cli
     """,
 )
