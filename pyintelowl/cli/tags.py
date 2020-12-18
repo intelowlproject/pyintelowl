@@ -23,10 +23,46 @@ def ls(ctx: ClickContext, as_json: bool):
     ctx.obj.logger.info("Requesting list of tags..")
     try:
         ans = ctx.obj.get_all_tags()
+        ans.sort(key=lambda tag: tag["id"])
         if as_json:
             rprint(json.dumps(ans, indent=4))
         else:
             _print_tags_table(ctx.obj.logger, ans)
+    except IntelOwlClientException as e:
+        ctx.obj.logger.fatal(str(e))
+
+
+@tags.command(help="Create new Tag")
+@click.argument("label", type=str)
+@click.argument("color", type=str)
+@add_options(json_flag_option)
+@click.pass_context
+def new(ctx: ClickContext, as_json: bool, color: str, label: str):
+    ctx.obj.logger.info("Adding new Tag..")
+    try:
+        ans = ctx.obj.create_tag(label, color)
+        if as_json:
+            rprint(json.dumps(ans, indent=4))
+        else:
+            _print_tags_table(ctx.obj.logger, [ans])
+    except IntelOwlClientException as e:
+        ctx.obj.logger.fatal(str(e))
+
+
+@tags.command(help="Edit existing Tag attributes")
+@click.argument("tag_id", type=int)
+@click.argument("label", type=str)
+@click.argument("color", type=str)
+@add_options(json_flag_option)
+@click.pass_context
+def edit(ctx: ClickContext, as_json: bool, color: str, label: str, tag_id: int):
+    ctx.obj.logger.info("Updating new Tag..")
+    try:
+        ans = ctx.obj.edit_tag(tag_id, label, color)
+        if as_json:
+            rprint(json.dumps(ans, indent=4))
+        else:
+            _print_tags_table(ctx.obj.logger, [ans])
     except IntelOwlClientException as e:
         ctx.obj.logger.fatal(str(e))
 
@@ -42,8 +78,7 @@ def view(ctx: ClickContext, tag_id: int, as_json: bool):
         if as_json:
             rprint(json.dumps(ans, indent=4))
         else:
-            ans = [ans]
-            _print_tags_table(ctx.obj.logger, ans)
+            _print_tags_table(ctx.obj.logger, [ans])
     except IntelOwlClientException as e:
         print(e.response.status_code)
         ctx.obj.logger.fatal(str(e))

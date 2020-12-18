@@ -297,6 +297,45 @@ class IntelOwl:
         response.raise_for_status()
         return answer
 
+    def create_tag(self, label: str, color: str):
+        """Creates new tag by sending a POST Request
+        Endpoint: ``/api/tags``
+
+        Args:
+            label ([str]): [Label of the tag to be created]
+            color ([str]): [Color of the tag to be created]
+        """
+        try:
+            url = self.instance + "/api/tags"
+            data = {"label": label, "color": color}
+            response = self.session.post(url, data=data)
+            self.logger.debug(msg=(response.url, response.status_code))
+            response.raise_for_status()
+            answer = response.json()
+        except Exception as e:
+            raise IntelOwlClientException(e)
+        return answer
+
+    def edit_tag(self, tag_id: Union[int, str], label: str, color: str):
+        """Edits existing tag by sending PUT request
+        Endpoint: ``api/tags``
+
+        Args:
+            id ([int]): [Id of the existing tag]
+            label ([str]): [Label of the tag to be created]
+            color ([str]): [Color of the tag to be created]
+        """
+        try:
+            url = self.instance + "/api/tags/" + str(tag_id)
+            data = {"label": label, "color": color}
+            response = self.session.put(url, data=data)
+            self.logger.debug(response.url)
+            response.raise_for_status()
+            answer = response.json()
+        except Exception as e:
+            raise IntelOwlClientException(e)
+        return answer
+
     def ask_analysis_result(self, job_id):
         """
         will be deprecated soon. Use `get_job_by_id` function instead.\n
