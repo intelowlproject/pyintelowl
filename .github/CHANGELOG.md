@@ -1,5 +1,13 @@
 # Changelog
 
+## 3.0.1 (https://github.com/intelowlproject/pyintelowl/releases/tag/3.0.1)
+This release was created mainly to solve a problem with the installation of the pip package.
+
+Other changes:
+* added support for adding tags when requesting a new job
+* added support for creating/editing tags
+* added support for "generic" classification of observables
+
 ## 3.0.0 (https://github.com/intelowlproject/pyintelowl/releases/tag/3.0.0)
 
 *Note: Incompatible with previous versions*
