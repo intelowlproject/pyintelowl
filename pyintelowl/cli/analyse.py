@@ -103,6 +103,8 @@ def observable(
 ):
     if not run_all:
         analyzers_list = analyzers_list.split(",")
+    else:
+        analyzers_list = []
     if tags_list:
         tags_list = list(map(int, tags_list.split(",")))
     else:
@@ -148,6 +150,8 @@ def file(
 ):
     if not run_all:
         analyzers_list = analyzers_list.split(",")
+    else:
+        analyzers_list = []
     if tags_list:
         tags_list = list(map(int, tags_list.split(",")))
     else:
