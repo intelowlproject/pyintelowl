@@ -8,7 +8,7 @@ __analyse_options = [
         "-al",
         "--analyzers-list",
         type=str,
-        default=(),
+        default="",
         help="""
     Comma separated list of analyzer names to invoke. Should not be used with
     --run-all-available-analyzers
@@ -18,7 +18,7 @@ __analyse_options = [
         "-tl",
         "--tags-list",
         type=str,
-        default=(),
+        default="",
         help="Comma separated list of tag indices for respective job.",
     ),
     click.option(
@@ -103,7 +103,10 @@ def observable(
 ):
     if not run_all:
         analyzers_list = analyzers_list.split(",")
-    tags_list = list(map(int, tags_list.split(",")))
+    if tags_list:
+        tags_list = list(map(int, tags_list.split(",")))
+    else:
+        tags_list = []
     if runtime_config:
         runtime_config = get_json_data(runtime_config)
     else:
@@ -145,7 +148,10 @@ def file(
 ):
     if not run_all:
         analyzers_list = analyzers_list.split(",")
-    tags_list = list(map(int, tags_list.split(",")))
+    if tags_list:
+        tags_list = list(map(int, tags_list.split(",")))
+    else:
+        tags_list = []
     if runtime_config:
         runtime_config = get_json_data(runtime_config)
     else:
