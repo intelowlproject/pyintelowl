@@ -2,8 +2,6 @@ import click
 import logging
 import csv
 import json
-import pathlib
-from tinynetrc import Netrc
 from rich.emoji import Emoji
 from rich.text import Text
 from rich.syntax import Syntax
@@ -69,14 +67,6 @@ def add_options(options):
         return func
 
     return _add_options
-
-
-def get_netrc_obj():
-    filepath = pathlib.Path().home().joinpath(".netrc")
-    filepath.touch(exist_ok=True)
-    netrc = Netrc(str(filepath))
-    host = netrc["pyintelowl"]
-    return netrc, host
 
 
 def get_tags_str(tags):
