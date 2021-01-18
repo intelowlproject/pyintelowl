@@ -1,7 +1,8 @@
 import click
+import click_creds
 from rich import print as rprint
 
-from ..cli._utils import get_netrc_obj, ClickContext
+from ..cli._utils import ClickContext
 
 
 @click.group("config")
@@ -13,18 +14,12 @@ def config():
 
 
 @config.command("get")
-def config_get():
+@click_creds.pass_netrcstore_obj
+def config_get(netrc: click_creds.NetrcStore):
     """
     Pretty Print config variables
     """
-    _, host = get_netrc_obj()
-    rprint(
-        {
-            "api_key": host["password"],
-            "instance_url": host["account"],
-            "certificate": host["login"],
-        }
-    )
+    rprint(netrc.host_with_mapping)
 
 
 @config.command("set")
@@ -54,13 +49,14 @@ def config_set(ctx: ClickContext, api_key, instance_url, certificate):
     """
     Set/Edit config variables
     """
-    netrc, _ = get_netrc_obj()
+    netrc: click_creds.NetrcStore = click_creds.get_netrc_object_from_ctx(ctx)
+    new_host = netrc.host.copy()
     if api_key:
-        netrc["pyintelowl"]["password"] = api_key
+        new_host["password"] = api_key
     if instance_url:
-        netrc["pyintelowl"]["account"] = instance_url
+        new_host["account"] = instance_url
     if certificate:
-        netrc["pyintelowl"]["login"] = certificate
+        new_host["login"] = certificate
     # finally save
-    netrc.save()
+    netrc.save(new_host)
     ctx.obj.logger.info("Successfully saved config variables!")
