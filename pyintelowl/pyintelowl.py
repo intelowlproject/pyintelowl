@@ -71,7 +71,6 @@ class IntelOwl:
         Returns:
             Dict: JSON body
         """
-        answer = None
         try:
             params = {"md5": md5, "analyzers_needed": analyzers_needed}
             if run_all_available_analyzers:
@@ -109,7 +108,7 @@ class IntelOwl:
         disable_external_analyzers: bool = False,
         run_all_available_analyzers: bool = False,
         runtime_configuration: Dict = None,
-        tags: List[int] = [],
+        tags: List[int] = None,
     ) -> Dict:
         """Send analysis request for a file.\n
         Endpoint: ``/api/send_analysis_request``
@@ -140,8 +139,9 @@ class IntelOwl:
         Returns:
             Dict: JSON body
         """
-        answer = None
         try:
+            if not tags:
+                tags = []
             if not runtime_configuration:
                 runtime_configuration = {}
             data = {
@@ -172,7 +172,7 @@ class IntelOwl:
         disable_external_analyzers: bool = False,
         run_all_available_analyzers: bool = False,
         runtime_configuration: Dict = None,
-        tags: List[int] = [],
+        tags: List[int] = None,
     ) -> Dict:
         """Send analysis request for an observable.\n
         Endpoint: ``/api/send_analysis_request``
@@ -201,8 +201,9 @@ class IntelOwl:
         Returns:
             Dict: JSON body
         """
-        answer = None
         try:
+            if not tags:
+                tags = []
             if not runtime_configuration:
                 runtime_configuration = {}
             data = {
@@ -341,7 +342,6 @@ class IntelOwl:
         will be deprecated soon. Use `get_job_by_id` function instead.\n
         Endpoint: ``/api/ask_analysis_result``
         """
-        answer = None
         try:
             params = {"job_id": job_id}
             url = self.instance + "/api/ask_analysis_result"
@@ -358,7 +358,6 @@ class IntelOwl:
         Get current state of `analyzer_config.json` from the IntelOwl instance.\n
         Endpoint: ``/api/get_analyzer_configs``
         """
-        answer = None
         try:
             url = self.instance + "/api/get_analyzer_configs"
             response = self.session.get(url)
@@ -402,7 +401,6 @@ class IntelOwl:
         Returns:
             List[Dict[str, Any]]: List of jobs
         """
-        answer = None
         try:
             url = self.instance + "/api/jobs"
             response = self.session.get(url)
@@ -426,7 +424,6 @@ class IntelOwl:
         Returns:
             Dict[str, str]: Dict with 3 keys: `id`, `label` and `color`.
         """
-        answer = None
         try:
             url = self.instance + "/api/tags/"
             response = self.session.get(url + str(tag_id))
@@ -450,7 +447,6 @@ class IntelOwl:
         Returns:
             Dict[str, Any]: JSON body.
         """
-        answer = None
         try:
             url = self.instance + "/api/jobs/" + str(job_id)
             response = self.session.get(url)
