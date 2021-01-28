@@ -1,76 +1,64 @@
-import sys
-import logging
-from unittest import TestCase, mock
-from click.testing import CliRunner
-from requests import Session
+from .utils import MockResponse, BaseTest
 from pyintelowl.main import cli
-
-from .mock_utils import MockResponse
-
-
-logger = logging.getLogger()
-logger.level = logging.DEBUG
-stream_handler = logging.StreamHandler(sys.stdout)
-logger.addHandler(stream_handler)
+from unittest import mock
+from requests import Session
 
 
-class TestJobs(TestCase):
-    def setUp(self):
-        self.runner = CliRunner()
-
+class TestJobs(BaseTest):
     def test_job_help(self):
         result = self.runner.invoke(cli, ["jobs", "-h"])
         assert "Manage Jobs" in result.output
+        assert result.exception is None
 
-    @mock.patch.object(Session, "get")
-    def test_list_all_jobs(self, mock_get=None):
-        mock_get.return_value = MockResponse(
+    @mock.patch.object(
+        Session,
+        "get",
+        return_value=MockResponse(
             [],
             200,
             "/api/jobs",
-        )
+        ),
+    )
+    def test_list_all_jobs(self, mock_get=None):
         result = self.runner.invoke(cli, ["jobs", "ls"])
+        assert "Requesting list of jobs.." in self.caplog.text
         assert "List of Jobs" in result.output
+        assert result.exception is None
 
-    @mock.patch.object(Session, "get")
-    def test_view_one_job(self, mock_get=None):
-        mock_get.return_value = MockResponse(
+    @mock.patch.object(
+        Session,
+        "get",
+        return_value=MockResponse(
             {
                 "id": 1,
                 "tags": [],
-                "source": "root",
-                "is_sample": True,
-                "md5": "88e6168765e5bc7caf741743d00e825d",
-                "observable_name": "wifiNetworkId=e7:9b:C3:AC:59:6B",
-                "observable_classification": "generic",
-                "file_name": "",
-                "file_mimetype": "",
-                "status": "failed",
-                "analyzers_requested": ["WiGLE"],
-                "run_all_available_analyzers": False,
-                "analyzers_to_execute": ["WiGLE"],
+                "source": "test-user",
+                "md5": "test-md5-hash",
+                "observable_name": "test-observable_name",
+                "observable_classification": "test",
+                "status": "reported_without_fails",
                 "analysis_reports": [
                     {
-                        "name": "WiGLE",
-                        "errors": ["too many values to unpack (expected 2)"],
+                        "name": "test-analyzer",
+                        "errors": [],
                         "report": {},
-                        "success": False,
-                        "process_time": 0.000652313232421875,
-                        "started_time": 1609169198.9222848,
-                        "started_time_str": "2020-12-28 15:26:38",
+                        "success": True,
                     }
                 ],
-                "received_request_time": "2020-12-28T15:26:38.746877Z",
-                "finished_analysis_time": "2020-12-28T15:26:38.937221Z",
-                "force_privacy": False,
-                "disable_external_analyzers": False,
-                "errors": [],
-                "runtime_configuration": {},
             },
             200,
             "/api/job/1",
-        )
+        ),
+    )
+    def test_view_one_job(self, mock_get=None):
         result = self.runner.invoke(cli, ["jobs", "view", "1"])
+        print("CAPLOG", self.caplog.text)
+        assert "Requesting Job" in self.caplog.text
         assert "Job attributes" in result.output
         assert "Analysis Data" in result.output
         assert "Job ID: 1" in result.output
+        assert result.exception is None
+
+    def test_poll(self):
+        # TODO
+        pass

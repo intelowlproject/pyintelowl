@@ -1,4 +1,7 @@
 import json
+from unittest import TestCase
+from click.testing import CliRunner
+import pytest
 
 
 # class for mocking responses
@@ -16,3 +19,13 @@ class MockResponse:
     @staticmethod
     def raise_for_status():
         pass
+
+
+class BaseTest(TestCase):
+    def setUp(self):
+        self.runner = CliRunner()
+
+    @pytest.fixture(autouse=True)
+    def inject_fixtures(self, caplog):
+        caplog.set_level("INFO")
+        self.caplog = caplog
