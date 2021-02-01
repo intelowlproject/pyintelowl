@@ -1,6 +1,7 @@
 import time
 from rich import box
 from rich.panel import Panel
+from rich.progress import track
 from rich.live import Live
 from rich.table import Table
 from rich.console import RenderGroup, Console
@@ -122,27 +123,35 @@ def _poll_for_job_cli(
     max_tries=5,
     interval=5,
 ):
-    console = Console()
     ans = None
-
-    with Live(refresh_per_second=interval) as live:
-        for i in range(max_tries):
+    console = Console()
+    with Live(console=console, transient=True, auto_refresh=False) as live:
+        for i in track(
+            range(max_tries),
+            description=f"Polling Job [underline blue]#{job_id}[/]..",
+            console=console,
+            update_period=interval,
+            transient=True,
+            auto_refresh=False,
+        ):
             ans = obj.get_job_by_id(job_id)
             status = ans["status"].lower()
-            if i != 0:
-                time.sleep(interval)
-
             if i == 0:
                 console.print(_render_job_attributes(ans))
 
-            live.update(
-                _render_job_analysis_table(ans["analysis_reports"]),
-            )
-            if status not in ["running", "pending"]:
+            if status in ["running", "pending"]:
+                live.update(
+                    _render_job_analysis_table(ans["analysis_reports"]),
+                    refresh=True,
+                )
+            else:
                 console.print(
                     "\nPolling stopped because job has finished with status: ",
                     get_status_text(status),
                     end="",
                 )
                 break
+            if i != 0:
+                time.sleep(interval)
+
     return ans
