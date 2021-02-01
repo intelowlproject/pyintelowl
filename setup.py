@@ -23,7 +23,7 @@ requirements = [
     "requests==2.25.0",
     "geocoder==1.38.1",
     "click==7.1.2",
-    "rich==9.2.0",
+    "rich==9.10.0",
     "click-creds==0.0.1",
 ]
 

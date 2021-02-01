@@ -1,8 +1,8 @@
 import time
 from rich import box
 from rich.panel import Panel
+from rich.live import Live
 from rich.table import Table
-from rich.progress import track
 from rich.console import RenderGroup, Console
 from ..cli._utils import (
     get_status_text,
@@ -124,29 +124,25 @@ def _poll_for_job_cli(
 ):
     console = Console()
     ans = None
-    for i in track(
-        range(max_tries),
-        description=f"Polling Job [underline blue]#{job_id}[/]..",
-        console=console,
-        transient=True,
-        update_period=interval,
-    ):
-        if i != 0:
-            # console.print(f"sleeping for {interval} seconds before next request..")
-            time.sleep(interval)
-        ans = obj.get_job_by_id(job_id)
-        status = ans["status"].lower()
-        if i == 0:
-            console.print(_render_job_attributes(ans))
-        console.print(
-            _render_job_analysis_table(ans["analysis_reports"], verbose=False),
-            justify="center",
-        )
-        if status not in ["running", "pending"]:
-            console.print(
-                "\nPolling stopped because job has finished with status: ",
-                get_status_text(status),
-                end="",
+
+    with Live(refresh_per_second=interval) as live:
+        for i in range(max_tries):
+            ans = obj.get_job_by_id(job_id)
+            status = ans["status"].lower()
+            if i != 0:
+                time.sleep(interval)
+
+            if i == 0:
+                console.print(_render_job_attributes(ans))
+
+            live.update(
+                _render_job_analysis_table(ans["analysis_reports"]),
             )
-            break
+            if status not in ["running", "pending"]:
+                console.print(
+                    "\nPolling stopped because job has finished with status: ",
+                    get_status_text(status),
+                    end="",
+                )
+                break
     return ans
