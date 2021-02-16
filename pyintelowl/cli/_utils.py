@@ -34,6 +34,7 @@ def get_status_text(status: str, as_text=True):
         "reported_without_fails": ("#73D216", str(Emoji("heavy_check_mark"))),
         "reported_with_fails": ("#CC0000", str(Emoji("warning"))),
         "failed": ("#CC0000", str(Emoji("cross_mark"))),
+        "killed": ("#CC0000", str(Emoji("cross_mark"))),
     }
     color, emoji = styles[status]
     s = f"[{color}]{status} {emoji}[/]"
@@ -45,6 +46,16 @@ def get_success_text(success):
     styles = {
         "True": ("#73D216", str(Emoji("heavy_check_mark"))),
         "False": ("#CC0000", str(Emoji("cross_mark"))),
+    }
+    color, emoji = styles[success]
+    return Text(emoji, style=color)
+
+
+def get_killed_status_text(success):
+    success = str(success)
+    styles = {
+        "True": ("#73D216", "killed " + str(Emoji("heavy_check_mark"))),
+        "False": ("#CC0000", "failed to kill " + str(Emoji("cross_mark"))),
     }
     color, emoji = styles[success]
     return Text(emoji, style=color)

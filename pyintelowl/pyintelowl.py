@@ -631,3 +631,30 @@ class IntelOwl:
             classification = "ip"
 
         return classification
+
+    def kill_running_job(self, job_id: int) -> bool:
+        """Send kill_running_job request.\n
+        Method: PATCH
+        Endpoint: ``/api/jobs/{job_id}/kill``
+
+        Args:
+            job_id (int):
+                id of job to kill
+
+        Raises:
+            IntelOwlClientException: on client/HTTP error
+
+        Returns:
+            Bool: killed or not
+        """
+
+        killed = False
+        try:
+            url = self.instance + f"/api/jobs/{job_id}/kill"
+            response = self.session.patch(url)
+            self.logger.debug(msg=(response.url, response.status_code))
+            killed = response.status_code == 200
+            response.raise_for_status()
+        except Exception as e:
+            raise IntelOwlClientException(e)
+        return killed

@@ -3,7 +3,12 @@ import json
 from rich import print as rprint
 from rich.console import Console
 from pyintelowl.exceptions import IntelOwlClientException
-from ..cli._utils import ClickContext, add_options, json_flag_option
+from ..cli._utils import (
+    ClickContext,
+    add_options,
+    json_flag_option,
+    get_killed_status_text,
+)
 from ..cli._jobs_utils import (
     _display_all_jobs,
     _display_single_job,
@@ -27,6 +32,7 @@ def jobs():
             "reported_without_fails",
             "reported_with_fails",
             "failed",
+            "killed",
         ],
         case_sensitive=False,
     ),
@@ -81,6 +87,20 @@ def view(ctx: ClickContext, job_id: int, categorize: bool, as_json: bool):
         else:
             _display_single_job(ans)
     except IntelOwlClientException as e:
+        ctx.obj.logger.fatal(str(e))
+
+
+@jobs.command(help="Kill a running job by job ID")
+@click.argument("job_id", type=int)
+@click.pass_context
+def kill(ctx: ClickContext, job_id: int):
+    ctx.obj.logger.info(f"Requesting kill for Job [underline blue]#{job_id}[/]..")
+    ans = False
+    try:
+        ans = ctx.obj.kill_running_job(job_id)
+        rprint(get_killed_status_text(ans))
+    except IntelOwlClientException as e:
+        rprint(get_killed_status_text(ans))
         ctx.obj.logger.fatal(str(e))
 
 
