@@ -685,3 +685,30 @@ class IntelOwl:
         except Exception as e:
             raise IntelOwlClientException(e)
         return deleted
+
+    def delete_tag_by_id(self, tag_id: int) -> bool:
+        """Send delete tag request.\n
+        Method: DELETE
+        Endpoint: ``/api/tags/{tag_id}``
+
+        Args:
+            tag_id (int):
+                id of tag to delete
+
+        Raises:
+            IntelOwlClientException: on client/HTTP error
+
+        Returns:
+            Bool: deleted or not
+        """
+
+        deleted = False
+        try:
+            url = self.instance + "/api/tags/" + str(tag_id)
+            response = self.session.delete(url)
+            self.logger.debug(msg=(response.url, response.status_code))
+            deleted = response.status_code == 204
+            response.raise_for_status()
+        except Exception as e:
+            raise IntelOwlClientException(e)
+        return deleted
