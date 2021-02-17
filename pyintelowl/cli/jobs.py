@@ -7,7 +7,7 @@ from ..cli._utils import (
     ClickContext,
     add_options,
     json_flag_option,
-    get_killed_status_text,
+    get_action_status_text,
 )
 from ..cli._jobs_utils import (
     _display_all_jobs,
@@ -98,9 +98,23 @@ def kill(ctx: ClickContext, job_id: int):
     ans = False
     try:
         ans = ctx.obj.kill_running_job(job_id)
-        rprint(get_killed_status_text(ans))
+        rprint(get_action_status_text(ans, "kill"))
     except IntelOwlClientException as e:
-        rprint(get_killed_status_text(ans))
+        rprint(get_action_status_text(ans, "kill"))
+        ctx.obj.logger.fatal(str(e))
+
+
+@jobs.command(help="Delete job by job ID")
+@click.argument("job_id", type=int)
+@click.pass_context
+def rm(ctx: ClickContext, job_id: int):
+    ctx.obj.logger.info(f"Requesting delete for Job [underline blue]#{job_id}[/]..")
+    ans = False
+    try:
+        ans = ctx.obj.delete_job_by_id(job_id)
+        rprint(get_action_status_text(ans, "delete"))
+    except IntelOwlClientException as e:
+        rprint(get_action_status_text(ans, "delete"))
         ctx.obj.logger.fatal(str(e))
 
 

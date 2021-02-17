@@ -658,3 +658,30 @@ class IntelOwl:
         except Exception as e:
             raise IntelOwlClientException(e)
         return killed
+
+    def delete_job_by_id(self, job_id: int) -> bool:
+        """Send delete job request.\n
+        Method: DELETE
+        Endpoint: ``/api/jobs/{job_id}``
+
+        Args:
+            job_id (int):
+                id of job to kill
+
+        Raises:
+            IntelOwlClientException: on client/HTTP error
+
+        Returns:
+            Bool: deleted or not
+        """
+
+        deleted = False
+        try:
+            url = self.instance + "/api/jobs/" + str(job_id)
+            response = self.session.delete(url)
+            self.logger.debug(msg=(response.url, response.status_code))
+            deleted = response.status_code == 204
+            response.raise_for_status()
+        except Exception as e:
+            raise IntelOwlClientException(e)
+        return deleted
