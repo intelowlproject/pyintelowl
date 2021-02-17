@@ -51,11 +51,12 @@ def get_success_text(success):
     return Text(emoji, style=color)
 
 
-def get_killed_status_text(success):
+def get_action_status_text(success, action):
     success = str(success)
+    actions = {"kill": "killed", "delete": "deleted"}
     styles = {
-        "True": ("#73D216", "killed " + str(Emoji("heavy_check_mark"))),
-        "False": ("#CC0000", "failed to kill " + str(Emoji("cross_mark"))),
+        "True": ("#73D216", f"{actions[action]} " + str(Emoji("heavy_check_mark"))),
+        "False": ("#CC0000", f"failed to {action} " + str(Emoji("cross_mark"))),
     }
     color, emoji = styles[success]
     return Text(emoji, style=color)
