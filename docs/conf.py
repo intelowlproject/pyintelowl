@@ -12,9 +12,9 @@
 #
 import os
 import sys
-from pyintelowl.version import __version__
 
-VERSION = f"v{__version__}"
+
+VERSION = "v3.1.0"
 GITHUB_URL = "https://github.com/intelowlproject/pyintelowl"
 
 sys.path.append(os.path.abspath("../"))
