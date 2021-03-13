@@ -337,22 +337,6 @@ class IntelOwl:
             raise IntelOwlClientException(e)
         return answer
 
-    def ask_analysis_result(self, job_id):
-        """
-        will be deprecated soon. Use `get_job_by_id` function instead.\n
-        Endpoint: ``/api/ask_analysis_result``
-        """
-        try:
-            params = {"job_id": job_id}
-            url = self.instance + "/api/ask_analysis_result"
-            response = self.session.get(url, params=params)
-            self.logger.debug(response.url)
-            response.raise_for_status()
-            answer = response.json()
-        except Exception as e:
-            raise IntelOwlClientException(e)
-        return answer
-
     def get_analyzer_configs(self):
         """
         Get current state of `analyzer_config.json` from the IntelOwl instance.\n
