@@ -13,7 +13,6 @@
 import os
 import sys
 
-
 VERSION = "v3.1.0"
 GITHUB_URL = "https://github.com/intelowlproject/pyintelowl"
 
