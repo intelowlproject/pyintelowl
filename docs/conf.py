@@ -12,8 +12,10 @@
 #
 import os
 import sys
-import pathlib
+from pyintelowl.version import __version__
 
+VERSION = f"v{__version__}"
+GITHUB_URL = "https://github.com/intelowlproject/pyintelowl"
 
 sys.path.append(os.path.abspath("../"))
 
@@ -24,10 +26,8 @@ project = "PyIntelOwl"
 copyright = "2020, Matteo Lodi"
 author = "Matteo Lodi"
 
-
-VERSION = (pathlib.Path("../version.txt")).read_text()
-
-GITHUB_URL = "https://github.com/intelowlproject/pyintelowl"
+# The full version, including alpha/beta/rc tags
+release = VERSION
 
 # -- General configuration ---------------------------------------------------
 
