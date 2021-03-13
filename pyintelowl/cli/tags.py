@@ -8,7 +8,12 @@ from rich import print as rprint
 
 from pyintelowl.exceptions import IntelOwlClientException
 
-from ..cli._utils import ClickContext, add_options, json_flag_option
+from ..cli._utils import (
+    ClickContext,
+    add_options,
+    json_flag_option,
+    get_action_status_text,
+)
 
 
 @click.group(help="Manage tags")
@@ -81,6 +86,20 @@ def view(ctx: ClickContext, tag_id: int, as_json: bool):
             _print_tags_table(ctx.obj.logger, [ans])
     except IntelOwlClientException as e:
         print(e.response.status_code)
+        ctx.obj.logger.fatal(str(e))
+
+
+@tags.command(help="Delete tag by tag ID")
+@click.argument("tag_id", type=int)
+@click.pass_context
+def rm(ctx: ClickContext, tag_id: int):
+    ctx.obj.logger.info(f"Requesting delete for tag [underline blue]#{tag_id}[/]..")
+    ans = False
+    try:
+        ans = ctx.obj.delete_tag_by_id(tag_id)
+        rprint(get_action_status_text(ans, "delete"))
+    except IntelOwlClientException as e:
+        rprint(get_action_status_text(ans, "delete"))
         ctx.obj.logger.fatal(str(e))
 
 

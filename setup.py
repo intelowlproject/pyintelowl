@@ -24,7 +24,7 @@ requirements = [
     "geocoder==1.38.1",
     "click==7.1.2",
     "rich==9.2.0",
-    "tinynetrc==1.3.0",
+    "click-creds==0.0.1",
 ]
 
 requirements_test = ["black==20.8b1", "flake8==3.7.9", "pre-commit==2.9.2"]

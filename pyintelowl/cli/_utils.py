@@ -2,8 +2,6 @@ import click
 import logging
 import csv
 import json
-import pathlib
-from tinynetrc import Netrc
 from rich.emoji import Emoji
 from rich.text import Text
 from rich.syntax import Syntax
@@ -36,6 +34,7 @@ def get_status_text(status: str, as_text=True):
         "reported_without_fails": ("#73D216", str(Emoji("heavy_check_mark"))),
         "reported_with_fails": ("#CC0000", str(Emoji("warning"))),
         "failed": ("#CC0000", str(Emoji("cross_mark"))),
+        "killed": ("#CC0000", str(Emoji("cross_mark"))),
     }
     color, emoji = styles[status]
     s = f"[{color}]{status} {emoji}[/]"
@@ -47,6 +46,17 @@ def get_success_text(success):
     styles = {
         "True": ("#73D216", str(Emoji("heavy_check_mark"))),
         "False": ("#CC0000", str(Emoji("cross_mark"))),
+    }
+    color, emoji = styles[success]
+    return Text(emoji, style=color)
+
+
+def get_action_status_text(success, action):
+    success = str(success)
+    actions = {"kill": "killed", "delete": "deleted"}
+    styles = {
+        "True": ("#73D216", f"{actions[action]} " + str(Emoji("heavy_check_mark"))),
+        "False": ("#CC0000", f"failed to {action} " + str(Emoji("cross_mark"))),
     }
     color, emoji = styles[success]
     return Text(emoji, style=color)
@@ -69,14 +79,6 @@ def add_options(options):
         return func
 
     return _add_options
-
-
-def get_netrc_obj():
-    filepath = pathlib.Path().home().joinpath(".netrc")
-    filepath.touch(exist_ok=True)
-    netrc = Netrc(str(filepath))
-    host = netrc["pyintelowl"]
-    return netrc, host
 
 
 def get_tags_str(tags):

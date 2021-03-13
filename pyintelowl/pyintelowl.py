@@ -71,7 +71,6 @@ class IntelOwl:
         Returns:
             Dict: JSON body
         """
-        answer = None
         try:
             params = {"md5": md5, "analyzers_needed": analyzers_needed}
             if run_all_available_analyzers:
@@ -109,7 +108,7 @@ class IntelOwl:
         disable_external_analyzers: bool = False,
         run_all_available_analyzers: bool = False,
         runtime_configuration: Dict = None,
-        tags: List[int] = [],
+        tags: List[int] = None,
     ) -> Dict:
         """Send analysis request for a file.\n
         Endpoint: ``/api/send_analysis_request``
@@ -140,8 +139,9 @@ class IntelOwl:
         Returns:
             Dict: JSON body
         """
-        answer = None
         try:
+            if not tags:
+                tags = []
             if not runtime_configuration:
                 runtime_configuration = {}
             data = {
@@ -172,7 +172,7 @@ class IntelOwl:
         disable_external_analyzers: bool = False,
         run_all_available_analyzers: bool = False,
         runtime_configuration: Dict = None,
-        tags: List[int] = [],
+        tags: List[int] = None,
     ) -> Dict:
         """Send analysis request for an observable.\n
         Endpoint: ``/api/send_analysis_request``
@@ -201,8 +201,9 @@ class IntelOwl:
         Returns:
             Dict: JSON body
         """
-        answer = None
         try:
+            if not tags:
+                tags = []
             if not runtime_configuration:
                 runtime_configuration = {}
             data = {
@@ -341,7 +342,6 @@ class IntelOwl:
         will be deprecated soon. Use `get_job_by_id` function instead.\n
         Endpoint: ``/api/ask_analysis_result``
         """
-        answer = None
         try:
             params = {"job_id": job_id}
             url = self.instance + "/api/ask_analysis_result"
@@ -358,7 +358,6 @@ class IntelOwl:
         Get current state of `analyzer_config.json` from the IntelOwl instance.\n
         Endpoint: ``/api/get_analyzer_configs``
         """
-        answer = None
         try:
             url = self.instance + "/api/get_analyzer_configs"
             response = self.session.get(url)
@@ -402,7 +401,6 @@ class IntelOwl:
         Returns:
             List[Dict[str, Any]]: List of jobs
         """
-        answer = None
         try:
             url = self.instance + "/api/jobs"
             response = self.session.get(url)
@@ -426,7 +424,6 @@ class IntelOwl:
         Returns:
             Dict[str, str]: Dict with 3 keys: `id`, `label` and `color`.
         """
-        answer = None
         try:
             url = self.instance + "/api/tags/"
             response = self.session.get(url + str(tag_id))
@@ -450,7 +447,6 @@ class IntelOwl:
         Returns:
             Dict[str, Any]: JSON body.
         """
-        answer = None
         try:
             url = self.instance + "/api/jobs/" + str(job_id)
             response = self.session.get(url)
@@ -635,3 +631,84 @@ class IntelOwl:
             classification = "ip"
 
         return classification
+
+    def kill_running_job(self, job_id: int) -> bool:
+        """Send kill_running_job request.\n
+        Method: PATCH
+        Endpoint: ``/api/jobs/{job_id}/kill``
+
+        Args:
+            job_id (int):
+                id of job to kill
+
+        Raises:
+            IntelOwlClientException: on client/HTTP error
+
+        Returns:
+            Bool: killed or not
+        """
+
+        killed = False
+        try:
+            url = self.instance + f"/api/jobs/{job_id}/kill"
+            response = self.session.patch(url)
+            self.logger.debug(msg=(response.url, response.status_code))
+            killed = response.status_code == 200
+            response.raise_for_status()
+        except Exception as e:
+            raise IntelOwlClientException(e)
+        return killed
+
+    def delete_job_by_id(self, job_id: int) -> bool:
+        """Send delete job request.\n
+        Method: DELETE
+        Endpoint: ``/api/jobs/{job_id}``
+
+        Args:
+            job_id (int):
+                id of job to kill
+
+        Raises:
+            IntelOwlClientException: on client/HTTP error
+
+        Returns:
+            Bool: deleted or not
+        """
+
+        deleted = False
+        try:
+            url = self.instance + "/api/jobs/" + str(job_id)
+            response = self.session.delete(url)
+            self.logger.debug(msg=(response.url, response.status_code))
+            deleted = response.status_code == 204
+            response.raise_for_status()
+        except Exception as e:
+            raise IntelOwlClientException(e)
+        return deleted
+
+    def delete_tag_by_id(self, tag_id: int) -> bool:
+        """Send delete tag request.\n
+        Method: DELETE
+        Endpoint: ``/api/tags/{tag_id}``
+
+        Args:
+            tag_id (int):
+                id of tag to delete
+
+        Raises:
+            IntelOwlClientException: on client/HTTP error
+
+        Returns:
+            Bool: deleted or not
+        """
+
+        deleted = False
+        try:
+            url = self.instance + "/api/tags/" + str(tag_id)
+            response = self.session.delete(url)
+            self.logger.debug(msg=(response.url, response.status_code))
+            deleted = response.status_code == 204
+            response.raise_for_status()
+        except Exception as e:
+            raise IntelOwlClientException(e)
+        return deleted
