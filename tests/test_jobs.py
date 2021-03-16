@@ -1,7 +1,7 @@
-from .utils import MockResponse, BaseTest
+from .utils import BaseTest
 from pyintelowl.main import cli
-from unittest import mock
-from requests import Session
+from .utils import mock_connections
+from .mocked_requests import mock_job_request
 
 
 class TestJobs(BaseTest):
@@ -10,54 +10,21 @@ class TestJobs(BaseTest):
         assert "Manage Jobs" in result.output
         assert result.exception is None
 
-    @mock.patch.object(
-        Session,
-        "get",
-        return_value=MockResponse(
-            [],
-            200,
-            "/api/jobs",
-        ),
-    )
+    @mock_connections(mock_job_request("VIEW_ALL_JOBS"))
     def test_list_all_jobs(self, mock_get=None):
         result = self.runner.invoke(cli, ["jobs", "ls"])
-        assert "Requesting list of jobs.." in self.caplog.text
-        assert "List of Jobs" in result.output
-        assert result.exception is None
+        self.assertIn("Requesting list of jobs..", self.caplog.text)
+        self.assertIs(result.exception, None)
+        self.assertIn("List of Jobs", result.output)
 
-    @mock.patch.object(
-        Session,
-        "get",
-        return_value=MockResponse(
-            {
-                "id": 1,
-                "tags": [],
-                "source": "test-user",
-                "md5": "test-md5-hash",
-                "observable_name": "test-observable_name",
-                "observable_classification": "test",
-                "status": "reported_without_fails",
-                "analysis_reports": [
-                    {
-                        "name": "test-analyzer",
-                        "errors": [],
-                        "report": {},
-                        "success": True,
-                    }
-                ],
-            },
-            200,
-            "/api/job/1",
-        ),
-    )
+    @mock_connections(mock_job_request("VIEW_ONE_JOB"))
     def test_view_one_job(self, mock_get=None):
         result = self.runner.invoke(cli, ["jobs", "view", "1"])
-        print("CAPLOG", self.caplog.text)
-        assert "Requesting Job" in self.caplog.text
-        assert "Job attributes" in result.output
-        assert "Analysis Data" in result.output
-        assert "Job ID: 1" in result.output
-        assert result.exception is None
+        self.assertIn("Requesting Job", self.caplog.text)
+        self.assertIs(result.exception, None, "Exception Caught!!!")
+        self.assertIn("Job attributes", result.output)
+        self.assertIn("Analysis Data", result.output)
+        self.assertIn("Job ID: 1", result.output)
 
     def test_poll(self):
         # TODO

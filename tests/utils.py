@@ -1,7 +1,8 @@
 import json
+import pytest
 from unittest import TestCase
 from click.testing import CliRunner
-import pytest
+from tests import MOCK_CONNECTIONS
 
 
 # class for mocking responses
@@ -29,3 +30,7 @@ class BaseTest(TestCase):
     def inject_fixtures(self, caplog):
         caplog.set_level("INFO")
         self.caplog = caplog
+
+
+def mock_connections(decorator):
+    return decorator if MOCK_CONNECTIONS else lambda x: x
