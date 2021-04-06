@@ -1,5 +1,12 @@
 # Changelog
 
+## 3.1.1 (https://github.com/intelowlproject/pyintelowl/releases/tag/3.1.1)
+This is a very little release to fix a problem in the logs for the ones that use pyintelowl as a library.
+
+## 3.1.0 (https://github.com/intelowlproject/pyintelowl/releases/tag/3.1.0)
+With this, pyintelowl now supports all API endpoints of IntelOwl. Super!!
+More info at: https://github.com/intelowlproject/IntelOwl/releases/tag/v2.2.0
+
 ## 3.0.1 (https://github.com/intelowlproject/pyintelowl/releases/tag/3.0.1)
 This release was created mainly to solve a problem with the installation of the pip package.
 
