@@ -26,3 +26,6 @@ jobs:
     - name: Lint with flake8 (PEP8 enforcer + linter)
       run: |
         flake8 . --config=.flake8 --show-source
+
+    - name: Tox
+      run: tox

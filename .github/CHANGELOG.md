@@ -1,7 +1,9 @@
 # Changelog
 
 ## 3.1.1 (https://github.com/intelowlproject/pyintelowl/releases/tag/3.1.1)
-This is a very little release to fix a problem in the logs for the ones that use pyintelowl as a library.
+* Added basic testing suite
+* Removed deprecated ask_analysis_result function
+* Little fix to a problem in the logs for the ones that use pyintelowl as a library
 
 ## 3.1.0 (https://github.com/intelowlproject/pyintelowl/releases/tag/3.1.0)
 With this, pyintelowl now supports all API endpoints of IntelOwl. Super!!

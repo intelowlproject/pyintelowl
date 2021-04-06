@@ -27,7 +27,12 @@ requirements = [
     "click-creds==0.0.1",
 ]
 
-requirements_test = ["black==20.8b1", "flake8==3.7.9", "pre-commit==2.9.2"]
+requirements_test = [
+    "black==20.8b1",
+    "flake8==3.7.9",
+    "pre-commit==2.9.2",
+    "tox==3.23.0",
+]
 
 # This call to setup() does all the work
 setup(
