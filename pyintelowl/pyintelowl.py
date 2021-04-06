@@ -19,10 +19,12 @@ class IntelOwl:
         instance_url: str,
         certificate: str = None,
         logger: logging.Logger = None,
+        cli: bool = False,
     ):
         self.token = token
         self.instance = instance_url
         self.certificate = certificate
+        self.cli = cli
         if logger:
             self.logger = logger
         else:
@@ -281,20 +283,29 @@ class IntelOwl:
         )
         answer = response.json()
         if answer.get("error", "") == "814":
-            err = """
-            Request failed..
-            Error: [i yellow]After the filter, no analyzers can be run.
-                Try with other analyzers.[/]
-            """
+            if self.cli:
+                err = """
+                    Request failed..
+                    Error: [i yellow]After the filter, no analyzers can be run.
+                        Try with other analyzers.[/]
+                    """
+            else:
+                err = "Request failed. After the filter, no analyzers can be run"
             raise IntelOwlClientException(err)
         warnings = answer.get("warnings", [])
-        self.logger.info(
-            f"""New Job running..
-            ID: {answer['job_id']} | Status: [u blue]{answer['status']}[/].
-            Got {len(warnings)} warnings:
-            [i yellow]{warnings if warnings else None}[/]
-        """
-        )
+        if self.cli:
+            info_log = f"""New Job running..
+                ID: {answer['job_id']} | Status: [u blue]{answer['status']}[/].
+                Got {len(warnings)} warnings:
+                [i yellow]{warnings if warnings else None}[/]
+            """
+        else:
+            info_log = f"""New Job running..
+                ID: {answer['job_id']} | Status: {answer['status']}.
+                Got {len(warnings)} warnings:
+                {warnings if warnings else None}
+            """
+        self.logger.info(info_log)
         response.raise_for_status()
         return answer
 
