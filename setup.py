@@ -32,7 +32,7 @@ requirements_test = [
     "flake8==3.9.1",
     "pre-commit==2.12.1",
     "tox==3.23.0",
-    "tox-gh-actions==2.5.0"
+    "tox-gh-actions==2.5.0",
 ]
 
 # This call to setup() does all the work
