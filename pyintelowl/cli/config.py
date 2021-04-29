@@ -32,7 +32,7 @@ def config_get(netrc: click_creds.NetrcStore):
 @click.option(
     "-u",
     "--instance-url",
-    required=True,
+    required=False,
     default="http://localhost:80",
     show_default=True,
     help="IntelOwl's instance URL",
@@ -42,6 +42,8 @@ def config_get(netrc: click_creds.NetrcStore):
     "--certificate",
     required=False,
     type=click.Path(exists=True),
+    default=False,
+    show_default=True,
     help="Path to SSL client certificate file (.pem)",
 )
 @click.pass_context
