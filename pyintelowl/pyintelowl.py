@@ -37,7 +37,7 @@ class IntelOwl:
         """
         if not hasattr(self, "_session"):
             session = requests.Session()
-            if self.certificate:
+            if self.certificate is not None:
                 session.verify = self.certificate
             session.headers.update(
                 {

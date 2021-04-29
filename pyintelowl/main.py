@@ -26,6 +26,8 @@ def cli(ctx: ClickContext, debug: bool):
         click.echo("Hint: Use `config set` to set config variables!")
     else:
         logger = get_logger("DEBUG" if debug else "INFO")
+        if cert == "False":
+            cert = False
         ctx.obj = IntelOwl(api_key, url, cert, logger, cli=True)
 
 
