@@ -4,14 +4,39 @@ on:
   pull_request:
     branches: [ master, develop ]
 jobs:
-  build:
-
+  linters:
     runs-on: ubuntu-latest
+
+    steps:
+
+    - uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+    - name: Install Dependencies
+      run: |
+        sudo apt-get update
+        pip3 install --upgrade pip
+        pip3 install -e .[test]
+    - name: Black formatter
+      run: |
+        black . --check --diff
+    - name: Lint with flake8 (PEP8 enforcer + linter)
+      run: |
+        flake8 . --config=.flake8 --show-source
+
+
+  tox:
+    runs-on: ubuntu-latest
+
     strategy:
       matrix:
         python-version: [ 3.6, 3.7, 3.8, 3.9 ]
 
     steps:
+
     - uses: actions/checkout@v2
 
     - name: Set up Python ${{ matrix.python-version }}
@@ -24,14 +49,6 @@ jobs:
         sudo apt-get update
         pip3 install --upgrade pip
         pip3 install -e .[test]
-
-    - name: Black formatter
-      run: |
-        black . --check --diff
-
-    - name: Lint with flake8 (PEP8 enforcer + linter)
-      run: |
-        flake8 . --config=.flake8 --show-source
 
     - name: Tox
       run: tox
