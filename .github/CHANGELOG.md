@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.1.2 (https://github.com/intelowlproject/pyintelowl/releases/tag/3.1.2)
+* Little fixes and adjustments
+
 ## 3.1.1 (https://github.com/intelowlproject/pyintelowl/releases/tag/3.1.1)
 * Removed deprecated ask_analysis_result function
 * Little fix to a problem in the logs for the ones that use pyintelowl as a library
