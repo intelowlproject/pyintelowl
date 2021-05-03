@@ -42,8 +42,6 @@ def config_get(netrc: click_creds.NetrcStore):
     "--certificate",
     required=False,
     type=click.Path(exists=True),
-    default=False,
-    show_default=True,
     help="Path to SSL client certificate file (.pem)",
 )
 @click.pass_context
@@ -59,6 +57,8 @@ def config_set(ctx: ClickContext, api_key, instance_url, certificate):
         new_host["account"] = instance_url
     if certificate:
         new_host["login"] = certificate
+    else:
+        new_host["login"] = False
     # finally save
     netrc.save(new_host)
     ctx.obj.logger.info("Successfully saved config variables!")
