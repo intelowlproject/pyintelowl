@@ -614,6 +614,9 @@ class IntelOwl:
                 re.match("^[a-f\d]{32}$", value)
                 or re.match("^[a-f\d]{40}$", value)
                 or re.match("^[a-f\d]{64}$", value)
+                or re.match("^[A-F\d]{32}$", value)
+                or re.match("^[A-F\d]{40}$", value)
+                or re.match("^[A-F\d]{64}$", value)
             ):
                 classification = "hash"
             else:
