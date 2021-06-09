@@ -29,6 +29,8 @@ def cli(ctx: ClickContext, debug: bool):
         logger = get_logger("DEBUG" if debug else "INFO")
         if cert == "False":
             cert = False
+        if cert == "True":
+            cert = True
         ctx.obj = IntelOwl(api_key, url, cert, logger, cli=True)
 
 

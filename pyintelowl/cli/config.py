@@ -44,8 +44,16 @@ def config_get(netrc: click_creds.NetrcStore):
     type=click.Path(exists=True),
     help="Path to SSL client certificate file (.pem)",
 )
+@click.option(
+    "-v",
+    "--verify",
+    required=False,
+    default=True,
+    type=click.BOOL,
+    help="Boolean determining whether certificate validation is enforced",
+)
 @click.pass_context
-def config_set(ctx: ClickContext, api_key, instance_url, certificate):
+def config_set(ctx: ClickContext, api_key, instance_url, certificate, verify):
     """
     Set/Edit config variables
     """
@@ -57,7 +65,7 @@ def config_set(ctx: ClickContext, api_key, instance_url, certificate):
         new_host["account"] = instance_url
     if certificate:
         new_host["login"] = certificate
-    else:
+    if verify is False:
         new_host["login"] = False
     # finally save
     netrc.save(new_host)
