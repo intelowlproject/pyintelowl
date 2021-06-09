@@ -49,6 +49,7 @@ def config_get(netrc: click_creds.NetrcStore):
     "--verify",
     required=False,
     default=True,
+    show_default=True,
     type=click.BOOL,
     help="Boolean determining whether certificate validation is enforced",
 )
