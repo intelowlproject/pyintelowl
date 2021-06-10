@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.1.3 (https://github.com/intelowlproject/pyintelowl/releases/tag/3.1.3)
+* Fix to allow SSL verification without a specified PEM file
+
 ## 3.1.2 (https://github.com/intelowlproject/pyintelowl/releases/tag/3.1.2)
 * Little fixes and adjustments
 

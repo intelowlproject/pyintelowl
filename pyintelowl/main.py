@@ -24,12 +24,11 @@ def cli(ctx: ClickContext, debug: bool):
     api_key, url, cert = host["password"], host["account"], host["login"]
     if (not api_key or not url) and ctx.invoked_subcommand != "config":
         click.echo("Hint: Use `config set` to set config variables!")
-        exit()
     else:
         logger = get_logger("DEBUG" if debug else "INFO")
         if cert == "False":
             cert = False
-        if cert in ["None", "True"]:
+        elif cert in ["None", "True"]:
             cert = True
         ctx.obj = IntelOwl(api_key, url, cert, logger, cli=True)
 
