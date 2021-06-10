@@ -19,10 +19,12 @@ class IntelOwl:
         instance_url: str,
         certificate: str = None,
         logger: logging.Logger = None,
+        cli: bool = False,
     ):
         self.token = token
         self.instance = instance_url
         self.certificate = certificate
+        self.cli = cli
         if logger:
             self.logger = logger
         else:
@@ -35,12 +37,12 @@ class IntelOwl:
         """
         if not hasattr(self, "_session"):
             session = requests.Session()
-            if self.certificate:
+            if self.certificate is not True:
                 session.verify = self.certificate
             session.headers.update(
                 {
                     "Authorization": f"Token {self.token}",
-                    "User-Agent": "IntelOwlClient/3.0.1",
+                    "User-Agent": "IntelOwlClient/3.1.3",
                 }
             )
             self._session = session
@@ -281,20 +283,29 @@ class IntelOwl:
         )
         answer = response.json()
         if answer.get("error", "") == "814":
-            err = """
-            Request failed..
-            Error: [i yellow]After the filter, no analyzers can be run.
-                Try with other analyzers.[/]
-            """
+            if self.cli:
+                err = """
+                    Request failed..
+                    Error: [i yellow]After the filter, no analyzers can be run.
+                        Try with other analyzers.[/]
+                    """
+            else:
+                err = "Request failed. After the filter, no analyzers can be run"
             raise IntelOwlClientException(err)
         warnings = answer.get("warnings", [])
-        self.logger.info(
-            f"""New Job running..
-            ID: {answer['job_id']} | Status: [u blue]{answer['status']}[/].
-            Got {len(warnings)} warnings:
-            [i yellow]{warnings if warnings else None}[/]
-        """
-        )
+        if self.cli:
+            info_log = f"""New Job running..
+                ID: {answer['job_id']} | Status: [u blue]{answer['status']}[/].
+                Got {len(warnings)} warnings:
+                [i yellow]{warnings if warnings else None}[/]
+            """
+        else:
+            info_log = f"""New Job running..
+                ID: {answer['job_id']} | Status: {answer['status']}.
+                Got {len(warnings)} warnings:
+                {warnings if warnings else None}
+            """
+        self.logger.info(info_log)
         response.raise_for_status()
         return answer
 
@@ -330,22 +341,6 @@ class IntelOwl:
             url = self.instance + "/api/tags/" + str(tag_id)
             data = {"label": label, "color": color}
             response = self.session.put(url, data=data)
-            self.logger.debug(response.url)
-            response.raise_for_status()
-            answer = response.json()
-        except Exception as e:
-            raise IntelOwlClientException(e)
-        return answer
-
-    def ask_analysis_result(self, job_id):
-        """
-        will be deprecated soon. Use `get_job_by_id` function instead.\n
-        Endpoint: ``/api/ask_analysis_result``
-        """
-        try:
-            params = {"job_id": job_id}
-            url = self.instance + "/api/ask_analysis_result"
-            response = self.session.get(url, params=params)
             self.logger.debug(response.url)
             response.raise_for_status()
             answer = response.json()
@@ -619,6 +614,9 @@ class IntelOwl:
                 re.match("^[a-f\d]{32}$", value)
                 or re.match("^[a-f\d]{40}$", value)
                 or re.match("^[a-f\d]{64}$", value)
+                or re.match("^[A-F\d]{32}$", value)
+                or re.match("^[A-F\d]{40}$", value)
+                or re.match("^[A-F\d]{64}$", value)
             ):
                 classification = "hash"
             else:

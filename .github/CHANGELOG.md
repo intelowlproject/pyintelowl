@@ -1,5 +1,22 @@
 # Changelog
 
+## 3.1.3 (https://github.com/intelowlproject/pyintelowl/releases/tag/3.1.3)
+* Fix to allow SSL verification without a specified PEM file
+
+## 3.1.2 (https://github.com/intelowlproject/pyintelowl/releases/tag/3.1.2)
+* Little fixes and adjustments
+
+## 3.1.1 (https://github.com/intelowlproject/pyintelowl/releases/tag/3.1.1)
+* Removed deprecated ask_analysis_result function
+* Little fix to a problem in the logs for the ones that use pyintelowl as a library
+* Tweaked configuration setup, allowing No Certification Validation
+* Added dependabot config and updated dependencies
+* Added basic testing suite for CLI
+
+## 3.1.0 (https://github.com/intelowlproject/pyintelowl/releases/tag/3.1.0)
+With this, pyintelowl now supports all API endpoints of IntelOwl. Super!!
+More info at: https://github.com/intelowlproject/IntelOwl/releases/tag/v2.2.0
+
 ## 3.0.1 (https://github.com/intelowlproject/pyintelowl/releases/tag/3.0.1)
 This release was created mainly to solve a problem with the installation of the pip package.
 

@@ -22,11 +22,15 @@ from .cli._utils import (
 def cli(ctx: ClickContext, debug: bool):
     host = click_creds.get_netrc_object_from_ctx(ctx).host.copy()
     api_key, url, cert = host["password"], host["account"], host["login"]
-    if not api_key or not url:
+    if (not api_key or not url) and ctx.invoked_subcommand != "config":
         click.echo("Hint: Use `config set` to set config variables!")
     else:
         logger = get_logger("DEBUG" if debug else "INFO")
-        ctx.obj = IntelOwl(api_key, url, cert, logger)
+        if cert == "False":
+            cert = False
+        elif cert in ["None", "True"]:
+            cert = True
+        ctx.obj = IntelOwl(api_key, url, cert, logger, cli=True)
 
 
 # Compile all groups and commands

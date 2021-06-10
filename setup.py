@@ -20,14 +20,20 @@ with open(os.path.join("pyintelowl", "version.py"), "r") as f:
 GITHUB_URL = "https://github.com/intelowlproject/pyintelowl"
 
 requirements = [
-    "requests==2.25.0",
+    "requests==2.25.1",
     "geocoder==1.38.1",
     "click==7.1.2",
-    "rich==9.2.0",
+    "rich==9.13.0",
     "click-creds==0.0.1",
 ]
 
-requirements_test = ["black==20.8b1", "flake8==3.7.9", "pre-commit==2.9.2"]
+requirements_test = [
+    "black==20.8b1",
+    "flake8==3.9.1",
+    "pre-commit==2.12.1",
+    "tox==3.23.0",
+    "tox-gh-actions==2.5.0",
+]
 
 # This call to setup() does all the work
 setup(
@@ -49,8 +55,6 @@ setup(
         "Environment :: Web Environment",
         # Pick your license as you wish (should match "license" above)
         "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)",
-        "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
