@@ -24,6 +24,7 @@ def cli(ctx: ClickContext, debug: bool):
     api_key, url, cert = host["password"], host["account"], host["login"]
     if (not api_key or not url) and ctx.invoked_subcommand != "config":
         click.echo("Hint: Use `config set` to set config variables!")
+        exit()
     else:
         logger = get_logger("DEBUG" if debug else "INFO")
         if cert == "False":
