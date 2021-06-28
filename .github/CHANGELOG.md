@@ -1,5 +1,8 @@
 # Changelog
 
+## [3.1.4](https://github.com/intelowlproject/pyintelowl/releases/tag/3.1.4)
+* Fix `IntelOwl._get_observable_classification` not setting 'generic' classification properly.
+
 ## 3.1.3 (https://github.com/intelowlproject/pyintelowl/releases/tag/3.1.3)
 * Fix to allow SSL verification without a specified PEM file
 
