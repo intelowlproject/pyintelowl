@@ -586,7 +586,7 @@ class IntelOwl:
     def _get_observable_classification(self, value: str) -> str:
         """Returns observable classification for the given value.\n
         Only following types are supported:
-        ip, domain, url, hash (md5, sha1, sha256)
+        ip, domain, url, hash (md5, sha1, sha256), generic (if no match)
 
         Args:
             value (str):
@@ -597,7 +597,7 @@ class IntelOwl:
                 if value type is not recognized
 
         Returns:
-            str: one of `ip`, `url`, `domain` or `hash`.
+            str: one of `ip`, `url`, `domain`, `hash` or 'generic'.
         """
         try:
             ipaddress.ip_address(value)
@@ -620,9 +620,9 @@ class IntelOwl:
             ):
                 classification = "hash"
             else:
-                classification = "general"
+                classification = "generic"
                 self.logger.warning(
-                    f"{value} is neither a domain nor a URL nor a IP not a hash"
+                    "Couldn't detect observable classification, setting as 'generic'..."
                 )
         else:
             # its a simple IP
