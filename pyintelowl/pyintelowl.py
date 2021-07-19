@@ -113,7 +113,7 @@ class IntelOwl:
         tags: List[int] = None,
     ) -> Dict:
         """Send analysis request for a file.\n
-        Endpoint: ``/api/send_analysis_request``
+        Endpoint: ``/api/analyze_file``
 
         Args:
             analyzers_requested (List[str]):
@@ -177,7 +177,7 @@ class IntelOwl:
         tags: List[int] = None,
     ) -> Dict:
         """Send analysis request for an observable.\n
-        Endpoint: ``/api/send_analysis_request``
+        Endpoint: ``/api/analyze_observable``
 
         Args:
             analyzers_requested (List[str]):
@@ -271,7 +271,11 @@ class IntelOwl:
         """
         Internal use only.
         """
-        url = self.instance + "/api/send_analysis_request"
+        if files is None:
+            url = self.instance + "/api/analyze_observable"
+        else:
+            url = self.instance + "/api/analyze_file"
+
         response = self.session.post(url, data=data, files=files)
         self.logger.debug(
             msg={
