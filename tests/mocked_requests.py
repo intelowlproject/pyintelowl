@@ -17,12 +17,12 @@ def mock_job_request(job_request_type):
                     "observable_name": "test-observable_name",
                     "observable_classification": "test",
                     "status": "reported_without_fails",
-                    "analysis_reports": [
+                    "analyzer_reports": [
                         {
                             "name": "test-analyzer",
                             "errors": [],
                             "report": {},
-                            "success": True,
+                            "status": "SUCCESS",
                         }
                     ],
                 },
