@@ -21,7 +21,7 @@ def _display_single_job(data):
         attrs = _render_job_attributes(data)
         console.print(attrs)
         # construct job analysis table
-        table = _render_job_analysis_table(data["analysis_reports"], verbose=True)
+        table = _render_job_analysis_table(data["analyzer_reports"], verbose=True)
         console.print(table, justify="center")
 
 
@@ -43,7 +43,7 @@ def _render_job_analysis_table(rows, verbose=False):
     for el in rows:
         cols = [
             el["name"],
-            get_success_text((el["success"])),
+            get_success_text((el["status"])),
         ]
         if verbose:
             cols.append(get_json_syntax(el["report"]) if el["report"] else None)
@@ -139,7 +139,7 @@ def _poll_for_job_cli(
         if i == 0:
             console.print(_render_job_attributes(ans))
         console.print(
-            _render_job_analysis_table(ans["analysis_reports"], verbose=False),
+            _render_job_analysis_table(ans["analyzer_reports"], verbose=False),
             justify="center",
         )
         if status not in ["running", "pending"]:
