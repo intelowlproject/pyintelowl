@@ -49,27 +49,6 @@ class IntelOwl:
 
         return self._session
 
-    def verify_and_filter(self, analyzers_requested) -> List[str]:
-        """
-        Filter out misconfigured analyzers from analyzers_requested
-        """
-        ac = self.get_analyzer_configs()
-
-        filtered_analyzers: List[str] = []
-        for analyzer in analyzers_requested:
-            if ac[analyzer]["verification"]["configured"]:
-                filtered_analyzers.append(analyzer)
-            else:
-                error_message = ac[analyzer]["verification"]["error_message"]
-                print(error_message)
-                self.logger.warning(
-                    f"""
-                    Misconfigured {analyzer} excluded: {error_message}
-                    """
-                )
-
-        return filtered_analyzers
-
     def ask_analysis_availability(
         self,
         md5: str,
@@ -123,9 +102,9 @@ class IntelOwl:
 
     def send_file_analysis_request(
         self,
+        analyzers_requested: List[str],
         filename: str,
         binary: bytes,
-        analyzers_requested: List[str] = [],
         force_privacy: bool = False,
         private_job: bool = False,
         disable_external_analyzers: bool = False,
@@ -170,7 +149,7 @@ class IntelOwl:
             data = {
                 "is_sample": True,
                 "md5": self.get_md5(binary, type_="binary"),
-                "analyzers_requested": self.verify_and_filter(analyzers_requested),
+                "analyzers_requested": analyzers_requested,
                 "tags_id": tags,
                 "run_all_available_analyzers": run_all_available_analyzers,
                 "force_privacy": force_privacy,
@@ -188,8 +167,8 @@ class IntelOwl:
 
     def send_observable_analysis_request(
         self,
+        analyzers_requested: List[str],
         observable_name: str,
-        analyzers_requested: List[str] = [],
         force_privacy: bool = False,
         private_job: bool = False,
         disable_external_analyzers: bool = False,
@@ -232,7 +211,7 @@ class IntelOwl:
             data = {
                 "is_sample": False,
                 "md5": self.get_md5(observable_name, type_="observable"),
-                "analyzers_requested": self.verify_and_filter(analyzers_requested),
+                "analyzers_requested": analyzers_requested,
                 "tags_id": tags,
                 "run_all_available_analyzers": run_all_available_analyzers,
                 "force_privacy": force_privacy,
@@ -274,12 +253,10 @@ class IntelOwl:
                 if not (obj.get("run_all", False)):
                     obj["analyzers_list"] = obj["analyzers_list"].split(",")
 
-                filtered_analyzers_list = self.verify_and_filter(obj["analyzers_list"])
-
                 self._new_analysis_cli(
                     obj["value"],
                     obj["type"],
-                    filtered_analyzers_list,
+                    obj.get("analyzers_list", None),
                     obj.get("run_all", False),
                     obj.get("force_privacy", False),
                     obj.get("private_job", False),
@@ -572,8 +549,8 @@ class IntelOwl:
         # 2nd step: send new analysis request
         if type_ == "observable":
             resp2 = self.send_observable_analysis_request(
-                observable_name=obj,
                 analyzers_requested=analyzers_list,
+                observable_name=obj,
                 force_privacy=force_privacy,
                 private_job=private_job,
                 disable_external_analyzers=disable_external_analyzers,
@@ -584,9 +561,9 @@ class IntelOwl:
         else:
             path = pathlib.Path(obj)
             resp2 = self.send_file_analysis_request(
+                analyzers_requested=analyzers_list,
                 filename=path.name,
                 binary=path.read_bytes(),
-                analyzers_requested=analyzers_list,
                 force_privacy=force_privacy,
                 private_job=private_job,
                 disable_external_analyzers=disable_external_analyzers,
