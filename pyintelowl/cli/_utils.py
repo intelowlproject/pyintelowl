@@ -43,6 +43,7 @@ def get_status_text(status: str, as_text=True):
 
 def get_success_text(success):
     success = str(success)
+    success = "True" if success == "SUCCESS" or success == "True" else "False"
     styles = {
         "True": ("#73D216", str(Emoji("heavy_check_mark"))),
         "False": ("#CC0000", str(Emoji("cross_mark"))),
@@ -53,6 +54,7 @@ def get_success_text(success):
 
 def get_action_status_text(success, action):
     success = str(success)
+    success = "True" if success == "SUCCESS" or success == "True" else "False"
     actions = {"kill": "killed", "delete": "deleted"}
     styles = {
         "True": ("#73D216", f"{actions[action]} " + str(Emoji("heavy_check_mark"))),

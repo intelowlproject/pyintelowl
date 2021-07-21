@@ -54,8 +54,9 @@ def get_analyzer_config(ctx: ClickContext, re_match: str, as_json: bool, as_text
             "Supported\nTypes",
             "External\nService",
             "Leaks\nInfo",
-            "Requires\nConfig",
-            "Additional\nConfig\nParams",
+            "Configuration\nParameters",
+            "Secrets",
+            "Configured",
         ]
         header_style = "bold blue"
         table = Table(
@@ -79,8 +80,9 @@ def get_analyzer_config(ctx: ClickContext, re_match: str, as_json: bool, as_text
                 ),
                 get_success_text(obj.get("external_service", False)),
                 get_success_text(obj.get("leaks_info", False)),
-                get_success_text(obj.get("requires_configuration", False)),
-                get_json_syntax(obj.get("additional_config_params", {})),
+                get_json_syntax(obj.get("config", {})),
+                get_json_syntax(obj.get("secrets", {})),
+                get_success_text(obj["verification"].get("configured", False)),
             )
         with console.pager(styles=True):
             console.print(table)

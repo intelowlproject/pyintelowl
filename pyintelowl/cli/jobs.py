@@ -80,7 +80,7 @@ def view(ctx: ClickContext, job_id: int, categorize: bool, as_json: bool):
             if ans["is_sample"]:
                 raise click.Abort("Cannot use the -c option for a file analysis")
             _result_filter_and_tabular_print(
-                ans["analysis_reports"],
+                ans["analyzer_reports"],
                 ans["observable_name"],
                 ans["observable_classification"],
             )
