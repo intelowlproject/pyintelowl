@@ -648,7 +648,7 @@ class IntelOwl:
             IntelOwlClientException: on client/HTTP error
 
         Returns:
-            Dict[bool, Bytes]: Download Status, File Name, Raw Data
+            Dict[str, Bytes]: JSON with raw data
         """
 
         downloaded = False

@@ -131,7 +131,7 @@ def rm(ctx: ClickContext, job_id: int):
 def down(ctx: ClickContext, job_id: int, output_file: str):
     ctx.obj.logger.info(
         f"Request sample download from Job [underline blue]#{job_id}[/].."
-    )  # noqa: E501
+    )
     ans = False
     try:
         ans = ctx.obj.download_sample(job_id)
