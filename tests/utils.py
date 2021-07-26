@@ -1,7 +1,8 @@
 import json
-import pytest
 from unittest import TestCase
-from click.testing import CliRunner
+from unittest.mock import patch  # noqa: F401
+
+from pyintelowl.pyintelowl import IntelOwl
 from tests import MOCK_CONNECTIONS
 
 
@@ -24,13 +25,12 @@ class MockResponse:
 
 class BaseTest(TestCase):
     def setUp(self):
-        self.runner = CliRunner()
-
-    @pytest.fixture(autouse=True)
-    def inject_fixtures(self, caplog):
-        caplog.set_level("INFO")
-        self.caplog = caplog
+        self.client = IntelOwl("test-token", "test-url")
 
 
 def mock_connections(decorator):
     return decorator if MOCK_CONNECTIONS else lambda x: x
+
+
+def mocked_requests(*args, **kwargs):
+    return MockResponse({}, 200)
