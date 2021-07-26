@@ -132,12 +132,11 @@ def down(ctx: ClickContext, job_id: int, output_file: str):
     ctx.obj.logger.info(
         f"Request sample download from Job [underline blue]#{job_id}[/].."
     )
-    ans = False
     try:
         ans = ctx.obj.download_sample(job_id)
         if ans:
             with open(output_file, "wb") as f:
-                f.write(ans["raw_data"])
+                f.write(ans)
 
         rprint(get_action_status_text(bool(ans), "download"))
     except IntelOwlClientException as e:
