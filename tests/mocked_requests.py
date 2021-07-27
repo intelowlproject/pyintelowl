@@ -25,6 +25,38 @@ def mocked_analyzer_config(*args, **kwargs):
     )
 
 
+def mocked_ask_analysis_success(*args, **kwargs):
+    return MockResponse(
+        {
+            "job_id": 1,
+            "status": "running",
+            "analyzers_to_execute": ["test_1", "test_2"],
+        },
+        200,
+        "api/ask_analysis_availability",
+    )
+
+
+def mocked_ask_analysis_no_status(*args, **kwargs):
+    return MockResponse(
+        {
+            "job_id": 1,
+        },
+        200,
+        "api/ask_analysis_availability",
+    )
+
+
+def mocked_ask_analysis_no_job_id(*args, **kwargs):
+    return MockResponse(
+        {
+            "status": "running",
+        },
+        200,
+        "api/ask_analysis_availability",
+    )
+
+
 def mocked_get_job_by_id(*args, **kwargs):
     return MockResponse(
         {

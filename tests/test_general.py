@@ -7,11 +7,61 @@ from .utils import (
 )
 from .mocked_requests import (
     mocked_analyzer_config,
+    mocked_ask_analysis_success,
+    mocked_ask_analysis_no_status,
+    mocked_ask_analysis_no_job_id,
     mocked_raise_exception,
 )
 
 
 class TestGeneral(BaseTest):
+    @mock_connections(
+        patch("requests.Session.get", side_effect=mocked_ask_analysis_success)
+    )
+    def test_ask_analysis_availability_success(self, mocked_requests):
+        md5 = self.hash
+        analyzers_needed = ["test_1", "test_2"]
+        result = self.client.ask_analysis_availability(md5, analyzers_needed)
+        self.assertIn("status", result)
+        self.assertIn("job_id", result)
+
+    @mock_connections(
+        patch("requests.Session.get", side_effect=mocked_ask_analysis_no_status)
+    )
+    def test_ask_analysis_availability_no_status(self, mocked_requests):
+        md5 = self.hash
+        analyzers_needed = ["test_1", "test_2"]
+        self.assertRaises(
+            IntelOwlClientException,
+            self.client.ask_analysis_availability,
+            md5,
+            analyzers_needed,
+        )
+
+    @mock_connections(
+        patch("requests.Session.get", side_effect=mocked_ask_analysis_no_job_id)
+    )
+    def test_ask_analysis_availability_no_job_id(self, mocked_requests):
+        md5 = self.hash
+        analyzers_needed = ["test_1", "test_2"]
+        self.assertRaises(
+            IntelOwlClientException,
+            self.client.ask_analysis_availability,
+            md5,
+            analyzers_needed,
+        )
+
+    @mock_connections(patch("requests.Session.get", side_effect=mocked_raise_exception))
+    def test_ask_analysis_availability_failure(self, mocked_requests):
+        md5 = self.hash
+        analyzers_needed = ["test_1", "test_2"]
+        self.assertRaises(
+            IntelOwlClientException,
+            self.client.ask_analysis_availability,
+            md5,
+            analyzers_needed,
+        )
+
     @mock_connections(patch("requests.Session.get", side_effect=mocked_analyzer_config))
     def test_get_analyzer_config_success(self, mocked_requests):
         ac = self.client.get_analyzer_configs()
