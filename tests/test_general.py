@@ -10,6 +10,7 @@ from .mocked_requests import (
     mocked_ask_analysis_success,
     mocked_ask_analysis_no_status,
     mocked_ask_analysis_no_job_id,
+    mocked_send_analysis_success,
     mocked_raise_exception,
 )
 
@@ -70,6 +71,61 @@ class TestGeneral(BaseTest):
     @mock_connections(patch("requests.Session.get", side_effect=mocked_raise_exception))
     def test_get_analyzer_config_failure(self, mocked_requests):
         self.assertRaises(IntelOwlClientException, self.client.get_analyzer_configs)
+
+    @mock_connections(
+        patch("requests.Session.post", side_effect=mocked_send_analysis_success)
+    )
+    def test_send_observable_analysis_request(self, mocked_requests):
+        analyzers_requested = ["test_1", "test_2"]
+        observable_name = self.domain
+        result = self.client.send_observable_analysis_request(
+            analyzers_requested, observable_name
+        )
+        self.assertIn("status", result)
+        self.assertIn("job_id", result)
+        self.assertIn("analyzers_running", result)
+
+    @mock_connections(
+        patch("requests.Session.post", side_effect=mocked_raise_exception)
+    )
+    def test_send_observable_analysis_request_failure(self, mocked_requests):
+        analyzers_requested = ["test_1", "test_2"]
+        observable_name = self.domain
+        self.assertRaises(
+            IntelOwlClientException,
+            self.client.send_observable_analysis_request,
+            analyzers_requested,
+            observable_name,
+        )
+
+    @mock_connections(
+        patch("requests.Session.post", side_effect=mocked_send_analysis_success)
+    )
+    def test_send_file_analysis_request(self, mocked_requests):
+        analyzers_requested = ["test_1", "test_2"]
+        filename = self.filepath
+        binary = get_test_file_data(self.filepath)
+        result = self.client.send_file_analysis_request(
+            analyzers_requested, filename, binary
+        )
+        self.assertIn("status", result)
+        self.assertIn("job_id", result)
+        self.assertIn("analyzers_running", result)
+
+    @mock_connections(
+        patch("requests.Session.post", side_effect=mocked_raise_exception)
+    )
+    def test_send_file_analysis_request_failure(self, mocked_requests):
+        analyzers_requested = ["test_1", "test_2"]
+        filename = self.filepath
+        binary = get_test_file_data(self.filepath)
+        self.assertRaises(
+            IntelOwlClientException,
+            self.client.send_file_analysis_request,
+            analyzers_requested,
+            filename,
+            binary,
+        )
 
     def test_get_md5_observable(self):
         type_ = "observable"

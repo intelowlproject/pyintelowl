@@ -21,7 +21,8 @@ ROOT_DIR = pathlib.Path(__file__).parent.parent
 
 # class for mocking responses
 class MockResponse:
-    def __init__(self, json_data, status_code, uri):
+    def __init__(self, json_data, status_code, uri, headers=None):
+        self.headers = headers
         self.json_data = json_data
         self.status_code = status_code
         self.text = json.dumps(json_data)

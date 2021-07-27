@@ -47,6 +47,19 @@ def mocked_ask_analysis_no_status(*args, **kwargs):
     )
 
 
+def mocked_send_analysis_success(*args, **kwargs):
+    return MockResponse(
+        {
+            "status": "accepted",
+            "job_id": 1,
+            "warnings": [],
+            "analyzers_running": ["test_1", "test_2"],
+        },
+        200,
+        "api/analyze_observable",
+    )
+
+
 def mocked_ask_analysis_no_job_id(*args, **kwargs):
     return MockResponse(
         {
