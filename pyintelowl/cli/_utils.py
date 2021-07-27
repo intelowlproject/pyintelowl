@@ -55,7 +55,7 @@ def get_success_text(success):
 def get_action_status_text(success, action):
     success = str(success)
     success = "True" if success == "SUCCESS" or success == "True" else "False"
-    actions = {"kill": "killed", "delete": "deleted"}
+    actions = {"kill": "killed", "delete": "deleted", "download": "downloaded"}
     styles = {
         "True": ("#73D216", f"{actions[action]} " + str(Emoji("heavy_check_mark"))),
         "False": ("#CC0000", f"failed to {action} " + str(Emoji("cross_mark"))),

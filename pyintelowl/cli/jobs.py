@@ -118,6 +118,32 @@ def rm(ctx: ClickContext, job_id: int):
         ctx.obj.logger.fatal(str(e))
 
 
+@jobs.command(help="Download sample by Job ID")
+@click.argument("job_id", type=int)
+@click.option(
+    "-o",
+    "--output-file",
+    type=click.Path(exists=False, resolve_path=True),
+    required=True,
+    help="Name and Path to downloaded analysis sample.",
+)
+@click.pass_context
+def down(ctx: ClickContext, job_id: int, output_file: str):
+    ctx.obj.logger.info(
+        f"Request sample download from Job [underline blue]#{job_id}[/].."
+    )
+    try:
+        ans = ctx.obj.download_sample(job_id)
+        if ans:
+            with open(output_file, "wb") as f:
+                f.write(ans)
+
+        rprint(get_action_status_text(bool(ans), "download"))
+    except IntelOwlClientException as e:
+        rprint(get_action_status_text(bool(ans), "download"))
+        ctx.obj.logger.fatal(str(e))
+
+
 @jobs.command(
     "poll",
     help="""

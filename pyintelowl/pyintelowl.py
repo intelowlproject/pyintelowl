@@ -634,6 +634,34 @@ class IntelOwl:
 
         return classification
 
+    def download_sample(self, job_id: int) -> bytes:
+        """
+        Download file sample from job.\n
+        Method: GET
+        Endpoint: ``/api/jobs/{job_id}/download_sample``
+
+        Args:
+            job_id (int):
+                id of job to download sample from
+
+        Raise:
+            IntelOwlClientException: on client/HTTP error
+
+        Returns:
+            Bytes: Raw file data.
+        """
+
+        try:
+            url = self.instance + f"/api/jobs/{job_id}/download_sample"
+            response = self.session.get(url)
+            self.logger.debug(msg=(response.url, response.status_code))
+            response.raise_for_status()
+
+        except Exception as e:
+            raise IntelOwlClientException(e)
+
+        return response.content
+
     def kill_running_job(self, job_id: int) -> bool:
         """Send kill_running_job request.\n
         Method: PATCH
