@@ -1,4 +1,5 @@
 MOCK_CONNECTIONS = True
+TEST_JOB_ID = 1
 TEST_IP = "8.8.8.8"
 TEST_DOMAIN = "www.google.com"
 TEST_URL = "https://www.google.com/search?test"

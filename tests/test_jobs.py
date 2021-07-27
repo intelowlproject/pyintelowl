@@ -25,8 +25,7 @@ class TestJobs(BaseTest):
 
     @mock_connections(patch("requests.Session.get", side_effect=mocked_get_job_by_id))
     def test_get_job_by_id_valid(self, mock_requests):
-        job_id = 1
-        job = self.client.get_job_by_id(job_id)
+        job = self.client.get_job_by_id(self.job_id)
         self.assertEqual(job.get("id", None), 1)
 
     @mock_connections(patch("requests.Session.get", side_effect=mocked_raise_exception))
@@ -38,26 +37,26 @@ class TestJobs(BaseTest):
         patch("requests.Session.delete", side_effect=mocked_delete_job_by_id)
     )
     def test_delete_job_by_id_success(self, mock_requests):
-        job_id = 1
-        deleted = self.client.delete_job_by_id(job_id)
+        deleted = self.client.delete_job_by_id(self.job_id)
         self.assertIsInstance(deleted, bool)
 
     @mock_connections(
         patch("requests.Session.delete", side_effect=mocked_raise_exception)
     )
     def test_delete_job_by_id_failure(self, mock_requests):
-        job_id = 1
-        self.assertRaises(IntelOwlClientException, self.client.delete_job_by_id, job_id)
+        self.assertRaises(
+            IntelOwlClientException, self.client.delete_job_by_id, self.job_id
+        )
 
     @mock_connections(patch("requests.Session.patch", side_effect=mocked_kill_job))
     def test_kill_running_job_success(self, mock_requests):
-        job_id = 1
-        killed = self.client.kill_running_job(job_id)
+        killed = self.client.kill_running_job(self.job_id)
         self.assertIsInstance(killed, bool)
 
     @mock_connections(
         patch("requests.Session.delete", side_effect=mocked_raise_exception)
     )
     def test_kill_running_job_failure(self, mock_requests):
-        job_id = 1
-        self.assertRaises(IntelOwlClientException, self.client.kill_running_job, job_id)
+        self.assertRaises(
+            IntelOwlClientException, self.client.kill_running_job, self.job_id
+        )
