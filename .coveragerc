@@ -1,0 +1,11 @@
+[run]
+branch = True
+source = pyintelowl
+omit = 
+    examples/*
+
+[report]
+ignore_errors = True
+omit =
+    examples/*
+    tests/*
