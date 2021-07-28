@@ -4,52 +4,39 @@ on:
   pull_request:
     branches: [ master, develop ]
 jobs:
-  linters:
+
+  tests:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        python-version: ['3.6', '3.7', '3.8', '3.9']
 
     steps:
-
     - uses: actions/checkout@v2
 
-    - name: Set up Python
+    - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
-        python-version: 3.8
+        python-version: ${{ matrix.python-version }}
+
     - name: Install Dependencies
       run: |
-        sudo apt-get update
-        pip3 install --upgrade pip
+        python3 -m pip install --upgrade pip
         pip3 install -e .[test]
-    - name: Black formatter
-      run: |
-        black . --check --diff
-    - name: Lint with flake8 (PEP8 enforcer + linter)
-      run: |
-        flake8 . --config=.flake8 --show-source
 
+    - name: Lint with flake8 and black
+      run: |
+        flake8 . --count
+        black . --check
 
-# to add once tests are properly added
-#  tox:
-#    runs-on: ubuntu-latest
-#
-#    strategy:
-#      matrix:
-#        python-version: [ 3.6, 3.7, 3.8, 3.9 ]
-#
-#    steps:
-#
-#    - uses: actions/checkout@v2
-#
-#    - name: Set up Python ${{ matrix.python-version }}
-#      uses: actions/setup-python@v2
-#      with:
-#        python-version: ${{ matrix.python-version }}
-#
-#    - name: Install Dependencies
-#      run: |
-#        sudo apt-get update
-#        pip3 install --upgrade pip
-#        pip3 install -e .[test]
-#
-#    - name: Tox
-#      run: tox
+    - name: Run tox tests
+      run: |
+        unzip -P infected tests/test_files.zip -d .
+        tox
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v1
+      with:
+        file: tests/coverage.xml

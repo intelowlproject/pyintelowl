@@ -54,7 +54,7 @@ def mock_connections(decorator):
     return decorator if MOCK_CONNECTIONS else lambda x: x
 
 
-def get_test_file_data(filepath):
+def get_file_data(filepath):
     with open(filepath, "rb") as f:
         file = f.read()
 

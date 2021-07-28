@@ -3,7 +3,7 @@ from .utils import (
     BaseTest,
     mock_connections,
     patch,
-    get_test_file_data,
+    get_file_data,
 )
 from .mocked_requests import (
     mocked_analyzer_config,
@@ -104,7 +104,7 @@ class TestGeneral(BaseTest):
     def test_send_file_analysis_request(self, mocked_requests):
         analyzers_requested = ["test_1", "test_2"]
         filename = self.filepath
-        binary = get_test_file_data(self.filepath)
+        binary = get_file_data(self.filepath)
         result = self.client.send_file_analysis_request(
             analyzers_requested, filename, binary
         )
@@ -118,7 +118,7 @@ class TestGeneral(BaseTest):
     def test_send_file_analysis_request_failure(self, mocked_requests):
         analyzers_requested = ["test_1", "test_2"]
         filename = self.filepath
-        binary = get_test_file_data(self.filepath)
+        binary = get_file_data(self.filepath)
         self.assertRaises(
             IntelOwlClientException,
             self.client.send_file_analysis_request,
@@ -135,15 +135,15 @@ class TestGeneral(BaseTest):
 
     def test_get_md5_binary(self):
         type_ = "binary"
-        test_string = get_test_file_data(self.filepath)
+        test_string = get_file_data(self.filepath)
         hashed_value = self.client.get_md5(test_string, type_)
-        self.assertEqual(hashed_value, "c35736429b30030acb60cb19c771649e")
+        self.assertEqual(hashed_value, self.file_hash)
 
     def test_get_md5_file_success(self):
         type_ = "file"
         test_string = self.filepath
         hashed_value = self.client.get_md5(test_string, type_)
-        self.assertEqual(hashed_value, "c35736429b30030acb60cb19c771649e")
+        self.assertEqual(hashed_value, self.file_hash)
 
     def test_get_md5_file_failure(self):
         type_ = "file"
