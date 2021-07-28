@@ -276,41 +276,34 @@ class IntelOwl:
         else:
             url = self.instance + "/api/analyze_file"
 
-        response = self.session.post(url, data=data, files=files)
-        self.logger.debug(
-            msg={
-                "url": response.url,
-                "code": response.status_code,
-                "headers": response.headers,
-                "body": response.json(),
-            }
-        )
-        answer = response.json()
-        if answer.get("error", "") == "814":
+        try:
+            response = self.session.post(url, data=data, files=files)
+            self.logger.debug(
+                msg={
+                    "url": response.url,
+                    "code": response.status_code,
+                    "headers": response.headers,
+                    "body": response.json(),
+                }
+            )
+            answer = response.json()
+            warnings = answer.get("warnings", [])
             if self.cli:
-                err = """
-                    Request failed..
-                    Error: [i yellow]After the filter, no analyzers can be run.
-                        Try with other analyzers.[/]
-                    """
+                info_log = f"""New Job running..
+                    ID: {answer['job_id']} | Status: [u blue]{answer['status']}[/].
+                    Got {len(warnings)} warnings:
+                    [i yellow]{warnings if warnings else None}[/]
+                """
             else:
-                err = "Request failed. After the filter, no analyzers can be run"
-            raise IntelOwlClientException(err)
-        warnings = answer.get("warnings", [])
-        if self.cli:
-            info_log = f"""New Job running..
-                ID: {answer['job_id']} | Status: [u blue]{answer['status']}[/].
-                Got {len(warnings)} warnings:
-                [i yellow]{warnings if warnings else None}[/]
-            """
-        else:
-            info_log = f"""New Job running..
-                ID: {answer['job_id']} | Status: {answer['status']}.
-                Got {len(warnings)} warnings:
-                {warnings if warnings else None}
-            """
-        self.logger.info(info_log)
-        response.raise_for_status()
+                info_log = f"""New Job running..
+                    ID: {answer['job_id']} | Status: {answer['status']}.
+                    Got {len(warnings)} warnings:
+                    {warnings if warnings else None}
+                """
+            self.logger.info(info_log)
+            response.raise_for_status()
+        except Exception as e:
+            raise IntelOwlClientException(e)
         return answer
 
     def create_tag(self, label: str, color: str):
