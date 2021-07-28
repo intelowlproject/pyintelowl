@@ -19,6 +19,7 @@ with open(os.path.join("pyintelowl", "version.py"), "r") as f:
 
 GITHUB_URL = "https://github.com/intelowlproject/pyintelowl"
 
+# Get requirements from files
 requirements = (HERE / "requirements.txt").read_text().split("\n")
 requirements_test = (HERE / "test-requirements.txt").read_text().split("\n")
 
