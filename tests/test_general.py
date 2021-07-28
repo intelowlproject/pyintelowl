@@ -137,13 +137,13 @@ class TestGeneral(BaseTest):
         type_ = "binary"
         test_string = get_test_file_data(self.filepath)
         hashed_value = self.client.get_md5(test_string, type_)
-        self.assertEqual(hashed_value, "c35736429b30030acb60cb19c771649e")
+        self.assertEqual(hashed_value, self.file_hash)
 
     def test_get_md5_file_success(self):
         type_ = "file"
         test_string = self.filepath
         hashed_value = self.client.get_md5(test_string, type_)
-        self.assertEqual(hashed_value, "c35736429b30030acb60cb19c771649e")
+        self.assertEqual(hashed_value, self.file_hash)
 
     def test_get_md5_file_failure(self):
         type_ = "file"
