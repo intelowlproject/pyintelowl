@@ -24,7 +24,7 @@ jobs:
     - name: Install Dependencies
       run: |
         python3 -m pip install --upgrade pip
-        pip3 install tox tox-gh-actions flake8 codecov black
+        pip3 install -e .[test]
 
     - name: Lint with flake8 and black
       run: |
@@ -33,6 +33,7 @@ jobs:
 
     - name: Run tox tests
       run: |
+        unzip -P infected tests/test_files.zip -d .
         tox
 
     - name: Upload coverage to Codecov
