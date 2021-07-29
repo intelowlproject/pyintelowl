@@ -3,12 +3,14 @@ from .utils import (
     BaseTest,
     mock_connections,
     patch,
+    get_file_data,
 )
 from .mocked_requests import (
     mocked_get_all_jobs,
     mocked_get_job_by_id,
     mocked_delete_job_by_id,
     mocked_kill_job,
+    mocked_download_job_sample,
     mocked_raise_exception,
 )
 
@@ -59,4 +61,18 @@ class TestJobs(BaseTest):
     def test_kill_running_job_failure(self, mock_requests):
         self.assertRaises(
             IntelOwlClientException, self.client.kill_running_job, self.job_id
+        )
+
+    @mock_connections(
+        patch("requests.Session.get", side_effect=mocked_download_job_sample)
+    )
+    def test_download_job_sample(self, mocked_requests):
+        file_data = get_file_data(self.filepath)
+        downloaded = self.client.download_sample(self.job_id)
+        self.assertEqual(downloaded, file_data)
+
+    @mock_connections(patch("requests.Session.get", side_effect=mocked_raise_exception))
+    def test_download_job_sample_failure(self, mocked_requests):
+        self.assertRaises(
+            IntelOwlClientException, self.client.download_sample, self.job_id
         )

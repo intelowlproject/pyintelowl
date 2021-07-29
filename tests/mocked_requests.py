@@ -1,4 +1,9 @@
-from .utils import MockResponse
+from .utils import (
+    MockResponse,
+    get_file_data,
+    ROOT_DIR,
+    TEST_FILE,
+)
 
 
 def mocked_raise_exception(*args, **kwargs):
@@ -115,6 +120,15 @@ def mocked_kill_job(*args, **kwargs):
         True,
         200,
         "/api/jobs/1/kill",
+    )
+
+
+def mocked_download_job_sample(*args, **kwargs):
+    return MockResponse(
+        {},
+        200,
+        "/api/jobs/1/download_sample",
+        content=get_file_data(f"{ROOT_DIR}/test_files/{TEST_FILE}"),
     )
 
 

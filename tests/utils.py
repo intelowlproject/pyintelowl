@@ -1,4 +1,3 @@
-import json
 import pathlib
 from unittest import TestCase
 from unittest.mock import patch  # noqa: F401
@@ -21,12 +20,11 @@ ROOT_DIR = pathlib.Path(__file__).parent.parent
 
 # class for mocking responses
 class MockResponse:
-    def __init__(self, json_data, status_code, uri, headers=None):
+    def __init__(self, json_data, status_code, uri, content=None, headers=None):
         self.headers = headers
         self.json_data = json_data
         self.status_code = status_code
-        self.text = json.dumps(json_data)
-        self.content = self.text.encode("utf-8")
+        self.content = content
         self.url = "http://localhost:80" + uri
 
     def json(self):

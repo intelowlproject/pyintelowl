@@ -600,20 +600,20 @@ class IntelOwl:
             ipaddress.ip_address(value)
         except ValueError:
             if re.match(
-                "^(?:ht|f)tps?://[a-z\d-]{1,63}(?:\.[a-z\d-]{1,63})+"
-                "(?:/[a-z\d-]{1,63})*(?:\.\w+)?",
+                r"^(?:ht|f)tps?://[a-z\d-]{1,63}(?:\.[a-z\d-]{1,63})+"
+                r"(?:/[a-z\d-]{1,63})*(?:\.\w+)?",
                 value,
             ):
                 classification = "url"
-            elif re.match("^(\.)?[a-z\d-]{1,63}(\.[a-z\d-]{1,63})+$", value):
+            elif re.match(r"^(\.)?[a-z\d-]{1,63}(\.[a-z\d-]{1,63})+$", value):
                 classification = "domain"
             elif (
-                re.match("^[a-f\d]{32}$", value)
-                or re.match("^[a-f\d]{40}$", value)
-                or re.match("^[a-f\d]{64}$", value)
-                or re.match("^[A-F\d]{32}$", value)
-                or re.match("^[A-F\d]{40}$", value)
-                or re.match("^[A-F\d]{64}$", value)
+                re.match(r"^[a-f\d]{32}$", value)
+                or re.match(r"^[a-f\d]{40}$", value)
+                or re.match(r"^[a-f\d]{64}$", value)
+                or re.match(r"^[A-F\d]{32}$", value)
+                or re.match(r"^[A-F\d]{40}$", value)
+                or re.match(r"^[A-F\d]{64}$", value)
             ):
                 classification = "hash"
             else:
