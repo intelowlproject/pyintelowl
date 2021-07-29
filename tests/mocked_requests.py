@@ -125,9 +125,10 @@ def mocked_kill_job(*args, **kwargs):
 
 def mocked_download_job_sample(*args, **kwargs):
     return MockResponse(
-        get_file_data(f"{ROOT_DIR}/test_files/{TEST_FILE}"),
+        {},
         200,
         "/api/jobs/1/download_sample",
+        content=get_file_data(f"{ROOT_DIR}/test_files/{TEST_FILE}"),
     )
 
 
