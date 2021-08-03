@@ -1,5 +1,5 @@
-requests==2.25.1
-geocoder==1.38.1
-click==7.1.2
-rich==9.13.0
-click-creds==0.0.1
+requests~=2.26
+geocoder~=1.38
+click~=7.1
+rich~=9.13
+click-creds~=0.0.1
