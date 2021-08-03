@@ -92,6 +92,7 @@ API Client Docs
 
    Index <index>
    pyintelowl
+   tests
 
 Indices and tables
 ==================
