@@ -637,7 +637,7 @@ class IntelOwl:
             job_id (int):
                 id of job to download sample from
 
-        Raise:
+        Raises:
             IntelOwlClientException: on client/HTTP error
 
         Returns:
