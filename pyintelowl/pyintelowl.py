@@ -754,8 +754,8 @@ class IntelOwl:
             raise IntelOwlClientException(e)
         return success
 
-    def kill_running_analyzer(self, job_id: int, analyzer_name: str) -> bool:
-        """Send kill running analyzer request.\n
+    def kill_analyzer(self, job_id: int, analyzer_name: str) -> bool:
+        """Send kill running/pending analyzer request.\n
         Method: PATCH
         Endpoint: ``/api/job/{job_id}/analyzer/{analyzer_name}/kill``
 
@@ -780,8 +780,8 @@ class IntelOwl:
         )
         return killed
 
-    def kill_running_connector(self, job_id: int, connector_name: str) -> bool:
-        """Send kill running connector request.\n
+    def kill_connector(self, job_id: int, connector_name: str) -> bool:
+        """Send kill running/pending connector request.\n
         Method: PATCH
         Endpoint: ``/api/job/{job_id}/connector/{connector_name}/kill``
 

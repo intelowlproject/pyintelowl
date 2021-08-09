@@ -200,14 +200,11 @@ def kill_analyzer(ctx: ClickContext, job_id: int, analyzer_name: str):
     )
     ans = False
     try:
-        ans = ctx.obj.kill_running_analyzer(job_id, analyzer_name)
+        ans = ctx.obj.kill_analyzer(job_id, analyzer_name)
         rprint(get_action_status_text(ans, "kill"))
     except IntelOwlClientException as e:
         rprint(get_action_status_text(ans, "kill"))
         ctx.obj.logger.fatal(str(e))
-
-
-""
 
 
 @jobs.command(help="Kill a running connector by name and job ID")
@@ -221,7 +218,7 @@ def kill_connector(ctx: ClickContext, job_id: int, connector_name: str):
     )
     ans = False
     try:
-        ans = ctx.obj.kill_running_connector(job_id, connector_name)
+        ans = ctx.obj.kill_connector(job_id, connector_name)
         rprint(get_action_status_text(ans, "kill"))
     except IntelOwlClientException as e:
         rprint(get_action_status_text(ans, "kill"))

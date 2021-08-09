@@ -81,7 +81,7 @@ class TestJobs(BaseTest):
 
     @mock_connections(patch("requests.Session.patch", side_effect=mocked_kill_analyzer))
     def test_kill_running_analyzer_success(self, mock_requests):
-        killed = self.client.kill_running_analyzer(self.job_id, self.analyzer_name)
+        killed = self.client.kill_analyzer(self.job_id, self.analyzer_name)
         self.assertIsInstance(killed, bool)
 
     @mock_connections(
@@ -90,7 +90,7 @@ class TestJobs(BaseTest):
     def test_kill_running_analyzer_failure(self, mock_requests):
         self.assertRaises(
             IntelOwlClientException,
-            self.client.kill_running_analyzer,
+            self.client.kill_analyzer,
             self.job_id,
             self.analyzer_name,
         )
@@ -99,7 +99,7 @@ class TestJobs(BaseTest):
         patch("requests.Session.patch", side_effect=mocked_kill_connector)
     )
     def test_kill_running_connector_success(self, mock_requests):
-        killed = self.client.kill_running_connector(self.job_id, self.connector_name)
+        killed = self.client.kill_connector(self.job_id, self.connector_name)
         self.assertIsInstance(killed, bool)
 
     @mock_connections(
@@ -108,7 +108,7 @@ class TestJobs(BaseTest):
     def test_kill_running_connector_failure(self, mock_requests):
         self.assertRaises(
             IntelOwlClientException,
-            self.client.kill_running_connector,
+            self.client.kill_connector,
             self.job_id,
             self.connector_name,
         )
