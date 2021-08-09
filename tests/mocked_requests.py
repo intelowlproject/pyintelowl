@@ -134,8 +134,40 @@ def mocked_delete_job_by_id(*args, **kwargs):
 def mocked_kill_job(*args, **kwargs):
     return MockResponse(
         True,
-        200,
+        204,
         "/api/jobs/1/kill",
+    )
+
+
+def mocked_kill_analyzer(*args, **kwargs):
+    return MockResponse(
+        True,
+        204,
+        "/api/job/1/analyzer/MISP/kill",
+    )
+
+
+def mocked_kill_connector(*args, **kwargs):
+    return MockResponse(
+        True,
+        204,
+        "/api/job/1/connector/MISP/kill",
+    )
+
+
+def mocked_retry_analyzer(*args, **kwargs):
+    return MockResponse(
+        True,
+        204,
+        "/api/job/1/analyzer/MISP/retry",
+    )
+
+
+def mocked_retry_connector(*args, **kwargs):
+    return MockResponse(
+        True,
+        204,
+        "/api/job/1/connector/MISP/retry",
     )
 
 
@@ -144,7 +176,7 @@ def mocked_download_job_sample(*args, **kwargs):
         {},
         200,
         "/api/jobs/1/download_sample",
-        content=get_file_data(f"{ROOT_DIR}/test_files/{TEST_FILE}"),
+        content=get_file_data(f"{ROOT_DIR}/tests/test_files/{TEST_FILE}"),
     )
 
 

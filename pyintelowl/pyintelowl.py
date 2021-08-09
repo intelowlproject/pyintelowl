@@ -691,7 +691,7 @@ class IntelOwl:
             url = self.instance + f"/api/jobs/{job_id}/kill"
             response = self.session.patch(url)
             self.logger.debug(msg=(response.url, response.status_code))
-            killed = response.status_code == 200
+            killed = response.status_code == 204
             response.raise_for_status()
         except Exception as e:
             raise IntelOwlClientException(e)
@@ -750,3 +750,125 @@ class IntelOwl:
         except Exception as e:
             raise IntelOwlClientException(e)
         return deleted
+
+    def __run_plugin_action(
+        self, job_id: int, plugin_type: str, plugin_name: str, plugin_action: str
+    ) -> bool:
+        """Internal method for kill/retry for analyzer/connector"""
+        success = False
+        try:
+            url = (
+                self.instance
+                + f"/api/job/{job_id}/{plugin_type}/{plugin_name}/{plugin_action}"
+            )
+            response = self.session.patch(url)
+            self.logger.debug(msg=(response.url, response.status_code))
+            success = response.status_code == 204
+            response.raise_for_status()
+        except Exception as e:
+            raise IntelOwlClientException(e)
+        return success
+
+    def kill_analyzer(self, job_id: int, analyzer_name: str) -> bool:
+        """Send kill running/pending analyzer request.\n
+        Method: PATCH
+        Endpoint: ``/api/job/{job_id}/analyzer/{analyzer_name}/kill``
+
+        Args:
+            job_id (int):
+                id of job
+            analyzer_name (str):
+                name of analyzer to kill
+
+        Raises:
+            IntelOwlClientException: on client/HTTP error
+
+        Returns:
+            Bool: killed or not
+        """
+
+        killed = self.__run_plugin_action(
+            job_id=job_id,
+            plugin_name=analyzer_name,
+            plugin_type="analyzer",
+            plugin_action="kill",
+        )
+        return killed
+
+    def kill_connector(self, job_id: int, connector_name: str) -> bool:
+        """Send kill running/pending connector request.\n
+        Method: PATCH
+        Endpoint: ``/api/job/{job_id}/connector/{connector_name}/kill``
+
+        Args:
+            job_id (int):
+                id of job
+            connector_name (str):
+                name of connector to kill
+
+        Raises:
+            IntelOwlClientException: on client/HTTP error
+
+        Returns:
+            Bool: killed or not
+        """
+
+        killed = self.__run_plugin_action(
+            job_id=job_id,
+            plugin_name=connector_name,
+            plugin_type="connector",
+            plugin_action="kill",
+        )
+        return killed
+
+    def retry_analyzer(self, job_id: int, analyzer_name: str) -> bool:
+        """Send retry failed/killed analyzer request.\n
+        Method: PATCH
+        Endpoint: ``/api/job/{job_id}/analyzer/{analyzer_name}/retry``
+
+        Args:
+            job_id (int):
+                id of job
+            analyzer_name (str):
+                name of analyzer to retry
+
+        Raises:
+            IntelOwlClientException: on client/HTTP error
+
+        Returns:
+            Bool: success or not
+        """
+
+        success = self.__run_plugin_action(
+            job_id=job_id,
+            plugin_name=analyzer_name,
+            plugin_type="analyzer",
+            plugin_action="retry",
+        )
+        return success
+
+    def retry_connector(self, job_id: int, connector_name: str) -> bool:
+        """Send retry failed/killed connector request.\n
+        Method: PATCH
+        Endpoint: ``/api/job/{job_id}/connector/{connector_name}/retry``
+
+        Args:
+            job_id (int):
+                id of job
+            connector_name (str):
+                name of connector to retry
+
+        Raises:
+            IntelOwlClientException: on client/HTTP error
+
+        Returns:
+            Bool: success or not
+        """
+
+        success = self.__run_plugin_action(
+            job_id=job_id,
+            plugin_name=connector_name,
+            plugin_type="connector",
+            plugin_action="retry",
+        )
+        return success
