@@ -805,3 +805,55 @@ class IntelOwl:
             plugin_action="kill",
         )
         return killed
+
+    def retry_analyzer(self, job_id: int, analyzer_name: str) -> bool:
+        """Send retry failed/killed analyzer request.\n
+        Method: PATCH
+        Endpoint: ``/api/job/{job_id}/analyzer/{analyzer_name}/retry``
+
+        Args:
+            job_id (int):
+                id of job
+            analyzer_name (str):
+                name of analyzer to retry
+
+        Raises:
+            IntelOwlClientException: on client/HTTP error
+
+        Returns:
+            Bool: success or not
+        """
+
+        success = self.__run_plugin_action(
+            job_id=job_id,
+            plugin_name=analyzer_name,
+            plugin_type="analyzer",
+            plugin_action="retry",
+        )
+        return success
+
+    def retry_connector(self, job_id: int, connector_name: str) -> bool:
+        """Send retry failed/killed connector request.\n
+        Method: PATCH
+        Endpoint: ``/api/job/{job_id}/connector/{connector_name}/retry``
+
+        Args:
+            job_id (int):
+                id of job
+            connector_name (str):
+                name of connector to retry
+
+        Raises:
+            IntelOwlClientException: on client/HTTP error
+
+        Returns:
+            Bool: success or not
+        """
+
+        success = self.__run_plugin_action(
+            job_id=job_id,
+            plugin_name=connector_name,
+            plugin_type="connector",
+            plugin_action="retry",
+        )
+        return success
