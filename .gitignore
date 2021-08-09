@@ -3,7 +3,7 @@ build
 dist
 pyintelowl.egg-info
 venv/
-test_files/
+tests/test_files/
 *.exe
 __pycache__
 .vscode

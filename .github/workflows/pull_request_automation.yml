@@ -33,7 +33,7 @@ jobs:
 
     - name: Run tox tests
       run: |
-        unzip -P infected tests/test_files.zip -d .
+        unzip -P infected tests/test_files.zip -d ./tests/
         tox
 
     - name: Upload coverage to Codecov

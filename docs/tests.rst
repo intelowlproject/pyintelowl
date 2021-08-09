@@ -5,7 +5,7 @@ Configuration
 --------------------------------------
 
 Some tests require file samples, which can be found in the encrypted folder ``tests/test_files.zip`` (password: "infected").
-Unzip the archive in ``test_files`` folder before running the tests.
+Unzip the archive in ``tests/test_files`` folder before running the tests.
 
 **Please remember that these are dangerous malware! They come encrypted and locked for a reason!
 Do NOT run them unless you are absolutely sure of what you are doing!

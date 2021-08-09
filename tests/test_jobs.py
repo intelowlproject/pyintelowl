@@ -9,6 +9,8 @@ from .mocked_requests import (
     mocked_get_all_jobs,
     mocked_get_job_by_id,
     mocked_delete_job_by_id,
+    mocked_kill_analyzer,
+    mocked_kill_connector,
     mocked_kill_job,
     mocked_download_job_sample,
     mocked_raise_exception,
@@ -56,7 +58,7 @@ class TestJobs(BaseTest):
         self.assertIsInstance(killed, bool)
 
     @mock_connections(
-        patch("requests.Session.delete", side_effect=mocked_raise_exception)
+        patch("requests.Session.patch", side_effect=mocked_raise_exception)
     )
     def test_kill_running_job_failure(self, mock_requests):
         self.assertRaises(
@@ -75,4 +77,38 @@ class TestJobs(BaseTest):
     def test_download_job_sample_failure(self, mocked_requests):
         self.assertRaises(
             IntelOwlClientException, self.client.download_sample, self.job_id
+        )
+
+    @mock_connections(patch("requests.Session.patch", side_effect=mocked_kill_analyzer))
+    def test_kill_running_analyzer_success(self, mock_requests):
+        killed = self.client.kill_running_analyzer(self.job_id, self.analyzer_name)
+        self.assertIsInstance(killed, bool)
+
+    @mock_connections(
+        patch("requests.Session.patch", side_effect=mocked_raise_exception)
+    )
+    def test_kill_running_analyzer_failure(self, mock_requests):
+        self.assertRaises(
+            IntelOwlClientException,
+            self.client.kill_running_analyzer,
+            self.job_id,
+            self.analyzer_name,
+        )
+
+    @mock_connections(
+        patch("requests.Session.patch", side_effect=mocked_kill_connector)
+    )
+    def test_kill_running_connector_success(self, mock_requests):
+        killed = self.client.kill_running_connector(self.job_id, self.connector_name)
+        self.assertIsInstance(killed, bool)
+
+    @mock_connections(
+        patch("requests.Session.patch", side_effect=mocked_raise_exception)
+    )
+    def test_kill_running_connector_failure(self, mock_requests):
+        self.assertRaises(
+            IntelOwlClientException,
+            self.client.kill_running_connector,
+            self.job_id,
+            self.connector_name,
         )

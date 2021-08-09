@@ -5,6 +5,8 @@ from unittest.mock import patch  # noqa: F401
 from pyintelowl.pyintelowl import IntelOwl
 from tests import (
     MOCK_CONNECTIONS,
+    TEST_ANALYZER_NAME,
+    TEST_CONNECTOR_NAME,
     TEST_JOB_ID,
     TEST_IP,
     TEST_DOMAIN,
@@ -44,8 +46,10 @@ class BaseTest(TestCase):
         self.domain = TEST_DOMAIN
         self.hash = TEST_HASH
         self.generic = TEST_GENERIC
-        self.filepath = f"{ROOT_DIR}/test_files/{TEST_FILE}"
+        self.filepath = f"{ROOT_DIR}/tests/test_files/{TEST_FILE}"
         self.file_hash = TEST_FILE_HASH
+        self.analyzer_name = TEST_ANALYZER_NAME
+        self.connector_name = TEST_CONNECTOR_NAME
 
 
 def mock_connections(decorator):
