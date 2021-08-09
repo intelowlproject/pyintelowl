@@ -30,6 +30,22 @@ def mocked_analyzer_config(*args, **kwargs):
     )
 
 
+def mocked_connector_config(*args, **kwargs):
+    return MockResponse(
+        {
+            "test_connector": {
+                "python_module": "test_class.test_module",
+                "description": "a test connector",
+                "disabled": False,
+                "config": {"soft_time_limit": 30, "queue": "default"},
+                "secrets": {},
+            }
+        },
+        200,
+        "api/get_connector_configs",
+    )
+
+
 def mocked_ask_analysis_success(*args, **kwargs):
     return MockResponse(
         {
