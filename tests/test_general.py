@@ -10,6 +10,7 @@ from .mocked_requests import (
     mocked_ask_analysis_success,
     mocked_ask_analysis_no_status,
     mocked_ask_analysis_no_job_id,
+    mocked_connector_config,
     mocked_send_analysis_success,
     mocked_raise_exception,
 )
@@ -71,6 +72,17 @@ class TestGeneral(BaseTest):
     @mock_connections(patch("requests.Session.get", side_effect=mocked_raise_exception))
     def test_get_analyzer_config_failure(self, mocked_requests):
         self.assertRaises(IntelOwlClientException, self.client.get_analyzer_configs)
+
+    @mock_connections(
+        patch("requests.Session.get", side_effect=mocked_connector_config)
+    )
+    def test_get_connector_config_success(self, mocked_requests):
+        cc = self.client.get_connector_configs()
+        self.assertNotEqual({}, cc)
+
+    @mock_connections(patch("requests.Session.get", side_effect=mocked_raise_exception))
+    def test_get_connector_config_failure(self, mocked_requests):
+        self.assertRaises(IntelOwlClientException, self.client.get_connector_configs)
 
     @mock_connections(
         patch("requests.Session.post", side_effect=mocked_send_analysis_success)
