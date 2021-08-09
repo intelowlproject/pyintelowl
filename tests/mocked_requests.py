@@ -139,6 +139,22 @@ def mocked_kill_connector(*args, **kwargs):
     )
 
 
+def mocked_retry_analyzer(*args, **kwargs):
+    return MockResponse(
+        True,
+        204,
+        "/api/job/1/analyzer/MISP/retry",
+    )
+
+
+def mocked_retry_connector(*args, **kwargs):
+    return MockResponse(
+        True,
+        204,
+        "/api/job/1/connector/MISP/retry",
+    )
+
+
 def mocked_download_job_sample(*args, **kwargs):
     return MockResponse(
         {},

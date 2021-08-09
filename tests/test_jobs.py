@@ -14,6 +14,8 @@ from .mocked_requests import (
     mocked_kill_job,
     mocked_download_job_sample,
     mocked_raise_exception,
+    mocked_retry_analyzer,
+    mocked_retry_connector,
 )
 
 
@@ -109,6 +111,42 @@ class TestJobs(BaseTest):
         self.assertRaises(
             IntelOwlClientException,
             self.client.kill_connector,
+            self.job_id,
+            self.connector_name,
+        )
+
+    @mock_connections(
+        patch("requests.Session.patch", side_effect=mocked_retry_analyzer)
+    )
+    def test_retry_analyzer_success(self, mock_requests):
+        success = self.client.retry_analyzer(self.job_id, self.analyzer_name)
+        self.assertIsInstance(success, bool)
+
+    @mock_connections(
+        patch("requests.Session.patch", side_effect=mocked_raise_exception)
+    )
+    def test_retry_analyzer_failure(self, mock_requests):
+        self.assertRaises(
+            IntelOwlClientException,
+            self.client.retry_analyzer,
+            self.job_id,
+            self.analyzer_name,
+        )
+
+    @mock_connections(
+        patch("requests.Session.patch", side_effect=mocked_retry_connector)
+    )
+    def test_retry_connector_success(self, mock_requests):
+        success = self.client.retry_connector(self.job_id, self.connector_name)
+        self.assertIsInstance(success, bool)
+
+    @mock_connections(
+        patch("requests.Session.patch", side_effect=mocked_raise_exception)
+    )
+    def test_retry_connector_failure(self, mock_requests):
+        self.assertRaises(
+            IntelOwlClientException,
+            self.client.retry_connector,
             self.job_id,
             self.connector_name,
         )
