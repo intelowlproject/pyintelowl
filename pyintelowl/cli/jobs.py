@@ -187,3 +187,42 @@ def poll(
             Console().print(f"Result saved into [u red]{output_file}[/]")
     except Exception as e:
         ctx.obj.logger.fatal(f"Error in retrieving job: {str(e)}")
+
+
+@jobs.command(help="Kill a running analyzer by name and job ID")
+@click.argument("job_id", type=int)
+@click.argument("analyzer_name", type=str)
+@click.pass_context
+def kill_analyzer(ctx: ClickContext, job_id: int, analyzer_name: str):
+    ctx.obj.logger.info(
+        f"Requesting kill_analyzer for analyzer [underline blue]#{analyzer_name}[/]"
+        f" and Job [underline blue]#{job_id}[/].."
+    )
+    ans = False
+    try:
+        ans = ctx.obj.kill_running_analyzer(job_id, analyzer_name)
+        rprint(get_action_status_text(ans, "kill"))
+    except IntelOwlClientException as e:
+        rprint(get_action_status_text(ans, "kill"))
+        ctx.obj.logger.fatal(str(e))
+
+
+""
+
+
+@jobs.command(help="Kill a running connector by name and job ID")
+@click.argument("job_id", type=int)
+@click.argument("connector_name", type=str)
+@click.pass_context
+def kill_connector(ctx: ClickContext, job_id: int, connector_name: str):
+    ctx.obj.logger.info(
+        f"Requesting kill_connector for connector [underline blue]#{connector_name}[/]"
+        f" and Job [underline blue]#{job_id}[/].."
+    )
+    ans = False
+    try:
+        ans = ctx.obj.kill_running_connector(job_id, connector_name)
+        rprint(get_action_status_text(ans, "kill"))
+    except IntelOwlClientException as e:
+        rprint(get_action_status_text(ans, "kill"))
+        ctx.obj.logger.fatal(str(e))
