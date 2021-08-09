@@ -2,7 +2,7 @@ from .analyse import analyse
 from .jobs import jobs
 from .tags import tags
 from .config import config
-from .commands import get_analyzer_config
+from .commands import get_analyzer_config, get_connector_config
 
 groups = [
     analyse,
@@ -12,4 +12,4 @@ groups = [
 ]
 
 
-cmds = [get_analyzer_config]
+cmds = [get_analyzer_config, get_connector_config]

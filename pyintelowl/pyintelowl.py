@@ -360,6 +360,21 @@ class IntelOwl:
             raise IntelOwlClientException(e)
         return answer
 
+    def get_connector_configs(self):
+        """
+        Get current state of `connector_config.json` from the IntelOwl instance.\n
+        Endpoint: ``/api/get_connector_configs``
+        """
+        try:
+            url = self.instance + "/api/get_connector_configs"
+            response = self.session.get(url)
+            self.logger.debug(msg=(response.url, response.status_code))
+            response.raise_for_status()
+            answer = response.json()
+        except Exception as e:
+            raise IntelOwlClientException(e)
+        return answer
+
     def get_all_tags(self) -> List[Dict[str, str]]:
         """
         Fetch list of all tags.\n
