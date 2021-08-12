@@ -6,6 +6,8 @@ from .utils import (
     get_file_data,
 )
 from .mocked_requests import (
+    mocked_analyzer_healthcheck,
+    mocked_connector_healthcheck,
     mocked_get_all_jobs,
     mocked_get_job_by_id,
     mocked_delete_job_by_id,
@@ -148,5 +150,35 @@ class TestJobs(BaseTest):
             IntelOwlClientException,
             self.client.retry_connector,
             self.job_id,
+            self.connector_name,
+        )
+
+    @mock_connections(
+        patch("requests.Session.get", side_effect=mocked_analyzer_healthcheck)
+    )
+    def test_analyzer_healthcheck(self, mock_requests):
+        result = self.client.analyzer_healthcheck(self.analyzer_name)
+        self.assertIsInstance(result, dict)
+
+    @mock_connections(patch("requests.Session.get", side_effect=mocked_raise_exception))
+    def test_analyzer_healthcheck_failure(self, mock_requests):
+        self.assertRaises(
+            IntelOwlClientException,
+            self.client.analyzer_healthcheck,
+            self.analyzer_name,
+        )
+
+    @mock_connections(
+        patch("requests.Session.get", side_effect=mocked_connector_healthcheck)
+    )
+    def test_connector_healthcheck_success(self, mock_requests):
+        result = self.client.connector_healthcheck(self.connector_name)
+        self.assertIsInstance(result, dict)
+
+    @mock_connections(patch("requests.Session.get", side_effect=mocked_raise_exception))
+    def test_connector_healthcheck_failure(self, mock_requests):
+        self.assertRaises(
+            IntelOwlClientException,
+            self.client.connector_healthcheck,
             self.connector_name,
         )
