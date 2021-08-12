@@ -5,7 +5,7 @@ import json
 import re
 import requests
 import hashlib
-from typing import List, Dict, Any, Union, AnyStr
+from typing import List, Dict, Any, Optional, Union, AnyStr
 
 from .exceptions import IntelOwlClientException
 
@@ -769,6 +769,19 @@ class IntelOwl:
             raise IntelOwlClientException(e)
         return success
 
+    def __run_plugin_healthcheck(
+        self, plugin_type: str, plugin_name: str
+    ) -> Dict[str, Optional[bool]]:
+        """Internal method for analyzer/connector healthcheck"""
+        try:
+            url = self.instance + f"/api/{plugin_type}/{plugin_name}/healthcheck"
+            response = self.session.get(url)
+            self.logger.debug(msg=(response.url, response.status_code))
+            response.raise_for_status()
+        except Exception as e:
+            raise IntelOwlClientException(e)
+        return response.json()
+
     def kill_analyzer(self, job_id: int, analyzer_name: str) -> bool:
         """Send kill running/pending analyzer request.\n
         Method: PATCH
@@ -872,3 +885,51 @@ class IntelOwl:
             plugin_action="retry",
         )
         return success
+
+    def analyzer_healthcheck(self, analyzer_name: str) -> Dict[str, Optional[bool]]:
+        """Send analyzer(docker-based) health check request.\n
+        Method: GET
+        Endpoint: ``/api/analyzer/{analyzer_name}/healthcheck``
+
+        Args:
+            analyzer_name (str):
+                name of analyzer
+
+        Raises:
+            IntelOwlClientException: on client/HTTP error
+
+        Returns:
+            Dict: {
+                `status`: `True/False/None`
+            }
+        """
+
+        result = self.__run_plugin_healthcheck(
+            plugin_name=analyzer_name,
+            plugin_type="analyzer",
+        )
+        return result
+
+    def connector_healthcheck(self, connector_name: str) -> Dict[str, Optional[bool]]:
+        """Send connector health check request.\n
+        Method: GET
+        Endpoint: ``/api/connector/{connector_name}/healthcheck``
+
+        Args:
+            connector_name (str):
+                name of connector
+
+        Raises:
+            IntelOwlClientException: on client/HTTP error
+
+        Returns:
+            Dict: {
+                `status`: `True/False/None`
+            }
+        """
+
+        result = self.__run_plugin_healthcheck(
+            plugin_name=connector_name,
+            plugin_type="connector",
+        )
+        return result
