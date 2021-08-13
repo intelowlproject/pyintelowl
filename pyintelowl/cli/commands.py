@@ -156,13 +156,13 @@ def get_connector_config(
 @click.pass_context
 def analyzer_healthcheck(ctx: ClickContext, analyzer_name: str):
     ctx.obj.logger.info(
-        f"Requesting healthcheck for analyzer [underline blue]#{analyzer_name}[/]"
+        f"Requesting healthcheck for analyzer [underline blue]{analyzer_name}[/]"
     )
     try:
-        result = ctx.obj.analyzer_healthcheck(analyzer_name)
-        if result["status"] is True:
+        status = ctx.obj.analyzer_healthcheck(analyzer_name)
+        if status is True:
             rprint(f"healthy {get_success_text(str(True))}")
-        elif result["status"] is False:
+        elif status is False:
             rprint(f"failing {get_success_text(str(False))}")
         else:
             rprint("unknown")
@@ -175,13 +175,13 @@ def analyzer_healthcheck(ctx: ClickContext, analyzer_name: str):
 @click.pass_context
 def connector_healthcheck(ctx: ClickContext, connector_name: str):
     ctx.obj.logger.info(
-        f"Requesting healthcheck for connector [underline blue]#{connector_name}[/]"
+        f"Requesting healthcheck for connector [underline blue]{connector_name}[/]"
     )
     try:
-        result = ctx.obj.connector_healthcheck(connector_name)
-        if result["status"] is True:
+        status = ctx.obj.connector_healthcheck(connector_name)
+        if status is True:
             rprint(f"healthy {get_success_text(str(True))}")
-        elif result["status"] is False:
+        elif status is False:
             rprint(f"failing {get_success_text(str(False))}")
         else:
             rprint("unknown")
