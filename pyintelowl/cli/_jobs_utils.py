@@ -14,14 +14,14 @@ from pyintelowl.exceptions import IntelOwlClientException
 from ..cli.domain_checkers import Checkers, console as checkers_console
 
 
-def _display_single_job(data):
+def _display_single_job(data, report_type):
     console = Console()
     with console.pager(styles=True):
         # print job attributes
         attrs = _render_job_attributes(data)
         console.print(attrs)
         # construct job analysis table
-        table = _render_job_analysis_table(data["analyzer_reports"], verbose=True)
+        table = _render_job_analysis_table(data[report_type], verbose=True)
         console.print(table, justify="center")
 
 
