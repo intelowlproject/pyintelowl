@@ -86,6 +86,9 @@ def _display_all_jobs(logger, rows):
         header="Analyzers\nCalled", justify="center", header_style=header_style
     )
     table.add_column(
+        header="Connectors\nCalled", justify="center", header_style=header_style
+    )
+    table.add_column(
         header="Process\nTime(s)", justify="center", header_style=header_style
     )
     table.add_column(header="Status", header_style=header_style)
@@ -99,6 +102,7 @@ def _display_all_jobs(logger, rows):
                 else el["file_mimetype"],
                 ", ".join([t["label"] for t in el["tags"]]),
                 el["no_of_analyzers_executed"],
+                el["no_of_connectors_executed"],
                 str(el["process_time"]),
                 get_status_text(el["status"]),
             )
