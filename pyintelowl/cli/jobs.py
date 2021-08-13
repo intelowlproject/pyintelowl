@@ -58,6 +58,22 @@ def ls(ctx: ClickContext, status: str, as_json: bool):
 @jobs.command(help="Tabular print job attributes and results for a job ID")
 @click.argument("job_id", type=int)
 @click.option(
+    "-r",
+    "--report",
+    type=click.Choice(
+        [
+            "analyzers",
+            "connectors",
+        ]
+    ),
+    default="analyzers",
+    show_choices=True,
+    help="""
+    Choose the type of report to be displayed:
+    analyzer or connector.
+    """,
+)
+@click.option(
     "-c",
     "--categorize",
     is_flag=True,
@@ -68,24 +84,27 @@ def ls(ctx: ClickContext, status: str, as_json: bool):
 )
 @add_options(json_flag_option)
 @click.pass_context
-def view(ctx: ClickContext, job_id: int, categorize: bool, as_json: bool):
+def view(ctx: ClickContext, job_id: int, report: str, categorize: bool, as_json: bool):
     ctx.obj.logger.info(f"Requesting Job [underline blue]#{job_id}[/]..")
     if as_json and categorize:
         raise click.Abort("Cannot use the -c and -j options together")
     try:
         ans = ctx.obj.get_job_by_id(job_id)
+        report_type = (
+            "analyzer_reports" if report == "analyzers" else "connector_reports"
+        )
         if as_json:
             rprint(json.dumps(ans, indent=4))
         elif categorize:
             if ans["is_sample"]:
                 raise click.Abort("Cannot use the -c option for a file analysis")
             _result_filter_and_tabular_print(
-                ans["analyzer_reports"],
+                ans[report_type],
                 ans["observable_name"],
                 ans["observable_classification"],
             )
         else:
-            _display_single_job(ans)
+            _display_single_job(ans, report_type)
     except IntelOwlClientException as e:
         ctx.obj.logger.fatal(str(e))
 
