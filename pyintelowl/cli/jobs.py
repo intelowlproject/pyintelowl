@@ -92,7 +92,7 @@ def view(ctx: ClickContext, job_id: int, report: str, categorize: bool, as_json:
         ans = ctx.obj.get_job_by_id(job_id)
         report_type = (
             "analyzer_reports" if report == "analyzers" else "connector_reports"
-        )  # noqa: E401
+        )
         if as_json:
             rprint(json.dumps(ans, indent=4))
         elif categorize:
