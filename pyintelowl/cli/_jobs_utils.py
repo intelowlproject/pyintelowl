@@ -1,5 +1,5 @@
 import time
-import typing
+from typing_extensions import Literal
 from rich import box
 from rich.panel import Panel
 from rich.table import Table
@@ -16,7 +16,7 @@ from ..cli.domain_checkers import Checkers, console as checkers_console
 
 
 def _display_single_job(
-    data, report_type: typing.Literal["analyzer_reports", "connector_reports"]
+    data, report_type: Literal["analyzer_reports", "connector_reports"]
 ):
     console = Console()
     with console.pager(styles=True):
@@ -33,9 +33,7 @@ def _display_single_job(
         console.print(table, justify="center")
 
 
-def _render_job_analysis_table(
-    rows, title: typing.Literal["Analysis Reports", "Connector Reports"], verbose=False
-):
+def _render_job_analysis_table(rows, title: str, verbose=False):
     if verbose:
         headers = ["Name", "Status", "Report", "Errors"]
     else:
@@ -153,7 +151,9 @@ def _poll_for_job_cli(
         if i == 0:
             console.print(_render_job_attributes(ans))
         console.print(
-            _render_job_analysis_table(ans["analyzer_reports"], verbose=False),
+            _render_job_analysis_table(
+                ans["analyzer_reports"], title="Analysis Reports", verbose=False
+            ),
             justify="center",
         )
         if status not in ["running", "pending"]:
