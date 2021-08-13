@@ -156,9 +156,10 @@ class TestJobs(BaseTest):
     @mock_connections(
         patch("requests.Session.get", side_effect=mocked_analyzer_healthcheck)
     )
-    def test_analyzer_healthcheck(self, mock_requests):
-        result = self.client.analyzer_healthcheck(self.analyzer_name)
-        self.assertIsInstance(result, dict)
+    def test_analyzer_healthcheck_success(self, mock_requests):
+        status = self.client.analyzer_healthcheck(self.analyzer_name)
+        self.assertIsInstance(status, bool)
+        self.assertTrue(status)
 
     @mock_connections(patch("requests.Session.get", side_effect=mocked_raise_exception))
     def test_analyzer_healthcheck_failure(self, mock_requests):
@@ -172,8 +173,9 @@ class TestJobs(BaseTest):
         patch("requests.Session.get", side_effect=mocked_connector_healthcheck)
     )
     def test_connector_healthcheck_success(self, mock_requests):
-        result = self.client.connector_healthcheck(self.connector_name)
-        self.assertIsInstance(result, dict)
+        status = self.client.connector_healthcheck(self.connector_name)
+        self.assertIsInstance(status, bool)
+        self.assertTrue(status)
 
     @mock_connections(patch("requests.Session.get", side_effect=mocked_raise_exception))
     def test_connector_healthcheck_failure(self, mock_requests):
