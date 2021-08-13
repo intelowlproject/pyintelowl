@@ -24,18 +24,25 @@ def _display_single_job(
         attrs = _render_job_attributes(data)
         console.print(attrs)
         # construct job analysis table
-        table = _render_job_analysis_table(data[report_type], verbose=True)
+        title = (
+            "Analysis Reports"
+            if report_type == "analyzer_reports"
+            else "Connector Reports"
+        )
+        table = _render_job_analysis_table(data[report_type], title, verbose=True)
         console.print(table, justify="center")
 
 
-def _render_job_analysis_table(rows, verbose=False):
+def _render_job_analysis_table(
+    rows, title: typing.Literal["Analysis Reports", "Connector Reports"], verbose=False
+):
     if verbose:
         headers = ["Name", "Status", "Report", "Errors"]
     else:
         headers = ["Name", "Status"]
     table = Table(
         show_header=True,
-        title="Analysis Data",
+        title=title,
         box=box.DOUBLE_EDGE,
         show_lines=True,
     )
