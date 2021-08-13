@@ -1,4 +1,5 @@
 import time
+import typing
 from rich import box
 from rich.panel import Panel
 from rich.table import Table
@@ -14,7 +15,9 @@ from pyintelowl.exceptions import IntelOwlClientException
 from ..cli.domain_checkers import Checkers, console as checkers_console
 
 
-def _display_single_job(data, report_type):
+def _display_single_job(
+    data, report_type: typing.Literal["analyzer_reports", "connector_reports"]
+):
     console = Console()
     with console.pager(styles=True):
         # print job attributes
