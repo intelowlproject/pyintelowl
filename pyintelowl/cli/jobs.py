@@ -128,10 +128,11 @@ def rm(ctx: ClickContext, job_id: int):
     help="Name and Path to downloaded analysis sample.",
 )
 @click.pass_context
-def down(ctx: ClickContext, job_id: int, output_file: str):
+def download_sample(ctx: ClickContext, job_id: int, output_file: str):
     ctx.obj.logger.info(
         f"Request sample download from Job [underline blue]#{job_id}[/].."
     )
+    ans = False
     try:
         ans = ctx.obj.download_sample(job_id)
         if ans:
