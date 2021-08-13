@@ -171,6 +171,22 @@ def mocked_retry_connector(*args, **kwargs):
     )
 
 
+def mocked_analyzer_healthcheck(*args, **kwargs):
+    return MockResponse(
+        {"status": True},
+        200,
+        "/api/analyzer/MISP/healthcheck",
+    )
+
+
+def mocked_connector_healthcheck(*args, **kwargs):
+    return MockResponse(
+        {"status": True},
+        200,
+        "/api/connector/MISP/healthcheck",
+    )
+
+
 def mocked_download_job_sample(*args, **kwargs):
     return MockResponse(
         {},

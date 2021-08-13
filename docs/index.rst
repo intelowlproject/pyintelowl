@@ -33,12 +33,14 @@ On successful installation, The ``pyintelowl`` entryscript should be directly in
    -h, --help   Show this message and exit.
 
    Commands:
-   analyse              Send new analysis request
-   config               Set or view config variables
-   get-analyzer-config  Get current state of `analyzer_config.json` from the...
-   get-connector-config  Get current state of `connector_config.json` from the...
-   jobs                 Manage Jobs
-   tags                 Manage tags
+   analyse                Send new analysis request
+   analyzer-healthcheck   Send healthcheck request for an analyzer...
+   config                 Set or view config variables
+   connector-healthcheck  Send healthcheck request for a connector
+   get-analyzer-config    Get current state of `analyzer_config.json` from...
+   get-connector-config   Get current state of `connector_config.json` from...
+   jobs                   Manage Jobs
+   tags                   Manage tags
 
 Configuration
 ^^^^^^^^^^^^^
