@@ -5,7 +5,16 @@ import json
 import re
 import requests
 import hashlib
-from typing import List, Dict, Any, Optional, Union, AnyStr, Literal, Callable
+from typing import (
+    List,
+    Dict,
+    Any,
+    Optional,
+    Union,
+    AnyStr,
+    Callable,
+)
+from typing_extensions import Literal
 
 from .exceptions import IntelOwlClientException
 
