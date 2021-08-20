@@ -34,7 +34,7 @@ __analyse_options = [
     click.option(
         "-t",
         "--tlp",
-        is_flag=True,
+        type=click.Choice(["WHITE", "GREEN", "AMBER", "RED"], case_sensitive=False),
         help="TLP for the analysis (WHITE/GREEN/AMBER/RED)",
     ),
     click.option(
