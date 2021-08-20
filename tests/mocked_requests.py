@@ -37,6 +37,7 @@ def mocked_connector_config(*args, **kwargs):
                 "python_module": "test_class.test_module",
                 "description": "a test connector",
                 "disabled": False,
+                "maximum_tlp": "WHITE",
                 "config": {"soft_time_limit": 30, "queue": "default"},
                 "secrets": {},
             }
