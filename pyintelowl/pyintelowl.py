@@ -141,9 +141,7 @@ class IntelOwl:
         analyzers_requested: List[str],
         filename: str,
         binary: bytes,
-        force_privacy: bool = False,
-        private_job: bool = False,
-        disable_external_analyzers: bool = False,
+        tlp: str = "WHITE",
         run_all_available_analyzers: bool = False,
         runtime_configuration: Dict = None,
         tags: List[int] = None,
@@ -158,12 +156,9 @@ class IntelOwl:
                 Filename
             binary (bytes):
                 File contents as bytes
-            force_privacy (bool, optional):
-                Disable analyzers that can leak info. Defaults to ``False``.
-            private_job (bool, optional):
-                Limit view permissions to your groups . Defaults to ``False``.
-            disable_external_analyzers (bool, optional):
-                Disable analyzers that use external services. Defaults to ``False``.
+            tlp (str, optional):
+                TLP for the analysis.
+                (options: ``WHITE, GREEN, AMBER, RED``). Defaults to ``WHITE``.
             tags (List[int]):
                 List of tags associated with this job
             run_all_available_analyzers (bool, optional):
@@ -188,9 +183,7 @@ class IntelOwl:
                 "analyzers_requested": analyzers_requested,
                 "tags_id": tags,
                 "run_all_available_analyzers": run_all_available_analyzers,
-                "force_privacy": force_privacy,
-                "private": private_job,
-                "disable_external_analyzers": disable_external_analyzers,
+                "tlp": tlp,
                 "file_name": filename,
             }
             if runtime_configuration:
@@ -205,9 +198,7 @@ class IntelOwl:
         self,
         analyzers_requested: List[str],
         observable_name: str,
-        force_privacy: bool = False,
-        private_job: bool = False,
-        disable_external_analyzers: bool = False,
+        tlp: str = "WHITE",
         run_all_available_analyzers: bool = False,
         runtime_configuration: Dict = None,
         tags: List[int] = None,
@@ -220,12 +211,9 @@ class IntelOwl:
                 List of analyzers to invoke
             observable_name (str):
                 Observable value
-            force_privacy (bool, optional):
-                Disable analyzers that can leak info. Defaults to ``False``.
-            private_job (bool, optional):
-                Limit view permissions to your groups . Defaults to ``False``.
-            disable_external_analyzers (bool, optional):
-                Disable analyzers that use external services. Defaults to ``False``.
+            tlp (str, optional):
+                TLP for the analysis.
+                (options: ``WHITE, GREEN, AMBER, RED``). Defaults to ``WHITE``.
             tags (List[int]):
                 List of tags associated with this job
             run_all_available_analyzers (bool, optional):
@@ -250,9 +238,7 @@ class IntelOwl:
                 "analyzers_requested": analyzers_requested,
                 "tags_id": tags,
                 "run_all_available_analyzers": run_all_available_analyzers,
-                "force_privacy": force_privacy,
-                "private": private_job,
-                "disable_external_analyzers": disable_external_analyzers,
+                "tlp": tlp,
                 "observable_name": observable_name,
                 "observable_classification": self._get_observable_classification(
                     observable_name
@@ -275,9 +261,7 @@ class IntelOwl:
         Args:
             rows (List[Dict]):
                 Each row should be a dictionary with keys,
-                `value`, `type`, `analyzers_list`, `run_all`
-                `force_privacy`, `private_job`, `disable_external_analyzers`,
-                `check`.
+                `value`, `type`, `analyzers_list`, `run_all`, `tlp`, `check`.
         """
         for obj in rows:
             try:
@@ -294,9 +278,7 @@ class IntelOwl:
                     obj["type"],
                     obj.get("analyzers_list", None),
                     obj.get("run_all", False),
-                    obj.get("force_privacy", False),
-                    obj.get("private_job", False),
-                    obj.get("disable_external_analyzers", False),
+                    obj.get("tlp", "WHITE"),
                     obj.get("check", None),
                     runtime_config,
                 )
@@ -492,9 +474,7 @@ class IntelOwl:
         analyzers_list: List[str],
         tags_list: List[int],
         run_all: bool,
-        force_privacy,
-        private_job,
-        disable_external_analyzers,
+        tlp,
         check,
         runtime_configuration: Dict = None,
         should_poll: bool = False,
@@ -548,9 +528,7 @@ class IntelOwl:
             resp2 = self.send_observable_analysis_request(
                 analyzers_requested=analyzers_list,
                 observable_name=obj,
-                force_privacy=force_privacy,
-                private_job=private_job,
-                disable_external_analyzers=disable_external_analyzers,
+                tlp=tlp,
                 tags=tags_list,
                 run_all_available_analyzers=run_all,
                 runtime_configuration=runtime_configuration,
@@ -561,9 +539,7 @@ class IntelOwl:
                 analyzers_requested=analyzers_list,
                 filename=path.name,
                 binary=path.read_bytes(),
-                force_privacy=force_privacy,
-                private_job=private_job,
-                disable_external_analyzers=disable_external_analyzers,
+                tlp=tlp,
                 tags=tags_list,
                 run_all_available_analyzers=run_all,
                 runtime_configuration=runtime_configuration,
