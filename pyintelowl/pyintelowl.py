@@ -114,13 +114,13 @@ class IntelOwl:
         Returns:
             Dict: JSON body
         """
-        params = {"md5": md5, "analyzers_needed": analyzers_needed}
+        data = {"md5": md5, "analyzers": analyzers_needed}
         if run_all_available_analyzers:
-            params["run_all_available_analyzers"] = True
+            data["run_all_available_analyzers"] = True
         if not check_reported_analysis_too:
-            params["running_only"] = True
+            data["running_only"] = True
         url = self.instance + "/api/ask_analysis_availability"
-        response = self.__make_request("GET", url=url, params=params)
+        response = self.__make_request("POST", url=url, data=data)
         answer = response.json()
         status, job_id = answer.get("status", None), answer.get("job_id", None)
         # check sanity cases
