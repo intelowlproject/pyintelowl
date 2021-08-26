@@ -18,7 +18,7 @@ from .mocked_requests import (
 
 class TestGeneral(BaseTest):
     @mock_connections(
-        patch("requests.Session.get", side_effect=mocked_ask_analysis_success)
+        patch("requests.Session.post", side_effect=mocked_ask_analysis_success)
     )
     def test_ask_analysis_availability_success(self, mocked_requests):
         md5 = self.hash
@@ -28,7 +28,7 @@ class TestGeneral(BaseTest):
         self.assertIn("job_id", result)
 
     @mock_connections(
-        patch("requests.Session.get", side_effect=mocked_ask_analysis_no_status)
+        patch("requests.Session.post", side_effect=mocked_ask_analysis_no_status)
     )
     def test_ask_analysis_availability_no_status(self, mocked_requests):
         md5 = self.hash
@@ -41,7 +41,7 @@ class TestGeneral(BaseTest):
         )
 
     @mock_connections(
-        patch("requests.Session.get", side_effect=mocked_ask_analysis_no_job_id)
+        patch("requests.Session.post", side_effect=mocked_ask_analysis_no_job_id)
     )
     def test_ask_analysis_availability_no_job_id(self, mocked_requests):
         md5 = self.hash
@@ -53,7 +53,9 @@ class TestGeneral(BaseTest):
             analyzers_needed,
         )
 
-    @mock_connections(patch("requests.Session.get", side_effect=mocked_raise_exception))
+    @mock_connections(
+        patch("requests.Session.post", side_effect=mocked_raise_exception)
+    )
     def test_ask_analysis_availability_failure(self, mocked_requests):
         md5 = self.hash
         analyzers_needed = ["test_1", "test_2"]
