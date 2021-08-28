@@ -19,6 +19,9 @@ from typing_extensions import Literal
 from .exceptions import IntelOwlClientException
 
 
+TLPType = Literal["WHITE", "GREEN", "AMBER", "RED"]
+
+
 class IntelOwl:
     logger: logging.Logger
 
@@ -141,7 +144,7 @@ class IntelOwl:
         analyzers_requested: List[str],
         filename: str,
         binary: bytes,
-        tlp: Literal["WHITE", "GREEN", "AMBER", "RED"] = "WHITE",
+        tlp: TLPType = "WHITE",
         run_all_available_analyzers: bool = False,
         runtime_configuration: Dict = None,
         tags: List[int] = None,
@@ -203,7 +206,7 @@ class IntelOwl:
         self,
         analyzers_requested: List[str],
         observable_name: str,
-        tlp: Literal["WHITE", "GREEN", "AMBER", "RED"] = "WHITE",
+        tlp: TLPType = "WHITE",
         run_all_available_analyzers: bool = False,
         runtime_configuration: Dict = None,
         tags: List[int] = None,
@@ -271,8 +274,8 @@ class IntelOwl:
         Args:
             rows (List[Dict]):
                 Each row should be a dictionary with keys,
-                `value`, `type`, `analyzers_list`, `run_all`, `tlp`, `check`,
-                 `connectors_list`.
+                `value`, `type`, `analyzers_list`, `run_all`, `check`,
+                 `runtime_config`, `tlp`, `connectors_list`.
         """
         for obj in rows:
             try:
@@ -290,10 +293,12 @@ class IntelOwl:
                     obj["value"],
                     obj["type"],
                     obj.get("analyzers_list", None),
+                    obj.get("tags_list", []),
                     obj.get("run_all", False),
-                    obj.get("tlp", "WHITE"),
                     obj.get("check", None),
                     runtime_config,
+                    obj.get("should_poll", False),
+                    obj.get("tlp", "WHITE"),
                     connectors_list,
                 )
             except IntelOwlClientException as e:
@@ -488,10 +493,10 @@ class IntelOwl:
         analyzers_list: List[str],
         tags_list: List[int],
         run_all: bool,
-        tlp,
         check,
         runtime_configuration: Dict = None,
         should_poll: bool = False,
+        tlp: TLPType = "WHITE",
         connectors_list: List[str] = [],
     ) -> None:
         """
@@ -515,10 +520,12 @@ class IntelOwl:
             )
             return
         analyzers = analyzers_list if analyzers_list else "all available analyzers"
+        connectors = connectors_list if connectors_list else "all available connectors"
         self.logger.info(
             f"""Requesting analysis..
             {type_}: [blue]{obj}[/]
             analyzers: [i green]{analyzers}[/]
+            connectors: [i green]{connectors}[/]
             """
         )
         # 1st step: ask analysis availability

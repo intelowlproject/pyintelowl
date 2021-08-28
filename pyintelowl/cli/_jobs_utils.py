@@ -78,6 +78,7 @@ def _render_job_attributes(data):
         f"{style}Classification:[/] {clsfn}",
         f"{style}Tags:[/] {tags}",
         f"{style}Status:[/] {status}",
+        f"{style}TLP:[/] {data['tlp']}",
     )
     return Panel(r, title="Job attributes")
 

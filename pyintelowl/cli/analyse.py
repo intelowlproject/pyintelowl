@@ -113,13 +113,13 @@ def observable(
             value,
             "observable",
             analyzers_list,
-            connectors_list,
             tags_list,
             run_all,
-            tlp,
             check,
             runtime_config,
             should_poll,
+            tlp,
+            connectors_list,
         )
     except IntelOwlClientException as e:
         ctx.obj.logger.fatal(str(e))
@@ -156,13 +156,13 @@ def file(
             filepath,
             "file",
             analyzers_list,
-            connectors_list,
             tags_list,
             run_all,
-            tlp,
             check,
             runtime_config,
             should_poll,
+            tlp,
+            connectors_list,
         )
     except IntelOwlClientException as e:
         ctx.obj.logger.fatal(str(e))
