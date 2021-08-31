@@ -1,10 +1,11 @@
 # Changelog
 
-# [4.0.0](https://github.com/intelowlproject/pyintelowl/releases/tag/4.0.0)
+## [4.0.0](https://github.com/intelowlproject/pyintelowl/releases/tag/4.0.0)
 
-*Note: Incompatible with previous versions.*
+**This version supports only IntelOwl versions >=3.0.0 and includes many breaking changes.**
 
-**This version supports only IntelOwl versions >=3.0.0**
+- Refactored argument names and ordering for `ask_analysis_availability`, `send_file_analysis_request`, `send_observable_analysis_request` methods to comply with latest changes in IntelOwl's REST API.
+- Added `kill`, `retry` and `healthcheck` features to analyzers and connectors. See [Managing Analyzers and Connectors](https://intelowl.readthedocs.io/en/master/Usage.html#managing-analyzers-and-connectors).
 
 
 ## [3.1.4](https://github.com/intelowlproject/pyintelowl/releases/tag/3.1.4)
@@ -24,8 +25,9 @@
 * Added basic testing suite for CLI
 
 ## [3.1.0](https://github.com/intelowlproject/pyintelowl/releases/tag/3.1.0)
-With this, pyintelowl now supports all API endpoints of IntelOwl. Super!!
-More info at: https://github.com/intelowlproject/IntelOwl/releases/tag/v2.2.0
+With this, pyintelowl now supports all API endpoints of IntelOwl.
+
+> More info at: https://github.com/intelowlproject/IntelOwl/releases/tag/v2.2.0
 
 ## [3.0.1](https://github.com/intelowlproject/pyintelowl/releases/tag/3.0.1)
 This release was created mainly to solve a problem with the installation of the pip package.
