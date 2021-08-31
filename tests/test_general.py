@@ -70,7 +70,8 @@ class TestGeneral(BaseTest):
 
     @mock_connections(patch("requests.Session.get", side_effect=mocked_raise_exception))
     def test_get_analyzer_config_failure(self, mocked_requests):
-        self.assertRaises(IntelOwlClientException, self.client.get_analyzer_configs)
+        with self.assertRaises(IntelOwlClientException):
+            self.client.get_analyzer_configs()
 
     @mock_connections(
         patch("requests.Session.get", side_effect=mocked_connector_config)
@@ -81,7 +82,8 @@ class TestGeneral(BaseTest):
 
     @mock_connections(patch("requests.Session.get", side_effect=mocked_raise_exception))
     def test_get_connector_config_failure(self, mocked_requests):
-        self.assertRaises(IntelOwlClientException, self.client.get_connector_configs)
+        with self.assertRaises(IntelOwlClientException):
+            self.client.get_connector_configs()
 
     @mock_connections(
         patch("requests.Session.post", side_effect=mocked_send_analysis_success)
