@@ -22,8 +22,8 @@ class TestGeneral(BaseTest):
     )
     def test_ask_analysis_availability_success(self, mocked_requests):
         md5 = self.hash
-        analyzers_needed = ["test_1", "test_2"]
-        result = self.client.ask_analysis_availability(md5, analyzers_needed)
+        analyzers = ["test_1", "test_2"]
+        result = self.client.ask_analysis_availability(md5, analyzers)
         self.assertIn("status", result)
         self.assertIn("job_id", result)
 
@@ -32,39 +32,36 @@ class TestGeneral(BaseTest):
     )
     def test_ask_analysis_availability_no_status(self, mocked_requests):
         md5 = self.hash
-        analyzers_needed = ["test_1", "test_2"]
-        self.assertRaises(
-            IntelOwlClientException,
-            self.client.ask_analysis_availability,
-            md5,
-            analyzers_needed,
-        )
+        analyzers = ["test_1", "test_2"]
+        with self.assertRaises(IntelOwlClientException):
+            self.client.ask_analysis_availability(
+                md5,
+                analyzers,
+            )
 
     @mock_connections(
         patch("requests.Session.post", side_effect=mocked_ask_analysis_no_job_id)
     )
     def test_ask_analysis_availability_no_job_id(self, mocked_requests):
         md5 = self.hash
-        analyzers_needed = ["test_1", "test_2"]
-        self.assertRaises(
-            IntelOwlClientException,
-            self.client.ask_analysis_availability,
-            md5,
-            analyzers_needed,
-        )
+        analyzers = ["test_1", "test_2"]
+        with self.assertRaises(IntelOwlClientException):
+            self.client.ask_analysis_availability(
+                md5,
+                analyzers,
+            )
 
     @mock_connections(
         patch("requests.Session.post", side_effect=mocked_raise_exception)
     )
     def test_ask_analysis_availability_failure(self, mocked_requests):
         md5 = self.hash
-        analyzers_needed = ["test_1", "test_2"]
-        self.assertRaises(
-            IntelOwlClientException,
-            self.client.ask_analysis_availability,
-            md5,
-            analyzers_needed,
-        )
+        analyzers = ["test_1", "test_2"]
+        with self.assertRaises(IntelOwlClientException):
+            self.client.ask_analysis_availability(
+                md5=md5,
+                analyzers=analyzers,
+            )
 
     @mock_connections(patch("requests.Session.get", side_effect=mocked_analyzer_config))
     def test_get_analyzer_config_success(self, mocked_requests):
@@ -90,15 +87,15 @@ class TestGeneral(BaseTest):
         patch("requests.Session.post", side_effect=mocked_send_analysis_success)
     )
     def test_send_observable_analysis_request(self, mocked_requests):
+        observable_name = self.domain
         analyzers_requested = ["test_1", "test_2"]
         connectors_requested = ["test_1", "test_2"]
-        observable_name = self.domain
         runtime_config = {"test_key": "test_param"}
         result = self.client.send_observable_analysis_request(
-            analyzers_requested,
             observable_name,
-            runtime_configuration=runtime_config,
+            analyzers_requested=analyzers_requested,
             connectors_requested=connectors_requested,
+            runtime_configuration=runtime_config,
         )
         self.assertIn("status", result)
         self.assertIn("job_id", result)
@@ -108,18 +105,17 @@ class TestGeneral(BaseTest):
         patch("requests.Session.post", side_effect=mocked_raise_exception)
     )
     def test_send_observable_analysis_request_failure(self, mocked_requests):
+        observable_name = self.domain
         analyzers_requested = ["test_1", "test_2"]
         connectors_requested = ["test_1", "test_2"]
-        observable_name = self.domain
         runtime_config = {"test_key": "test_param"}
-        self.assertRaises(
-            IntelOwlClientException,
-            self.client.send_observable_analysis_request,
-            analyzers_requested,
-            observable_name,
-            runtime_configuration=runtime_config,
-            connectors_requested=connectors_requested,
-        )
+        with self.assertRaises(IntelOwlClientException):
+            self.client.send_observable_analysis_request(
+                observable_name,
+                analyzers_requested=analyzers_requested,
+                connectors_requested=connectors_requested,
+                runtime_configuration=runtime_config,
+            )
 
     @mock_connections(
         patch("requests.Session.post", side_effect=mocked_send_analysis_success)
@@ -131,11 +127,11 @@ class TestGeneral(BaseTest):
         binary = get_file_data(self.filepath)
         runtime_config = {"test_key": "test_param"}
         result = self.client.send_file_analysis_request(
-            analyzers_requested,
             filename,
             binary,
-            runtime_configuration=runtime_config,
+            analyzers_requested=analyzers_requested,
             connectors_requested=connectors_requested,
+            runtime_configuration=runtime_config,
         )
         self.assertIn("status", result)
         self.assertIn("job_id", result)
@@ -150,15 +146,14 @@ class TestGeneral(BaseTest):
         filename = self.filepath
         binary = get_file_data(self.filepath)
         runtime_config = {"test_key": "test_param"}
-        self.assertRaises(
-            IntelOwlClientException,
-            self.client.send_file_analysis_request,
-            analyzers_requested,
-            filename,
-            binary,
-            runtime_configuration=runtime_config,
-            connectors_requested=connectors_requested,
-        )
+        with self.assertRaises(IntelOwlClientException):
+            self.client.send_file_analysis_request(
+                filename,
+                binary,
+                analyzers_requested=analyzers_requested,
+                connectors_requested=connectors_requested,
+                runtime_configuration=runtime_config,
+            )
 
     def test_get_md5_observable(self):
         type_ = "observable"
@@ -181,9 +176,8 @@ class TestGeneral(BaseTest):
     def test_get_md5_file_failure(self):
         type_ = "file"
         test_string = "/path/to/non-existent/file"
-        self.assertRaises(
-            IntelOwlClientException, self.client.get_md5, test_string, type_
-        )
+        with self.assertRaises(IntelOwlClientException):
+            self.client.get_md5(test_string, type_)
 
     def test__get_observable_classification_ip(self):
         test_value = self.ip
