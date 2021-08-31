@@ -2,11 +2,22 @@
 
 ## [4.0.0](https://github.com/intelowlproject/pyintelowl/releases/tag/4.0.0)
 
-**This version supports only IntelOwl versions >=3.0.0 and includes many breaking changes.**
+> **This version supports only IntelOwl versions >=3.0.0 and includes many breaking changes.**
 
+**Changes:**
 - Refactored argument names and ordering for `ask_analysis_availability`, `send_file_analysis_request`, `send_observable_analysis_request` methods to comply with latest changes in IntelOwl's REST API.
-- Added `kill`, `retry` and `healthcheck` features to analyzers and connectors. See [Managing Analyzers and Connectors](https://intelowl.readthedocs.io/en/master/Usage.html#managing-analyzers-and-connectors).
+- Deprecate `run_all_available_analyzers` argument/flag.
 
+**New Features:**
+- Ability to specify `connectors_requested` when creating a new analysis.
+- Ability to request and view "Connector Reports" for a job.
+- Ability to request `connector_config.json` file and view in either JSON or tabular format.
+- Ability to request download of sample associated with a job.
+- Added `kill`, `retry` and `healthcheck` features to analyzers and connectors. See [Managing Analyzers and Connectors](https://intelowl.readthedocs.io/en/master/Usage.html#managing-analyzers-and-connectors) section of the documentation.
+
+**Others:**
+- Soften peer dependencies/requirements to avoid pip conflicts.
+- Better testing across different python versions using tox's matrix.
 
 ## [3.1.4](https://github.com/intelowlproject/pyintelowl/releases/tag/3.1.4)
 * Fix `IntelOwl._get_observable_classification` not setting 'generic' classification properly.
