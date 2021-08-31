@@ -13,7 +13,7 @@
 import os
 import sys
 
-VERSION = "v3.1.4"
+VERSION = "4.0.0"
 GITHUB_URL = "https://github.com/intelowlproject/pyintelowl"
 
 sys.path.append(os.path.abspath("../"))
