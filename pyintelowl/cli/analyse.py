@@ -15,6 +15,16 @@ __analyse_options = [
     """,
     ),
     click.option(
+        "-cl",
+        "--connectors-list",
+        type=str,
+        default="",
+        help="""
+    Comma separated list of specific connector names to invoke.
+    Defaults to all connectors.
+    """,
+    ),
+    click.option(
         "-tl",
         "--tags-list",
         type=str,
@@ -80,6 +90,7 @@ def observable(
     ctx: ClickContext,
     value,
     analyzers_list: str,
+    connectors_list: str,
     tags_list: str,
     run_all,
     tlp,
@@ -87,10 +98,8 @@ def observable(
     runtime_config,
     should_poll: bool,
 ):
-    if not run_all:
-        analyzers_list = analyzers_list.split(",")
-    else:
-        analyzers_list = []
+    analyzers_list = analyzers_list.split(",") if not run_all else []
+    connectors_list = connectors_list.split(",") if connectors_list else []
     if tags_list:
         tags_list = list(map(int, tags_list.split(",")))
     else:
@@ -106,10 +115,11 @@ def observable(
             analyzers_list,
             tags_list,
             run_all,
-            tlp,
             check,
             runtime_config,
             should_poll,
+            tlp,
+            connectors_list,
         )
     except IntelOwlClientException as e:
         ctx.obj.logger.fatal(str(e))
@@ -123,6 +133,7 @@ def file(
     ctx: ClickContext,
     filepath: str,
     analyzers_list: str,
+    connectors_list: str,
     tags_list: str,
     run_all,
     tlp,
@@ -130,10 +141,8 @@ def file(
     runtime_config,
     should_poll: bool,
 ):
-    if not run_all:
-        analyzers_list = analyzers_list.split(",")
-    else:
-        analyzers_list = []
+    analyzers_list = analyzers_list.split(",") if not run_all else []
+    connectors_list = connectors_list.split(",") if connectors_list else []
     if tags_list:
         tags_list = list(map(int, tags_list.split(",")))
     else:
@@ -149,10 +158,11 @@ def file(
             analyzers_list,
             tags_list,
             run_all,
-            tlp,
             check,
             runtime_config,
             should_poll,
+            tlp,
+            connectors_list,
         )
     except IntelOwlClientException as e:
         ctx.obj.logger.fatal(str(e))

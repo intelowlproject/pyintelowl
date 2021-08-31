@@ -91,10 +91,14 @@ class TestGeneral(BaseTest):
     )
     def test_send_observable_analysis_request(self, mocked_requests):
         analyzers_requested = ["test_1", "test_2"]
+        connectors_requested = ["test_1", "test_2"]
         observable_name = self.domain
         runtime_config = {"test_key": "test_param"}
         result = self.client.send_observable_analysis_request(
-            analyzers_requested, observable_name, runtime_configuration=runtime_config
+            analyzers_requested,
+            observable_name,
+            runtime_configuration=runtime_config,
+            connectors_requested=connectors_requested,
         )
         self.assertIn("status", result)
         self.assertIn("job_id", result)
@@ -105,6 +109,7 @@ class TestGeneral(BaseTest):
     )
     def test_send_observable_analysis_request_failure(self, mocked_requests):
         analyzers_requested = ["test_1", "test_2"]
+        connectors_requested = ["test_1", "test_2"]
         observable_name = self.domain
         runtime_config = {"test_key": "test_param"}
         self.assertRaises(
@@ -113,6 +118,7 @@ class TestGeneral(BaseTest):
             analyzers_requested,
             observable_name,
             runtime_configuration=runtime_config,
+            connectors_requested=connectors_requested,
         )
 
     @mock_connections(
@@ -120,11 +126,16 @@ class TestGeneral(BaseTest):
     )
     def test_send_file_analysis_request(self, mocked_requests):
         analyzers_requested = ["test_1", "test_2"]
+        connectors_requested = ["test_1", "test_2"]
         filename = self.filepath
         binary = get_file_data(self.filepath)
         runtime_config = {"test_key": "test_param"}
         result = self.client.send_file_analysis_request(
-            analyzers_requested, filename, binary, runtime_configuration=runtime_config
+            analyzers_requested,
+            filename,
+            binary,
+            runtime_configuration=runtime_config,
+            connectors_requested=connectors_requested,
         )
         self.assertIn("status", result)
         self.assertIn("job_id", result)
@@ -135,6 +146,7 @@ class TestGeneral(BaseTest):
     )
     def test_send_file_analysis_request_failure(self, mocked_requests):
         analyzers_requested = ["test_1", "test_2"]
+        connectors_requested = ["test_1", "test_2"]
         filename = self.filepath
         binary = get_file_data(self.filepath)
         runtime_config = {"test_key": "test_param"}
@@ -145,6 +157,7 @@ class TestGeneral(BaseTest):
             filename,
             binary,
             runtime_configuration=runtime_config,
+            connectors_requested=connectors_requested,
         )
 
     def test_get_md5_observable(self):

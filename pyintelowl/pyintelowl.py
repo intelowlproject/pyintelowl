@@ -19,6 +19,9 @@ from typing_extensions import Literal
 from .exceptions import IntelOwlClientException
 
 
+TLPType = Literal["WHITE", "GREEN", "AMBER", "RED"]
+
+
 class IntelOwl:
     logger: logging.Logger
 
@@ -141,10 +144,11 @@ class IntelOwl:
         analyzers_requested: List[str],
         filename: str,
         binary: bytes,
-        tlp: Literal["WHITE", "GREEN", "AMBER", "RED"] = "WHITE",
+        tlp: TLPType = "WHITE",
         run_all_available_analyzers: bool = False,
         runtime_configuration: Dict = None,
         tags: List[int] = None,
+        connectors_requested: List[str] = [],
     ) -> Dict:
         """Send analysis request for a file.\n
         Endpoint: ``/api/analyze_file``
@@ -165,6 +169,9 @@ class IntelOwl:
                 If True, runs all compatible analyzers. Defaults to ``False``.
             runtime_configuration (Dict, optional):
                 Overwrite configuration for analyzers. Defaults to ``{}``.
+            connectors_requested (List[str], optional):
+                List of specific connectors to invoke.
+                Defaults to ``[]`` i.e. all connectors.
 
         Raises:
             IntelOwlClientException: on client/HTTP error
@@ -185,6 +192,7 @@ class IntelOwl:
                 "run_all_available_analyzers": run_all_available_analyzers,
                 "tlp": tlp,
                 "file_name": filename,
+                "connectors_requested": connectors_requested,
             }
             if runtime_configuration:
                 data["runtime_configuration"] = json.dumps(runtime_configuration)
@@ -198,10 +206,11 @@ class IntelOwl:
         self,
         analyzers_requested: List[str],
         observable_name: str,
-        tlp: Literal["WHITE", "GREEN", "AMBER", "RED"] = "WHITE",
+        tlp: TLPType = "WHITE",
         run_all_available_analyzers: bool = False,
         runtime_configuration: Dict = None,
         tags: List[int] = None,
+        connectors_requested: List[str] = [],
     ) -> Dict:
         """Send analysis request for an observable.\n
         Endpoint: ``/api/analyze_observable``
@@ -220,6 +229,9 @@ class IntelOwl:
                 If True, runs all compatible analyzers. Defaults to ``False``.
             runtime_configuration (Dict, optional):
                 Overwrite configuration for analyzers. Defaults to ``{}``.
+            connectors_requested (List[str], optional):
+                List of specific connectors to invoke.
+                Defaults to ``[]`` i.e. all connectors.
 
         Raises:
             IntelOwlClientException: on client/HTTP error
@@ -243,6 +255,7 @@ class IntelOwl:
                 "observable_classification": self._get_observable_classification(
                     observable_name
                 ),
+                "connectors_requested": connectors_requested,
             }
             if runtime_configuration:
                 data["runtime_configuration"] = json.dumps(runtime_configuration)
@@ -261,7 +274,8 @@ class IntelOwl:
         Args:
             rows (List[Dict]):
                 Each row should be a dictionary with keys,
-                `value`, `type`, `analyzers_list`, `run_all`, `tlp`, `check`.
+                `value`, `type`, `analyzers_list`, `run_all`, `check`,
+                 `runtime_config`, `tlp`, `connectors_list`.
         """
         for obj in rows:
             try:
@@ -273,14 +287,19 @@ class IntelOwl:
                 if not (obj.get("run_all", False)):
                     obj["analyzers_list"] = obj["analyzers_list"].split(",")
 
+                connectors_list = obj.get("connectors_list", []).split(",")
+
                 self._new_analysis_cli(
                     obj["value"],
                     obj["type"],
                     obj.get("analyzers_list", None),
+                    obj.get("tags_list", []),
                     obj.get("run_all", False),
-                    obj.get("tlp", "WHITE"),
                     obj.get("check", None),
                     runtime_config,
+                    obj.get("should_poll", False),
+                    obj.get("tlp", "WHITE"),
+                    connectors_list,
                 )
             except IntelOwlClientException as e:
                 self.logger.fatal(str(e))
@@ -474,10 +493,11 @@ class IntelOwl:
         analyzers_list: List[str],
         tags_list: List[int],
         run_all: bool,
-        tlp,
         check,
         runtime_configuration: Dict = None,
         should_poll: bool = False,
+        tlp: TLPType = "WHITE",
+        connectors_list: List[str] = [],
     ) -> None:
         """
         For internal use by the pyintelowl CLI.
@@ -500,10 +520,12 @@ class IntelOwl:
             )
             return
         analyzers = analyzers_list if analyzers_list else "all available analyzers"
+        connectors = connectors_list if connectors_list else "all available connectors"
         self.logger.info(
             f"""Requesting analysis..
             {type_}: [blue]{obj}[/]
             analyzers: [i green]{analyzers}[/]
+            connectors: [i green]{connectors}[/]
             """
         )
         # 1st step: ask analysis availability
@@ -532,6 +554,7 @@ class IntelOwl:
                 tags=tags_list,
                 run_all_available_analyzers=run_all,
                 runtime_configuration=runtime_configuration,
+                connectors_requested=connectors_list,
             )
         else:
             path = pathlib.Path(obj)
@@ -543,6 +566,7 @@ class IntelOwl:
                 tags=tags_list,
                 run_all_available_analyzers=run_all,
                 runtime_configuration=runtime_configuration,
+                connectors_requested=connectors_list,
             )
         # 3rd step: poll for result
         if should_poll:
