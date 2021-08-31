@@ -12,8 +12,8 @@
 #
 import os
 import sys
+from pyintelowl.version import __version__
 
-VERSION = "v3.1.4"
 GITHUB_URL = "https://github.com/intelowlproject/pyintelowl"
 
 sys.path.append(os.path.abspath("../"))
@@ -26,11 +26,11 @@ copyright = "2020, Matteo Lodi"
 author = "Matteo Lodi"
 
 # The full version, including alpha/beta/rc tags
-release = VERSION
+release = __version__
 
 # -- General configuration ---------------------------------------------------
 
-html_title = f"{project} Documentation ({VERSION})"
+html_title = f"{project} Documentation ({__version__})"
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
