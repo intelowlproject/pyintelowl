@@ -10,8 +10,8 @@ __analyse_options = [
         type=str,
         default="",
         help="""
-    Comma separated list of analyzer names to invoke. Should not be used with
-    --run-all-available-analyzers
+    Comma separated list of analyzer names to invoke.
+    Defaults to all configured analyzers.
     """,
     ),
     click.option(
@@ -20,8 +20,8 @@ __analyse_options = [
         type=str,
         default="",
         help="""
-    Comma separated list of specific connector names to invoke.
-    Defaults to all connectors.
+    Comma separated list of connector names to invoke.
+    Defaults to all configured connectors.
     """,
     ),
     click.option(
@@ -30,16 +30,6 @@ __analyse_options = [
         type=str,
         default="",
         help="Comma separated list of tag indices for respective job.",
-    ),
-    click.option(
-        "-aa",
-        "--run-all-available-analyzers",
-        "run_all",
-        is_flag=True,
-        help="""
-    Run all available and compatible analyzers. Should not be used with
-    --analyzers-list.
-    """,
     ),
     click.option(
         "-t",
@@ -92,14 +82,13 @@ def observable(
     analyzers_list: str,
     connectors_list: str,
     tags_list: str,
-    run_all,
     tlp,
     check,
     runtime_config,
     should_poll: bool,
 ):
-    analyzers_list = analyzers_list.split(",") if not run_all else []
-    connectors_list = connectors_list.split(",") if connectors_list else []
+    analyzers_list = analyzers_list.split(",") if len(analyzers_list) else []
+    connectors_list = connectors_list.split(",") if len(connectors_list) else []
     if tags_list:
         tags_list = list(map(int, tags_list.split(",")))
     else:
@@ -112,14 +101,13 @@ def observable(
         ctx.obj._new_analysis_cli(
             value,
             "observable",
-            analyzers_list,
-            tags_list,
-            run_all,
             check,
-            runtime_config,
-            should_poll,
             tlp,
+            analyzers_list,
             connectors_list,
+            runtime_config,
+            tags_list,
+            should_poll,
         )
     except IntelOwlClientException as e:
         ctx.obj.logger.fatal(str(e))
@@ -135,14 +123,13 @@ def file(
     analyzers_list: str,
     connectors_list: str,
     tags_list: str,
-    run_all,
     tlp,
     check,
     runtime_config,
     should_poll: bool,
 ):
-    analyzers_list = analyzers_list.split(",") if not run_all else []
-    connectors_list = connectors_list.split(",") if connectors_list else []
+    analyzers_list = analyzers_list.split(",") if len(analyzers_list) else []
+    connectors_list = connectors_list.split(",") if len(connectors_list) else []
     if tags_list:
         tags_list = list(map(int, tags_list.split(",")))
     else:
@@ -155,14 +142,13 @@ def file(
         ctx.obj._new_analysis_cli(
             filepath,
             "file",
-            analyzers_list,
-            tags_list,
-            run_all,
             check,
-            runtime_config,
-            should_poll,
             tlp,
+            analyzers_list,
             connectors_list,
+            runtime_config,
+            tags_list,
+            should_poll,
         )
     except IntelOwlClientException as e:
         ctx.obj.logger.fatal(str(e))
@@ -178,13 +164,6 @@ def batch(
     filepath: str,
 ):
     rows = get_json_data(filepath)
-    # parse boolean columns
-    bool_flags = [
-        "run_all",
-    ]
-    for row in rows:
-        for flag in bool_flags:
-            row[flag] = row.get(flag, False) in ["true", True]
     try:
         ctx.obj.send_analysis_batch(rows)
     except IntelOwlClientException as e:
