@@ -1,18 +1,18 @@
-pyintelowl modules
+Modules
 ============================
 
-pyintelowl.pyintelowl module
-----------------------------
+``IntelOwl`` class
+--------------------------------
 
-.. automodule:: pyintelowl.pyintelowl
+.. autoclass:: pyintelowl.pyintelowl.IntelOwl
    :members:
    :undoc-members:
    :show-inheritance:
 
-pyintelowl.exceptions module
-----------------------------
+``IntelOwlClientException`` class
+--------------------------------
 
-.. automodule:: pyintelowl.exceptions
+.. autoclass:: pyintelowl.exceptions.IntelOwlClientException
    :members:
    :undoc-members:
    :show-inheritance:

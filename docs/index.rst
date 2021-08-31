@@ -1,8 +1,3 @@
-.. pyintelowl documentation master file, created by
-   sphinx-quickstart on Sat Dec  5 23:00:08 2020.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 Welcome to PyIntelOwl's documentation!
 ======================================
 
@@ -42,8 +37,7 @@ On successful installation, The ``pyintelowl`` entryscript should be directly in
    jobs                   Manage Jobs
    tags                   Manage tags
 
-Configuration
-^^^^^^^^^^^^^
+**Configuration:**
 
 You can use ``set`` to set the config variables and ``get`` to view them.
 
@@ -79,16 +73,15 @@ Usage as SDK/library
    """
 
    try:
-      ans = obj.get_analyzer_configs(1)
+      ans = obj.get_analyzer_configs()
       print(ans)
    except IntelOwlClientException as e:
       print("Oh no! Error: ", e)
 
 .. Tip:: We very much **recommend** going through the :class:`pyintelowl.pyintelowl.IntelOwl` docs.
 
-
-API Client Docs
-==================
+Index
+======
 
 .. toctree::
    :maxdepth: 3
