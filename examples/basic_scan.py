@@ -5,6 +5,4 @@ obj = IntelOwl(
     "http://localhost:80/",
 )
 
-obj.send_observable_analysis_request(
-    observable_name="scanme.org", run_all_available_analyzers=True
-)
+obj.send_observable_analysis_request(observable_name="scanme.org")
