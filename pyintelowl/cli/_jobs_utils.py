@@ -152,7 +152,7 @@ def _poll_for_job_cli(
         if i == 0:
             console.print(_render_job_attributes(ans))
         console.print(
-            _render_job_analysis_table(
+            _render_job_reports_table(
                 ans["analyzer_reports"], title="Analysis Reports", verbose=False
             ),
             justify="center",
