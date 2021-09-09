@@ -29,13 +29,13 @@ def _display_single_job(
             if report_type == "analyzer_reports"
             else "Connector Reports"
         )
-        table = _render_job_analysis_table(data[report_type], title, verbose=True)
+        table = _render_job_reports_table(data[report_type], title, verbose=True)
         console.print(table, justify="center")
 
 
-def _render_job_analysis_table(rows, title: str, verbose=False):
+def _render_job_reports_table(rows, title: str, verbose=False):
     if verbose:
-        headers = ["Name", "Status", "Report", "Errors"]
+        headers = ["Name", "Status", "Report", "Errors", "Runtime configuration"]
     else:
         headers = ["Name", "Status"]
     table = Table(
@@ -54,8 +54,8 @@ def _render_job_analysis_table(rows, title: str, verbose=False):
             get_success_text((el["status"])),
         ]
         if verbose:
-            cols.append(get_json_syntax(el["report"]) if el["report"] else None)
-            cols.append(get_json_syntax(el["errors"]) if el["errors"] else None)
+            for field in ["report", "errors", "runtime_configuration"]:
+                cols.append(get_json_syntax(el[field]) if el[field] else None)
         table.add_row(*cols)
     return table
 

@@ -21,10 +21,8 @@ json_flag_option = [
 
 
 class ClickContext(click.Context):
+    #: IntelOwl instance
     obj: IntelOwl
-    """
-    IntelOwl instance
-    """
 
 
 def get_status_text(status: str, as_text=True):

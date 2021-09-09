@@ -55,7 +55,8 @@ def get_analyzer_config(ctx: ClickContext, re_match: str, as_json: bool, as_text
             "Supported\nTypes",
             "External\nService",
             "Leaks\nInfo",
-            "Configuration\nParameters",
+            "Configuration",
+            "Parameters",
             "Secrets",
             "Configured",
         ]
@@ -82,6 +83,7 @@ def get_analyzer_config(ctx: ClickContext, re_match: str, as_json: bool, as_text
                 get_success_text(obj.get("external_service", False)),
                 get_success_text(obj.get("leaks_info", False)),
                 get_json_syntax(obj.get("config", {})),
+                get_json_syntax(obj.get("params", {})),
                 get_json_syntax(obj.get("secrets", {})),
                 get_success_text(obj["verification"].get("configured", False)),
             )
@@ -126,7 +128,8 @@ def get_connector_config(
         headers = [
             "Name",
             "Description",
-            "Configuration\nParameters",
+            "Configuration",
+            "Parameters",
             "Secrets",
             "Configured",
         ]
@@ -144,6 +147,7 @@ def get_connector_config(
                 name,
                 obj.get("description", ""),
                 get_json_syntax(obj.get("config", {})),
+                get_json_syntax(obj.get("params", {})),
                 get_json_syntax(obj.get("secrets", {})),
                 get_success_text(obj["verification"].get("configured", False)),
             )
