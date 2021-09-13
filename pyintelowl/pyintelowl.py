@@ -5,9 +5,21 @@ import json
 import re
 import requests
 import hashlib
-from typing import List, Dict, Any, Union, AnyStr
+from typing import (
+    List,
+    Dict,
+    Any,
+    Optional,
+    Union,
+    AnyStr,
+    Callable,
+)
+from typing_extensions import Literal
 
 from .exceptions import IntelOwlClientException
+
+
+TLPType = Literal["WHITE", "GREEN", "AMBER", "RED"]
 
 
 class IntelOwl:
@@ -49,11 +61,42 @@ class IntelOwl:
 
         return self._session
 
+    def __make_request(
+        self,
+        method: Literal["GET", "POST", "PUT", "PATCH", "DELETE"] = "GET",
+        *args,
+        **kwargs,
+    ) -> requests.Response:
+        """
+        For internal use only.
+        """
+        response: requests.Response = None
+        requests_function_map: Dict[str, Callable] = {
+            "GET": self.session.get,
+            "POST": self.session.post,
+            "PUT": self.session.put,
+            "PATCH": self.session.patch,
+            "DELETE": self.session.delete,
+        }
+        func = requests_function_map.get(method, None)
+        if not func:
+            raise RuntimeError(f"Unsupported method name: {method}")
+
+        try:
+            response = func(*args, **kwargs)
+            self.logger.debug(
+                msg=(response.url, response.status_code, response.content)
+            )
+            response.raise_for_status()
+        except Exception as e:
+            raise IntelOwlClientException(e, response=response)
+
+        return response
+
     def ask_analysis_availability(
         self,
         md5: str,
-        analyzers_needed: List[str],
-        run_all_available_analyzers: bool = False,
+        analyzers: List[str] = None,
         check_reported_analysis_too: bool = False,
     ) -> Dict:
         """Search for already available analysis.\n
@@ -61,9 +104,9 @@ class IntelOwl:
 
         Args:
             md5 (str): md5sum of the observable or file
-            analyzers_needed (List[str]): list of analyzers to invoke
-            run_all_available_analyzers (bool, optional):
-            If True, runs all compatible analyzers. Defaults to ``False``.
+            analyzers (List[str], optional):
+            list of analyzers to trigger.
+            Defaults to `None` meaning automatically select all configured analyzers.
             check_reported_analysis_too (bool, optional):
             Check against all existing jobs. Defaults to ``False``.
 
@@ -73,67 +116,60 @@ class IntelOwl:
         Returns:
             Dict: JSON body
         """
-        try:
-            params = {"md5": md5, "analyzers_needed": analyzers_needed}
-            if run_all_available_analyzers:
-                params["run_all_available_analyzers"] = True
-            if not check_reported_analysis_too:
-                params["running_only"] = True
-            url = self.instance + "/api/ask_analysis_availability"
-            response = self.session.get(url, params=params)
-            self.logger.debug(msg=(response.url, response.status_code))
-            response.raise_for_status()
-            answer = response.json()
-            status, job_id = answer.get("status", None), answer.get("job_id", None)
-            # check sanity cases
-            if not status:
-                raise IntelOwlClientException(
-                    "API ask_analysis_availability gave result without status ?"
-                    f" Response: {answer}"
-                )
-            if status != "not_available" and not job_id:
-                raise IntelOwlClientException(
-                    "API ask_analysis_availability gave result without job_id ?"
-                    f" Response: {answer}"
-                )
-        except Exception as e:
-            raise IntelOwlClientException(e)
+        if not analyzers:
+            analyzers = []
+        data = {"md5": md5, "analyzers": analyzers}
+        if not check_reported_analysis_too:
+            data["running_only"] = True
+        url = self.instance + "/api/ask_analysis_availability"
+        response = self.__make_request("POST", url=url, data=data)
+        answer = response.json()
+        status, job_id = answer.get("status", None), answer.get("job_id", None)
+        # check sanity cases
+        if not status:
+            raise IntelOwlClientException(
+                "API ask_analysis_availability gave result without status ?"
+                f" Response: {answer}"
+            )
+        if status != "not_available" and not job_id:
+            raise IntelOwlClientException(
+                "API ask_analysis_availability gave result without job_id ?"
+                f" Response: {answer}"
+            )
         return answer
 
     def send_file_analysis_request(
         self,
-        analyzers_requested: List[str],
         filename: str,
         binary: bytes,
-        force_privacy: bool = False,
-        private_job: bool = False,
-        disable_external_analyzers: bool = False,
-        run_all_available_analyzers: bool = False,
+        tlp: TLPType = "WHITE",
+        analyzers_requested: List[str] = None,
+        connectors_requested: List[str] = None,
         runtime_configuration: Dict = None,
         tags: List[int] = None,
     ) -> Dict:
         """Send analysis request for a file.\n
-        Endpoint: ``/api/send_analysis_request``
+        Endpoint: ``/api/analyze_file``
 
         Args:
-            analyzers_requested (List[str]):
-                List of analyzers to invoke
+
             filename (str):
                 Filename
             binary (bytes):
                 File contents as bytes
-            force_privacy (bool, optional):
-                Disable analyzers that can leak info. Defaults to ``False``.
-            private_job (bool, optional):
-                Limit view permissions to your groups . Defaults to ``False``.
-            disable_external_analyzers (bool, optional):
-                Disable analyzers that use external services. Defaults to ``False``.
-            tags (List[int]):
-                List of tags associated with this job
-            run_all_available_analyzers (bool, optional):
-                If True, runs all compatible analyzers. Defaults to ``False``.
+            analyzers_requested (List[str], optional):
+                List of analyzers to invoke
+                Defaults to ``[]`` i.e. all analyzers.
+            connectors_requested (List[str], optional):
+                List of specific connectors to invoke.
+                Defaults to ``[]`` i.e. all connectors.
+            tlp (str, optional):
+                TLP for the analysis.
+                (options: ``WHITE, GREEN, AMBER, RED``). Defaults to ``WHITE``.
             runtime_configuration (Dict, optional):
                 Overwrite configuration for analyzers. Defaults to ``{}``.
+            tags (List[int], optional):
+                List of tags associated with this job
 
         Raises:
             IntelOwlClientException: on client/HTTP error
@@ -142,6 +178,10 @@ class IntelOwl:
             Dict: JSON body
         """
         try:
+            if not analyzers_requested:
+                analyzers_requested = []
+            if not connectors_requested:
+                connectors_requested = []
             if not tags:
                 tags = []
             if not runtime_configuration:
@@ -149,13 +189,11 @@ class IntelOwl:
             data = {
                 "is_sample": True,
                 "md5": self.get_md5(binary, type_="binary"),
-                "analyzers_requested": analyzers_requested,
-                "tags_id": tags,
-                "run_all_available_analyzers": run_all_available_analyzers,
-                "force_privacy": force_privacy,
-                "private": private_job,
-                "disable_external_analyzers": disable_external_analyzers,
                 "file_name": filename,
+                "analyzers_requested": analyzers_requested,
+                "connectors_requested": connectors_requested,
+                "tlp": tlp,
+                "tags_id": tags,
             }
             if runtime_configuration:
                 data["runtime_configuration"] = json.dumps(runtime_configuration)
@@ -167,35 +205,32 @@ class IntelOwl:
 
     def send_observable_analysis_request(
         self,
-        analyzers_requested: List[str],
         observable_name: str,
-        force_privacy: bool = False,
-        private_job: bool = False,
-        disable_external_analyzers: bool = False,
-        run_all_available_analyzers: bool = False,
+        tlp: TLPType = "WHITE",
+        analyzers_requested: List[str] = None,
+        connectors_requested: List[str] = None,
         runtime_configuration: Dict = None,
         tags: List[int] = None,
     ) -> Dict:
         """Send analysis request for an observable.\n
-        Endpoint: ``/api/send_analysis_request``
+        Endpoint: ``/api/analyze_observable``
 
         Args:
-            analyzers_requested (List[str]):
-                List of analyzers to invoke
             observable_name (str):
                 Observable value
-            force_privacy (bool, optional):
-                Disable analyzers that can leak info. Defaults to ``False``.
-            private_job (bool, optional):
-                Limit view permissions to your groups . Defaults to ``False``.
-            disable_external_analyzers (bool, optional):
-                Disable analyzers that use external services. Defaults to ``False``.
-            tags (List[int]):
-                List of tags associated with this job
-            run_all_available_analyzers (bool, optional):
-                If True, runs all compatible analyzers. Defaults to ``False``.
+            analyzers_requested (List[str], optional):
+                List of analyzers to invoke
+                Defaults to ``[]`` i.e. all analyzers.
+            connectors_requested (List[str], optional):
+                List of specific connectors to invoke.
+                Defaults to ``[]`` i.e. all connectors.
+            tlp (str, optional):
+                TLP for the analysis.
+                (options: ``WHITE, GREEN, AMBER, RED``). Defaults to ``WHITE``.
             runtime_configuration (Dict, optional):
                 Overwrite configuration for analyzers. Defaults to ``{}``.
+            tags (List[int], optional):
+                List of tags associated with this job
 
         Raises:
             IntelOwlClientException: on client/HTTP error
@@ -204,6 +239,10 @@ class IntelOwl:
             Dict: JSON body
         """
         try:
+            if not analyzers_requested:
+                analyzers_requested = []
+            if not connectors_requested:
+                connectors_requested = []
             if not tags:
                 tags = []
             if not runtime_configuration:
@@ -211,16 +250,14 @@ class IntelOwl:
             data = {
                 "is_sample": False,
                 "md5": self.get_md5(observable_name, type_="observable"),
-                "analyzers_requested": analyzers_requested,
-                "tags_id": tags,
-                "run_all_available_analyzers": run_all_available_analyzers,
-                "force_privacy": force_privacy,
-                "private": private_job,
-                "disable_external_analyzers": disable_external_analyzers,
                 "observable_name": observable_name,
                 "observable_classification": self._get_observable_classification(
                     observable_name
                 ),
+                "analyzers_requested": analyzers_requested,
+                "connectors_requested": connectors_requested,
+                "tlp": tlp,
+                "tags_id": tags,
             }
             if runtime_configuration:
                 data["runtime_configuration"] = json.dumps(runtime_configuration)
@@ -239,9 +276,9 @@ class IntelOwl:
         Args:
             rows (List[Dict]):
                 Each row should be a dictionary with keys,
-                `value`, `type`, `analyzers_list`, `run_all`
-                `force_privacy`, `private_job`, `disable_external_analyzers`,
-                `check`.
+                `value`, `type`, `check`, `tlp`,
+                `analyzers_list`, `connectors_list`, `runtime_config`
+                `tags_list`.
         """
         for obj in rows:
             try:
@@ -250,19 +287,23 @@ class IntelOwl:
                     with open(runtime_config) as fp:
                         runtime_config = json.load(fp)
 
-                if not (obj.get("run_all", False)):
-                    obj["analyzers_list"] = obj["analyzers_list"].split(",")
+                analyzers_list = obj.get("analyzers_list", [])
+                connectors_list = obj.get("connectors_list", [])
+                if isinstance(analyzers_list, str):
+                    analyzers_list = analyzers_list.split(",")
+                if isinstance(connectors_list, str):
+                    connectors_list = connectors_list.split(",")
 
                 self._new_analysis_cli(
                     obj["value"],
                     obj["type"],
-                    obj.get("analyzers_list", None),
-                    obj.get("run_all", False),
-                    obj.get("force_privacy", False),
-                    obj.get("private_job", False),
-                    obj.get("disable_external_analyzers", False),
                     obj.get("check", None),
+                    obj.get("tlp", "WHITE"),
+                    analyzers_list,
+                    connectors_list,
                     runtime_config,
+                    obj.get("tags_list", []),
+                    obj.get("should_poll", False),
                 )
             except IntelOwlClientException as e:
                 self.logger.fatal(str(e))
@@ -271,42 +312,40 @@ class IntelOwl:
         """
         Internal use only.
         """
-        url = self.instance + "/api/send_analysis_request"
-        response = self.session.post(url, data=data, files=files)
-        self.logger.debug(
-            msg={
-                "url": response.url,
-                "code": response.status_code,
-                "headers": response.headers,
-                "body": response.json(),
-            }
-        )
-        answer = response.json()
-        if answer.get("error", "") == "814":
-            if self.cli:
-                err = """
-                    Request failed..
-                    Error: [i yellow]After the filter, no analyzers can be run.
-                        Try with other analyzers.[/]
-                    """
-            else:
-                err = "Request failed. After the filter, no analyzers can be run"
-            raise IntelOwlClientException(err)
-        warnings = answer.get("warnings", [])
-        if self.cli:
-            info_log = f"""New Job running..
-                ID: {answer['job_id']} | Status: [u blue]{answer['status']}[/].
-                Got {len(warnings)} warnings:
-                [i yellow]{warnings if warnings else None}[/]
-            """
+        response = None
+        if files is None:
+            url = self.instance + "/api/analyze_observable"
         else:
-            info_log = f"""New Job running..
-                ID: {answer['job_id']} | Status: {answer['status']}.
-                Got {len(warnings)} warnings:
-                {warnings if warnings else None}
-            """
-        self.logger.info(info_log)
-        response.raise_for_status()
+            url = self.instance + "/api/analyze_file"
+
+        try:
+            response = self.session.post(url, data=data, files=files)
+            self.logger.debug(
+                msg={
+                    "url": response.url,
+                    "code": response.status_code,
+                    "headers": response.headers,
+                    "body": response.json(),
+                }
+            )
+            answer = response.json()
+            warnings = answer.get("warnings", [])
+            if self.cli:
+                info_log = f"""New Job running..
+                    ID: {answer['job_id']} | Status: [u blue]{answer['status']}[/].
+                    Got {len(warnings)} warnings:
+                    [i yellow]{warnings if warnings else None}[/]
+                """
+            else:
+                info_log = f"""New Job running..
+                    ID: {answer['job_id']} | Status: {answer['status']}.
+                    Got {len(warnings)} warnings:
+                    {warnings if warnings else None}
+                """
+            self.logger.info(info_log)
+            response.raise_for_status()
+        except Exception as e:
+            raise IntelOwlClientException(e, response=response)
         return answer
 
     def create_tag(self, label: str, color: str):
@@ -317,16 +356,10 @@ class IntelOwl:
             label ([str]): [Label of the tag to be created]
             color ([str]): [Color of the tag to be created]
         """
-        try:
-            url = self.instance + "/api/tags"
-            data = {"label": label, "color": color}
-            response = self.session.post(url, data=data)
-            self.logger.debug(msg=(response.url, response.status_code))
-            response.raise_for_status()
-            answer = response.json()
-        except Exception as e:
-            raise IntelOwlClientException(e)
-        return answer
+        url = self.instance + "/api/tags"
+        data = {"label": label, "color": color}
+        response = self.__make_request("POST", url=url, data=data)
+        return response.json()
 
     def edit_tag(self, tag_id: Union[int, str], label: str, color: str):
         """Edits existing tag by sending PUT request
@@ -337,31 +370,28 @@ class IntelOwl:
             label ([str]): [Label of the tag to be created]
             color ([str]): [Color of the tag to be created]
         """
-        try:
-            url = self.instance + "/api/tags/" + str(tag_id)
-            data = {"label": label, "color": color}
-            response = self.session.put(url, data=data)
-            self.logger.debug(response.url)
-            response.raise_for_status()
-            answer = response.json()
-        except Exception as e:
-            raise IntelOwlClientException(e)
-        return answer
+        url = self.instance + "/api/tags/" + str(tag_id)
+        data = {"label": label, "color": color}
+        response = self.__make_request("PUT", url=url, data=data)
+        return response.json()
 
     def get_analyzer_configs(self):
         """
         Get current state of `analyzer_config.json` from the IntelOwl instance.\n
         Endpoint: ``/api/get_analyzer_configs``
         """
-        try:
-            url = self.instance + "/api/get_analyzer_configs"
-            response = self.session.get(url)
-            self.logger.debug(msg=(response.url, response.status_code))
-            response.raise_for_status()
-            answer = response.json()
-        except Exception as e:
-            raise IntelOwlClientException(e)
-        return answer
+        url = self.instance + "/api/get_analyzer_configs"
+        response = self.__make_request("GET", url=url)
+        return response.json()
+
+    def get_connector_configs(self):
+        """
+        Get current state of `connector_config.json` from the IntelOwl instance.\n
+        Endpoint: ``/api/get_connector_configs``
+        """
+        url = self.instance + "/api/get_connector_configs"
+        response = self.__make_request("GET", url=url)
+        return response.json()
 
     def get_all_tags(self) -> List[Dict[str, str]]:
         """
@@ -374,16 +404,9 @@ class IntelOwl:
         Returns:
             List[Dict[str, str]]: List of tags
         """
-        answer = None
-        try:
-            url = self.instance + "/api/tags"
-            response = self.session.get(url)
-            self.logger.debug(msg=(response.url, response.status_code))
-            response.raise_for_status()
-            answer = response.json()
-        except Exception as e:
-            raise IntelOwlClientException(e)
-        return answer
+        url = self.instance + "/api/tags"
+        response = self.__make_request("GET", url=url)
+        return response.json()
 
     def get_all_jobs(self) -> List[Dict[str, Any]]:
         """
@@ -396,15 +419,9 @@ class IntelOwl:
         Returns:
             List[Dict[str, Any]]: List of jobs
         """
-        try:
-            url = self.instance + "/api/jobs"
-            response = self.session.get(url)
-            self.logger.debug(msg=(response.url, response.status_code))
-            response.raise_for_status()
-            answer = response.json()
-        except Exception as e:
-            raise IntelOwlClientException(e)
-        return answer
+        url = self.instance + "/api/jobs"
+        response = self.__make_request("GET", url=url)
+        return response.json()
 
     def get_tag_by_id(self, tag_id: Union[int, str]) -> Dict[str, str]:
         """Fetch tag info by ID.\n
@@ -419,15 +436,10 @@ class IntelOwl:
         Returns:
             Dict[str, str]: Dict with 3 keys: `id`, `label` and `color`.
         """
-        try:
-            url = self.instance + "/api/tags/"
-            response = self.session.get(url + str(tag_id))
-            self.logger.debug(msg=(response.url, response.status_code))
-            response.raise_for_status()
-            answer = response.json()
-        except Exception as e:
-            raise IntelOwlClientException(e)
-        return answer
+
+        url = self.instance + "/api/tags/" + str(tag_id)
+        response = self.__make_request("GET", url=url)
+        return response.json()
 
     def get_job_by_id(self, job_id: Union[int, str]) -> Dict[str, Any]:
         """Fetch job info by ID.
@@ -442,15 +454,9 @@ class IntelOwl:
         Returns:
             Dict[str, Any]: JSON body.
         """
-        try:
-            url = self.instance + "/api/jobs/" + str(job_id)
-            response = self.session.get(url)
-            self.logger.debug(msg=(response.url, response.status_code))
-            response.raise_for_status()
-            answer = response.json()
-        except Exception as e:
-            raise IntelOwlClientException(e)
-        return answer
+        url = self.instance + "/api/jobs/" + str(job_id)
+        response = self.__make_request("GET", url=url)
+        return response.json()
 
     @staticmethod
     def get_md5(
@@ -488,48 +494,37 @@ class IntelOwl:
         self,
         obj: str,
         type_: str,
-        analyzers_list: List[str],
-        tags_list: List[int],
-        run_all: bool,
-        force_privacy,
-        private_job,
-        disable_external_analyzers,
         check,
+        tlp: TLPType = "WHITE",
+        analyzers_list: List[str] = None,
+        connectors_list: List[str] = None,
         runtime_configuration: Dict = None,
+        tags_list: List[int] = None,
         should_poll: bool = False,
     ) -> None:
         """
         For internal use by the pyintelowl CLI.
         """
+        if not analyzers_list:
+            analyzers_list = []
+        if not connectors_list:
+            connectors_list = []
         if not runtime_configuration:
             runtime_configuration = {}
-        # CLI sanity checks
-        if analyzers_list and run_all:
-            self.logger.warning(
-                """
-                Can't use -al and -aa options together. See usage with -h.
-                """
-            )
-            return
-        if not (analyzers_list or run_all):
-            self.logger.warning(
-                """
-                Either one of -al, -aa must be specified. See usage with -h.
-                """,
-            )
-            return
-        analyzers = analyzers_list if analyzers_list else "all available analyzers"
+        if not tags_list:
+            tags_list = []
         self.logger.info(
             f"""Requesting analysis..
             {type_}: [blue]{obj}[/]
-            analyzers: [i green]{analyzers}[/]
+            analyzers: [i green]{analyzers_list if analyzers_list else 'all'}[/]
+            connectors: [i green]{connectors_list if connectors_list else 'all'}[/]
             """
         )
         # 1st step: ask analysis availability
         if check != "force-new":
             md5 = self.get_md5(obj, type_=type_)
             resp = self.ask_analysis_availability(
-                md5, analyzers_list, run_all, True if check == "reported" else False
+                md5, analyzers_list, True if check == "reported" else False
             )
             status, job_id = resp.get("status", None), resp.get("job_id", None)
             if status != "not_available":
@@ -545,27 +540,23 @@ class IntelOwl:
         # 2nd step: send new analysis request
         if type_ == "observable":
             resp2 = self.send_observable_analysis_request(
-                analyzers_requested=analyzers_list,
                 observable_name=obj,
-                force_privacy=force_privacy,
-                private_job=private_job,
-                disable_external_analyzers=disable_external_analyzers,
-                tags=tags_list,
-                run_all_available_analyzers=run_all,
+                tlp=tlp,
+                analyzers_requested=analyzers_list,
+                connectors_requested=connectors_list,
                 runtime_configuration=runtime_configuration,
+                tags=tags_list,
             )
         else:
             path = pathlib.Path(obj)
             resp2 = self.send_file_analysis_request(
-                analyzers_requested=analyzers_list,
                 filename=path.name,
                 binary=path.read_bytes(),
-                force_privacy=force_privacy,
-                private_job=private_job,
-                disable_external_analyzers=disable_external_analyzers,
-                tags=tags_list,
-                run_all_available_analyzers=run_all,
+                tlp=tlp,
+                analyzers_requested=analyzers_list,
+                connectors_requested=connectors_list,
                 runtime_configuration=runtime_configuration,
+                tags=tags_list,
             )
         # 3rd step: poll for result
         if should_poll:
@@ -603,20 +594,20 @@ class IntelOwl:
             ipaddress.ip_address(value)
         except ValueError:
             if re.match(
-                "^(?:ht|f)tps?://[a-z\d-]{1,63}(?:\.[a-z\d-]{1,63})+"
-                "(?:/[a-z\d-]{1,63})*(?:\.\w+)?",
+                r"^(?:ht|f)tps?://[a-z\d-]{1,63}(?:\.[a-z\d-]{1,63})+"
+                r"(?:/[a-z\d-]{1,63})*(?:\.\w+)?",
                 value,
             ):
                 classification = "url"
-            elif re.match("^(\.)?[a-z\d-]{1,63}(\.[a-z\d-]{1,63})+$", value):
+            elif re.match(r"^(\.)?[a-z\d-]{1,63}(\.[a-z\d-]{1,63})+$", value):
                 classification = "domain"
             elif (
-                re.match("^[a-f\d]{32}$", value)
-                or re.match("^[a-f\d]{40}$", value)
-                or re.match("^[a-f\d]{64}$", value)
-                or re.match("^[A-F\d]{32}$", value)
-                or re.match("^[A-F\d]{40}$", value)
-                or re.match("^[A-F\d]{64}$", value)
+                re.match(r"^[a-f\d]{32}$", value)
+                or re.match(r"^[a-f\d]{40}$", value)
+                or re.match(r"^[a-f\d]{64}$", value)
+                or re.match(r"^[A-F\d]{32}$", value)
+                or re.match(r"^[A-F\d]{40}$", value)
+                or re.match(r"^[A-F\d]{64}$", value)
             ):
                 classification = "hash"
             else:
@@ -629,6 +620,27 @@ class IntelOwl:
             classification = "ip"
 
         return classification
+
+    def download_sample(self, job_id: int) -> bytes:
+        """
+        Download file sample from job.\n
+        Method: GET
+        Endpoint: ``/api/jobs/{job_id}/download_sample``
+
+        Args:
+            job_id (int):
+                id of job to download sample from
+
+        Raises:
+            IntelOwlClientException: on client/HTTP error
+
+        Returns:
+            Bytes: Raw file data.
+        """
+
+        url = self.instance + f"/api/jobs/{job_id}/download_sample"
+        response = self.__make_request("GET", url=url)
+        return response.content
 
     def kill_running_job(self, job_id: int) -> bool:
         """Send kill_running_job request.\n
@@ -646,15 +658,9 @@ class IntelOwl:
             Bool: killed or not
         """
 
-        killed = False
-        try:
-            url = self.instance + f"/api/jobs/{job_id}/kill"
-            response = self.session.patch(url)
-            self.logger.debug(msg=(response.url, response.status_code))
-            killed = response.status_code == 200
-            response.raise_for_status()
-        except Exception as e:
-            raise IntelOwlClientException(e)
+        url = self.instance + f"/api/jobs/{job_id}/kill"
+        response = self.__make_request("PATCH", url=url)
+        killed = response.status_code == 204
         return killed
 
     def delete_job_by_id(self, job_id: int) -> bool:
@@ -672,16 +678,9 @@ class IntelOwl:
         Returns:
             Bool: deleted or not
         """
-
-        deleted = False
-        try:
-            url = self.instance + "/api/jobs/" + str(job_id)
-            response = self.session.delete(url)
-            self.logger.debug(msg=(response.url, response.status_code))
-            deleted = response.status_code == 204
-            response.raise_for_status()
-        except Exception as e:
-            raise IntelOwlClientException(e)
+        url = self.instance + "/api/jobs/" + str(job_id)
+        response = self.__make_request("DELETE", url=url)
+        deleted = response.status_code == 204
         return deleted
 
     def delete_tag_by_id(self, tag_id: int) -> bool:
@@ -700,13 +699,167 @@ class IntelOwl:
             Bool: deleted or not
         """
 
-        deleted = False
-        try:
-            url = self.instance + "/api/tags/" + str(tag_id)
-            response = self.session.delete(url)
-            self.logger.debug(msg=(response.url, response.status_code))
-            deleted = response.status_code == 204
-            response.raise_for_status()
-        except Exception as e:
-            raise IntelOwlClientException(e)
+        url = self.instance + "/api/tags/" + str(tag_id)
+        response = self.__make_request("DELETE", url=url)
+        deleted = response.status_code == 204
         return deleted
+
+    def __run_plugin_action(
+        self, job_id: int, plugin_type: str, plugin_name: str, plugin_action: str
+    ) -> bool:
+        """Internal method for kill/retry for analyzer/connector"""
+        response = None
+        url = (
+            self.instance
+            + f"/api/job/{job_id}/{plugin_type}/{plugin_name}/{plugin_action}"
+        )
+        response = self.__make_request("PATCH", url=url)
+        success = response.status_code == 204
+        return success
+
+    def kill_analyzer(self, job_id: int, analyzer_name: str) -> bool:
+        """Send kill running/pending analyzer request.\n
+        Method: PATCH
+        Endpoint: ``/api/job/{job_id}/analyzer/{analyzer_name}/kill``
+
+        Args:
+            job_id (int):
+                id of job
+            analyzer_name (str):
+                name of analyzer to kill
+
+        Raises:
+            IntelOwlClientException: on client/HTTP error
+
+        Returns:
+            Bool: killed or not
+        """
+
+        killed = self.__run_plugin_action(
+            job_id=job_id,
+            plugin_name=analyzer_name,
+            plugin_type="analyzer",
+            plugin_action="kill",
+        )
+        return killed
+
+    def kill_connector(self, job_id: int, connector_name: str) -> bool:
+        """Send kill running/pending connector request.\n
+        Method: PATCH
+        Endpoint: ``/api/job/{job_id}/connector/{connector_name}/kill``
+
+        Args:
+            job_id (int):
+                id of job
+            connector_name (str):
+                name of connector to kill
+
+        Raises:
+            IntelOwlClientException: on client/HTTP error
+
+        Returns:
+            Bool: killed or not
+        """
+
+        killed = self.__run_plugin_action(
+            job_id=job_id,
+            plugin_name=connector_name,
+            plugin_type="connector",
+            plugin_action="kill",
+        )
+        return killed
+
+    def retry_analyzer(self, job_id: int, analyzer_name: str) -> bool:
+        """Send retry failed/killed analyzer request.\n
+        Method: PATCH
+        Endpoint: ``/api/job/{job_id}/analyzer/{analyzer_name}/retry``
+
+        Args:
+            job_id (int):
+                id of job
+            analyzer_name (str):
+                name of analyzer to retry
+
+        Raises:
+            IntelOwlClientException: on client/HTTP error
+
+        Returns:
+            Bool: success or not
+        """
+
+        success = self.__run_plugin_action(
+            job_id=job_id,
+            plugin_name=analyzer_name,
+            plugin_type="analyzer",
+            plugin_action="retry",
+        )
+        return success
+
+    def retry_connector(self, job_id: int, connector_name: str) -> bool:
+        """Send retry failed/killed connector request.\n
+        Method: PATCH
+        Endpoint: ``/api/job/{job_id}/connector/{connector_name}/retry``
+
+        Args:
+            job_id (int):
+                id of job
+            connector_name (str):
+                name of connector to retry
+
+        Raises:
+            IntelOwlClientException: on client/HTTP error
+
+        Returns:
+            Bool: success or not
+        """
+
+        success = self.__run_plugin_action(
+            job_id=job_id,
+            plugin_name=connector_name,
+            plugin_type="connector",
+            plugin_action="retry",
+        )
+        return success
+
+    def analyzer_healthcheck(self, analyzer_name: str) -> Optional[bool]:
+        """Send analyzer(docker-based) health check request.\n
+        Method: GET
+        Endpoint: ``/api/analyzer/{analyzer_name}/healthcheck``
+
+        Args:
+            analyzer_name (str):
+                name of analyzer
+
+        Raises:
+            IntelOwlClientException: on client/HTTP error
+
+        Returns:
+            Dict: {
+                `status`: `True/False/None`
+            }
+        """
+
+        url = self.instance + f"/api/analyzer/{analyzer_name}/healthcheck"
+        response = self.__make_request("GET", url=url)
+        return response.json().get("status", None)
+
+    def connector_healthcheck(self, connector_name: str) -> Optional[bool]:
+        """Send connector health check request.\n
+        Method: GET
+        Endpoint: ``/api/connector/{connector_name}/healthcheck``
+
+        Args:
+            connector_name (str):
+                name of connector
+
+        Raises:
+            IntelOwlClientException: on client/HTTP error
+
+        Returns:
+            Dict: {
+                `status`: `True/False/None`
+            }
+        """
+        url = self.instance + f"/api/connector/{connector_name}/healthcheck"
+        response = self.__make_request("GET", url=url)
+        return response.json().get("status", None)

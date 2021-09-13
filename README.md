@@ -15,7 +15,7 @@ Robust Python **SDK** and **Command Line Client** for interacting with [IntelOwl
   - Choose whether you want to HTTP poll for the analysis to finish or not.
 - List all jobs or view one job in a prettified tabular form.
 - List all tags or view one tag in a prettified tabular form.
-- Tabular view of the `analyzer_config.json` from IntelOwl with RegEx matching capabilities.
+- Tabular view of the `analyzer_config.json` and `connector_config.json` from IntelOwl with RegEx matching capabilities.
 
 ## Demo
 
@@ -45,11 +45,14 @@ Options:
   -h, --help   Show this message and exit.
 
 Commands:
-  analyse              Send new analysis request
-  config               Set or view config variables
-  get-analyzer-config  Get current state of `analyzer_config.json` from the...
-  jobs                 Manage Jobs
-  tags                 Manage tags
+  analyse                Send new analysis request
+  analyzer-healthcheck   Send healthcheck request for an analyzer...
+  config                 Set or view config variables
+  connector-healthcheck  Send healthcheck request for a connector
+  get-analyzer-config    Get current state of `analyzer_config.json` from...
+  get-connector-config   Get current state of `connector_config.json` from...
+  jobs                   Manage Jobs
+  tags                   Manage tags
 ```
 
 ### As a library / SDK

@@ -1,26 +1,46 @@
 # Changelog
 
+## [4.0.0](https://github.com/intelowlproject/pyintelowl/releases/tag/4.0.0)
+
+> **This version supports only IntelOwl versions >=3.0.0 and includes many breaking changes.**
+
+**Changes:**
+- Refactored argument names and ordering for `ask_analysis_availability`, `send_file_analysis_request`, `send_observable_analysis_request` methods to comply with latest changes in IntelOwl's REST API.
+- Deprecate `run_all_available_analyzers` argument/flag.
+
+**New Features:**
+- Ability to specify `connectors_requested` when creating a new analysis.
+- Ability to request and view "Connector Reports" for a job.
+- Ability to request `connector_config.json` file and view in either JSON or tabular format.
+- Ability to request download of sample associated with a job.
+- Added `kill`, `retry` and `healthcheck` features to analyzers and connectors. See [Managing Analyzers and Connectors](https://intelowl.readthedocs.io/en/master/Usage.html#managing-analyzers-and-connectors) section of the documentation.
+
+**Others:**
+- Soften peer dependencies/requirements to avoid pip conflicts.
+- Better testing across different python versions using tox's matrix.
+
 ## [3.1.4](https://github.com/intelowlproject/pyintelowl/releases/tag/3.1.4)
 * Fix `IntelOwl._get_observable_classification` not setting 'generic' classification properly.
 
-## 3.1.3 (https://github.com/intelowlproject/pyintelowl/releases/tag/3.1.3)
+## [3.1.3](https://github.com/intelowlproject/pyintelowl/releases/tag/3.1.3)
 * Fix to allow SSL verification without a specified PEM file
 
-## 3.1.2 (https://github.com/intelowlproject/pyintelowl/releases/tag/3.1.2)
+## [3.1.2](https://github.com/intelowlproject/pyintelowl/releases/tag/3.1.2)
 * Little fixes and adjustments
 
-## 3.1.1 (https://github.com/intelowlproject/pyintelowl/releases/tag/3.1.1)
+## [3.1.1](https://github.com/intelowlproject/pyintelowl/releases/tag/3.1.1)
 * Removed deprecated ask_analysis_result function
 * Little fix to a problem in the logs for the ones that use pyintelowl as a library
 * Tweaked configuration setup, allowing No Certification Validation
 * Added dependabot config and updated dependencies
 * Added basic testing suite for CLI
 
-## 3.1.0 (https://github.com/intelowlproject/pyintelowl/releases/tag/3.1.0)
-With this, pyintelowl now supports all API endpoints of IntelOwl. Super!!
-More info at: https://github.com/intelowlproject/IntelOwl/releases/tag/v2.2.0
+## [3.1.0](https://github.com/intelowlproject/pyintelowl/releases/tag/3.1.0)
+With this, pyintelowl now supports all API endpoints of IntelOwl.
 
-## 3.0.1 (https://github.com/intelowlproject/pyintelowl/releases/tag/3.0.1)
+> More info at: https://github.com/intelowlproject/IntelOwl/releases/tag/v2.2.0
+
+## [3.0.1](https://github.com/intelowlproject/pyintelowl/releases/tag/3.0.1)
 This release was created mainly to solve a problem with the installation of the pip package.
 
 Other changes:
@@ -28,7 +48,7 @@ Other changes:
 * added support for creating/editing tags
 * added support for "generic" classification of observables
 
-## 3.0.0 (https://github.com/intelowlproject/pyintelowl/releases/tag/3.0.0)
+## [3.0.0](https://github.com/intelowlproject/pyintelowl/releases/tag/3.0.0)
 
 *Note: Incompatible with previous versions*
 
@@ -38,7 +58,7 @@ This version brings a complete rewrite of the pyintelowl library as well as comm
 - Complete type-hinting and sphinx docs for the `pyintelowl.IntelOwl` class with helper member functions for each IntelOwl API endpoint.
 
 
-## 2.0.0 (https://github.com/intelowlproject/pyintelowl/releases/tag/2.0.0)
+## [2.0.0](https://github.com/intelowlproject/pyintelowl/releases/tag/2.0.0)
 **This version supports only IntelOwl versions >=1.8.0 (about to be released). To interact with previous IntelOwl versions programmatically please refer to pyintelowl version 1.3.5**
 
 * we forced [black](https://github.com/psf/black) style, added linters and precommit configuration. In this way pyintelowl is aligned to IntelOwl.
@@ -49,17 +69,17 @@ If you were using pyintelowl and IntelOwl before this version, you have to:
 * retrieve a new API token from the Django Admin Interface for your user: you have to go in the *Durin* section (click on `Auth tokens`) and generate a key there. This token is valid until manually deleted.
 
 
-## 1.3.5 (https://github.com/intelowlproject/pyintelowl/releases/tag/1.3.5)
+## [1.3.5](https://github.com/intelowlproject/pyintelowl/releases/tag/1.3.5)
 Now optional parameter "runtime_configuration" properly works
 
 Please use this version of pyintelowl with version >= 1.5.x of IntelOwl
 
 
-## 1.3.4 (https://github.com/intelowlproject/pyintelowl/releases/tag/1.3.4)
+## [1.3.4](https://github.com/intelowlproject/pyintelowl/releases/tag/1.3.4)
 see [1.3.3](https://github.com/intelowlproject/pyintelowl/releases/tag/1.3.3) for details
 
 
-## 1.3.3 (https://github.com/intelowlproject/pyintelowl/releases/tag/1.3.3)
+## [1.3.3](https://github.com/intelowlproject/pyintelowl/releases/tag/1.3.3)
 Some fixes:
 
 *   pyintelowl did not work correctly against HTTPS-enabled IntelOwl Servers
@@ -68,7 +88,7 @@ Some fixes:
 Please use this version of pyintelowl with v1.5.x of IntelOwl
 
 
-## 1.3.2 (https://github.com/intelowlproject/pyintelowl/releases/tag/1.3.2)
+## [1.3.2](https://github.com/intelowlproject/pyintelowl/releases/tag/1.3.2)
 Patch Release after [1.3.0](https://github.com/intelowlproject/pyintelowl/releases/tag/1.3.0).
 
 - renamed `additional_configuration` to `runtime_configuration`.
@@ -77,19 +97,19 @@ Patch Release after [1.3.0](https://github.com/intelowlproject/pyintelowl/releas
 **Please use this version of pyintelowl with v1.5.x of IntelOwl.**
 
 
-## 1.3.1 (https://github.com/intelowlproject/pyintelowl/releases/tag/1.3.1)
+## [1.3.1](https://github.com/intelowlproject/pyintelowl/releases/tag/1.3.1)
 Fixes and improvements to "--show-colors" option
 
 
-## 1.3.0 (https://github.com/intelowlproject/pyintelowl/releases/tag/1.3.0)
+## [1.3.0](https://github.com/intelowlproject/pyintelowl/releases/tag/1.3.0)
 reformatted some code + added support for new parameter "additional_configuration"
 
 
-## 1.2.0 (https://github.com/intelowlproject/pyintelowl/releases/tag/1.2.0)
+## [1.2.0](https://github.com/intelowlproject/pyintelowl/releases/tag/1.2.0)
 PR #16 for details.
 
 
-## 1.1.0 (https://github.com/intelowlproject/pyintelowl/releases/tag/1.1.0)
+## [1.1.0](https://github.com/intelowlproject/pyintelowl/releases/tag/1.1.0)
 Added an option when executing pyintelowl as CLI: `-sc` will show the results in a colorful and organized way that helps the user in looking for useful information. By default, the results are still shown in the JSON format. Thanks to tsale to his idea and contribution.
 
 **Example:**
@@ -99,7 +119,7 @@ python3 intel_owl_client.py -i <your_intelowl_instance> -sc -a VirusTotal_v2_Get
 ```
 
 
-## 1.0.0 (https://github.com/intelowlproject/pyintelowl/releases/tag/1.0.0)
+## [1.0.0](https://github.com/intelowlproject/pyintelowl/releases/tag/1.0.0)
 For all the details, check the official blog post:
 
 https://www.honeynet.org/2020/07/05/intel-owl-release-v1-0-0/

@@ -1,8 +1,3 @@
-.. pyintelowl documentation master file, created by
-   sphinx-quickstart on Sat Dec  5 23:00:08 2020.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 Welcome to PyIntelOwl's documentation!
 ======================================
 
@@ -33,14 +28,16 @@ On successful installation, The ``pyintelowl`` entryscript should be directly in
    -h, --help   Show this message and exit.
 
    Commands:
-   analyse              Send new analysis request
-   config               Set or view config variables
-   get-analyzer-config  Get current state of `analyzer_config.json` from the...
-   jobs                 Manage Jobs
-   tags                 Manage tags
+   analyse                Send new analysis request
+   analyzer-healthcheck   Send healthcheck request for an analyzer...
+   config                 Set or view config variables
+   connector-healthcheck  Send healthcheck request for a connector
+   get-analyzer-config    Get current state of `analyzer_config.json` from...
+   get-connector-config   Get current state of `connector_config.json` from...
+   jobs                   Manage Jobs
+   tags                   Manage tags
 
-Configuration
-^^^^^^^^^^^^^
+**Configuration:**
 
 You can use ``set`` to set the config variables and ``get`` to view them.
 
@@ -76,22 +73,22 @@ Usage as SDK/library
    """
 
    try:
-      ans = obj.get_analyzer_configs(1)
+      ans = obj.get_analyzer_configs()
       print(ans)
    except IntelOwlClientException as e:
       print("Oh no! Error: ", e)
 
 .. Tip:: We very much **recommend** going through the :class:`pyintelowl.pyintelowl.IntelOwl` docs.
 
-
-API Client Docs
-==================
+Index
+======
 
 .. toctree::
    :maxdepth: 3
 
    Index <index>
    pyintelowl
+   tests
 
 Indices and tables
 ==================

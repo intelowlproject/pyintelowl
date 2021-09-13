@@ -21,10 +21,8 @@ json_flag_option = [
 
 
 class ClickContext(click.Context):
+    #: IntelOwl instance
     obj: IntelOwl
-    """
-    IntelOwl instance
-    """
 
 
 def get_status_text(status: str, as_text=True):
@@ -43,6 +41,7 @@ def get_status_text(status: str, as_text=True):
 
 def get_success_text(success):
     success = str(success)
+    success = "True" if success == "SUCCESS" or success == "True" else "False"
     styles = {
         "True": ("#73D216", str(Emoji("heavy_check_mark"))),
         "False": ("#CC0000", str(Emoji("cross_mark"))),
@@ -53,7 +52,13 @@ def get_success_text(success):
 
 def get_action_status_text(success, action):
     success = str(success)
-    actions = {"kill": "killed", "delete": "deleted"}
+    success = "True" if success == "SUCCESS" or success == "True" else "False"
+    actions = {
+        "kill": "killed",
+        "retry": "retried",
+        "delete": "deleted",
+        "download": "downloaded",
+    }
     styles = {
         "True": ("#73D216", f"{actions[action]} " + str(Emoji("heavy_check_mark"))),
         "False": ("#CC0000", f"failed to {action} " + str(Emoji("cross_mark"))),

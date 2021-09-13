@@ -1,4 +1,5 @@
 import time
+from typing_extensions import Literal
 from rich import box
 from rich.panel import Panel
 from rich.table import Table
@@ -14,25 +15,32 @@ from pyintelowl.exceptions import IntelOwlClientException
 from ..cli.domain_checkers import Checkers, console as checkers_console
 
 
-def _display_single_job(data):
+def _display_single_job(
+    data, report_type: Literal["analyzer_reports", "connector_reports"]
+):
     console = Console()
     with console.pager(styles=True):
         # print job attributes
         attrs = _render_job_attributes(data)
         console.print(attrs)
         # construct job analysis table
-        table = _render_job_analysis_table(data["analysis_reports"], verbose=True)
+        title = (
+            "Analysis Reports"
+            if report_type == "analyzer_reports"
+            else "Connector Reports"
+        )
+        table = _render_job_reports_table(data[report_type], title, verbose=True)
         console.print(table, justify="center")
 
 
-def _render_job_analysis_table(rows, verbose=False):
+def _render_job_reports_table(rows, title: str, verbose=False):
     if verbose:
-        headers = ["Name", "Status", "Report", "Errors"]
+        headers = ["Name", "Status", "Report", "Errors", "Runtime configuration"]
     else:
         headers = ["Name", "Status"]
     table = Table(
         show_header=True,
-        title="Analysis Data",
+        title=title,
         box=box.DOUBLE_EDGE,
         show_lines=True,
     )
@@ -43,11 +51,11 @@ def _render_job_analysis_table(rows, verbose=False):
     for el in rows:
         cols = [
             el["name"],
-            get_success_text((el["success"])),
+            get_success_text((el["status"])),
         ]
         if verbose:
-            cols.append(get_json_syntax(el["report"]) if el["report"] else None)
-            cols.append(get_json_syntax(el["errors"]) if el["errors"] else None)
+            for field in ["report", "errors", "runtime_configuration"]:
+                cols.append(get_json_syntax(el[field]) if el[field] else None)
         table.add_row(*cols)
     return table
 
@@ -70,6 +78,7 @@ def _render_job_attributes(data):
         f"{style}Classification:[/] {clsfn}",
         f"{style}Tags:[/] {tags}",
         f"{style}Status:[/] {status}",
+        f"{style}TLP:[/] {data['tlp']}",
     )
     return Panel(r, title="Job attributes")
 
@@ -86,6 +95,9 @@ def _display_all_jobs(logger, rows):
         header="Analyzers\nCalled", justify="center", header_style=header_style
     )
     table.add_column(
+        header="Connectors\nCalled", justify="center", header_style=header_style
+    )
+    table.add_column(
         header="Process\nTime(s)", justify="center", header_style=header_style
     )
     table.add_column(header="Status", header_style=header_style)
@@ -99,6 +111,7 @@ def _display_all_jobs(logger, rows):
                 else el["file_mimetype"],
                 ", ".join([t["label"] for t in el["tags"]]),
                 el["no_of_analyzers_executed"],
+                el["no_of_connectors_executed"],
                 str(el["process_time"]),
                 get_status_text(el["status"]),
             )
@@ -139,7 +152,9 @@ def _poll_for_job_cli(
         if i == 0:
             console.print(_render_job_attributes(ans))
         console.print(
-            _render_job_analysis_table(ans["analysis_reports"], verbose=False),
+            _render_job_reports_table(
+                ans["analyzer_reports"], title="Analysis Reports", verbose=False
+            ),
             justify="center",
         )
         if status not in ["running", "pending"]:

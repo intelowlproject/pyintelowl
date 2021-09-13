@@ -10,8 +10,18 @@ __analyse_options = [
         type=str,
         default="",
         help="""
-    Comma separated list of analyzer names to invoke. Should not be used with
-    --run-all-available-analyzers
+    Comma separated list of analyzer names to invoke.
+    Defaults to all configured analyzers.
+    """,
+    ),
+    click.option(
+        "-cl",
+        "--connectors-list",
+        type=str,
+        default="",
+        help="""
+    Comma separated list of connector names to invoke.
+    Defaults to all configured connectors.
     """,
     ),
     click.option(
@@ -22,32 +32,10 @@ __analyse_options = [
         help="Comma separated list of tag indices for respective job.",
     ),
     click.option(
-        "-aa",
-        "--run-all-available-analyzers",
-        "run_all",
-        is_flag=True,
-        help="""
-    Run all available and compatible analyzers. Should not be used with
-    --analyzers-list.
-    """,
-    ),
-    click.option(
-        "-fp",
-        "--force-privacy",
-        is_flag=True,
-        help="Disable analyzers that could impact privacy",
-    ),
-    click.option(
-        "-p",
-        "--private-job",
-        is_flag=True,
-        help="Limit view permissions to my group",
-    ),
-    click.option(
-        "-de",
-        "--disable-external-analyzers",
-        is_flag=True,
-        help="Disable analyzers that use external services",
+        "-t",
+        "--tlp",
+        type=click.Choice(["WHITE", "GREEN", "AMBER", "RED"], case_sensitive=False),
+        help="TLP for the analysis (WHITE/GREEN/AMBER/RED)",
     ),
     click.option(
         "-c",
@@ -92,19 +80,15 @@ def observable(
     ctx: ClickContext,
     value,
     analyzers_list: str,
+    connectors_list: str,
     tags_list: str,
-    run_all,
-    force_privacy,
-    private_job,
-    disable_external_analyzers,
+    tlp,
     check,
     runtime_config,
     should_poll: bool,
 ):
-    if not run_all:
-        analyzers_list = analyzers_list.split(",")
-    else:
-        analyzers_list = []
+    analyzers_list = analyzers_list.split(",") if len(analyzers_list) else []
+    connectors_list = connectors_list.split(",") if len(connectors_list) else []
     if tags_list:
         tags_list = list(map(int, tags_list.split(",")))
     else:
@@ -117,14 +101,12 @@ def observable(
         ctx.obj._new_analysis_cli(
             value,
             "observable",
-            analyzers_list,
-            tags_list,
-            run_all,
-            force_privacy,
-            private_job,
-            disable_external_analyzers,
             check,
+            tlp,
+            analyzers_list,
+            connectors_list,
             runtime_config,
+            tags_list,
             should_poll,
         )
     except IntelOwlClientException as e:
@@ -139,19 +121,15 @@ def file(
     ctx: ClickContext,
     filepath: str,
     analyzers_list: str,
+    connectors_list: str,
     tags_list: str,
-    run_all,
-    force_privacy,
-    private_job,
-    disable_external_analyzers,
+    tlp,
     check,
     runtime_config,
     should_poll: bool,
 ):
-    if not run_all:
-        analyzers_list = analyzers_list.split(",")
-    else:
-        analyzers_list = []
+    analyzers_list = analyzers_list.split(",") if len(analyzers_list) else []
+    connectors_list = connectors_list.split(",") if len(connectors_list) else []
     if tags_list:
         tags_list = list(map(int, tags_list.split(",")))
     else:
@@ -164,14 +142,12 @@ def file(
         ctx.obj._new_analysis_cli(
             filepath,
             "file",
-            analyzers_list,
-            tags_list,
-            run_all,
-            force_privacy,
-            private_job,
-            disable_external_analyzers,
             check,
+            tlp,
+            analyzers_list,
+            connectors_list,
             runtime_config,
+            tags_list,
             should_poll,
         )
     except IntelOwlClientException as e:
@@ -188,16 +164,6 @@ def batch(
     filepath: str,
 ):
     rows = get_json_data(filepath)
-    # parse boolean columns
-    bool_flags = [
-        "run_all",
-        "force_privacy",
-        "private_job",
-        "disable_external_analyzers",
-    ]
-    for row in rows:
-        for flag in bool_flags:
-            row[flag] = row.get(flag, False) in ["true", True]
     try:
         ctx.obj.send_analysis_batch(rows)
     except IntelOwlClientException as e:
