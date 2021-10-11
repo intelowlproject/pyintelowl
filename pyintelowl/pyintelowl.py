@@ -190,7 +190,6 @@ class IntelOwl:
             if not runtime_configuration:
                 runtime_configuration = {}
             data = {
-                "md5": self.get_md5(binary, type_="binary"),
                 "file_name": filename,
                 "analyzers_requested": analyzers_requested,
                 "connectors_requested": connectors_requested,
@@ -252,7 +251,6 @@ class IntelOwl:
             if not runtime_configuration:
                 runtime_configuration = {}
             data = {
-                "md5": self.get_md5(observable_name, type_="observable"),
                 "observable_name": observable_name,
                 "observable_classification": self._get_observable_classification(
                     observable_name
