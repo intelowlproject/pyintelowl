@@ -16,6 +16,7 @@ from typing import (
 )
 from typing_extensions import Literal
 
+from pyintelowl.version import __version__
 from .exceptions import IntelOwlClientException
 
 
@@ -54,7 +55,7 @@ class IntelOwl:
             session.headers.update(
                 {
                     "Authorization": f"Token {self.token}",
-                    "User-Agent": "IntelOwlClient/3.1.3",
+                    "User-Agent": f"PyIntelOwl/{__version__}",
                 }
             )
             self._session = session
@@ -142,11 +143,11 @@ class IntelOwl:
         self,
         filename: str,
         binary: bytes,
-        tlp: TLPType = "WHITE",
+        tlp: TLPType = None,
         analyzers_requested: List[str] = None,
         connectors_requested: List[str] = None,
         runtime_configuration: Dict = None,
-        tags: List[int] = None,
+        tags_labels: List[str] = None,
     ) -> Dict:
         """Send analysis request for a file.\n
         Endpoint: ``/api/analyze_file``
@@ -168,8 +169,8 @@ class IntelOwl:
                 (options: ``WHITE, GREEN, AMBER, RED``). Defaults to ``WHITE``.
             runtime_configuration (Dict, optional):
                 Overwrite configuration for analyzers. Defaults to ``{}``.
-            tags (List[int], optional):
-                List of tags associated with this job
+            tags_labels (List[str], optional):
+                List of tag labels to assign (creates non-existing tags)
 
         Raises:
             IntelOwlClientException: on client/HTTP error
@@ -178,22 +179,22 @@ class IntelOwl:
             Dict: JSON body
         """
         try:
+            if not tlp:
+                tlp = "WHITE"
             if not analyzers_requested:
                 analyzers_requested = []
             if not connectors_requested:
                 connectors_requested = []
-            if not tags:
-                tags = []
+            if not tags_labels:
+                tags_labels = []
             if not runtime_configuration:
                 runtime_configuration = {}
             data = {
-                "is_sample": True,
-                "md5": self.get_md5(binary, type_="binary"),
                 "file_name": filename,
                 "analyzers_requested": analyzers_requested,
                 "connectors_requested": connectors_requested,
                 "tlp": tlp,
-                "tags_id": tags,
+                "tags_labels": tags_labels,
             }
             if runtime_configuration:
                 data["runtime_configuration"] = json.dumps(runtime_configuration)
@@ -206,11 +207,11 @@ class IntelOwl:
     def send_observable_analysis_request(
         self,
         observable_name: str,
-        tlp: TLPType = "WHITE",
+        tlp: TLPType = None,
         analyzers_requested: List[str] = None,
         connectors_requested: List[str] = None,
         runtime_configuration: Dict = None,
-        tags: List[int] = None,
+        tags_labels: List[str] = None,
     ) -> Dict:
         """Send analysis request for an observable.\n
         Endpoint: ``/api/analyze_observable``
@@ -229,8 +230,8 @@ class IntelOwl:
                 (options: ``WHITE, GREEN, AMBER, RED``). Defaults to ``WHITE``.
             runtime_configuration (Dict, optional):
                 Overwrite configuration for analyzers. Defaults to ``{}``.
-            tags (List[int], optional):
-                List of tags associated with this job
+            tags_labels (List[str], optional):
+                List of tag labels to assign (creates non-existing tags)
 
         Raises:
             IntelOwlClientException: on client/HTTP error
@@ -239,17 +240,17 @@ class IntelOwl:
             Dict: JSON body
         """
         try:
+            if not tlp:
+                tlp = "WHITE"
             if not analyzers_requested:
                 analyzers_requested = []
             if not connectors_requested:
                 connectors_requested = []
-            if not tags:
-                tags = []
+            if not tags_labels:
+                tags_labels = []
             if not runtime_configuration:
                 runtime_configuration = {}
             data = {
-                "is_sample": False,
-                "md5": self.get_md5(observable_name, type_="observable"),
                 "observable_name": observable_name,
                 "observable_classification": self._get_observable_classification(
                     observable_name
@@ -257,7 +258,7 @@ class IntelOwl:
                 "analyzers_requested": analyzers_requested,
                 "connectors_requested": connectors_requested,
                 "tlp": tlp,
-                "tags_id": tags,
+                "tags_labels": tags_labels,
             }
             if runtime_configuration:
                 data["runtime_configuration"] = json.dumps(runtime_configuration)
@@ -315,11 +316,13 @@ class IntelOwl:
         response = None
         if files is None:
             url = self.instance + "/api/analyze_observable"
+            args = {"json": data}
         else:
             url = self.instance + "/api/analyze_file"
+            args = {"data": data, "files": files}
 
         try:
-            response = self.session.post(url, data=data, files=files)
+            response = self.session.post(url, **args)
             self.logger.debug(
                 msg={
                     "url": response.url,
@@ -499,7 +502,7 @@ class IntelOwl:
         analyzers_list: List[str] = None,
         connectors_list: List[str] = None,
         runtime_configuration: Dict = None,
-        tags_list: List[int] = None,
+        tags_labels: List[str] = None,
         should_poll: bool = False,
     ) -> None:
         """
@@ -511,13 +514,14 @@ class IntelOwl:
             connectors_list = []
         if not runtime_configuration:
             runtime_configuration = {}
-        if not tags_list:
-            tags_list = []
+        if not tags_labels:
+            tags_labels = []
         self.logger.info(
             f"""Requesting analysis..
             {type_}: [blue]{obj}[/]
             analyzers: [i green]{analyzers_list if analyzers_list else 'all'}[/]
             connectors: [i green]{connectors_list if connectors_list else 'all'}[/]
+            tags: [i green]{tags_labels}[/]
             """
         )
         # 1st step: ask analysis availability
@@ -545,7 +549,7 @@ class IntelOwl:
                 analyzers_requested=analyzers_list,
                 connectors_requested=connectors_list,
                 runtime_configuration=runtime_configuration,
-                tags=tags_list,
+                tags_labels=tags_labels,
             )
         else:
             path = pathlib.Path(obj)
@@ -556,7 +560,7 @@ class IntelOwl:
                 analyzers_requested=analyzers_list,
                 connectors_requested=connectors_list,
                 runtime_configuration=runtime_configuration,
-                tags=tags_list,
+                tags_labels=tags_labels,
             )
         # 3rd step: poll for result
         if should_poll:
