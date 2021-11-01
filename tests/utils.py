@@ -3,6 +3,7 @@ from unittest import TestCase
 from unittest.mock import patch  # noqa: F401
 
 from pyintelowl.pyintelowl import IntelOwl
+
 from tests import (
     MOCK_CONNECTIONS,
     TEST_ANALYZER_NAME,
