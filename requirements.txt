@@ -1,6 +1,6 @@
 requests~=2.26
 geocoder~=1.38
-click~=8.0.1
+click>=7.0
 rich~=10.12
 click-creds~=0.0.3
 typing_extensions
