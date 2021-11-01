@@ -2,6 +2,9 @@
 
 [![PyPI version](https://badge.fury.io/py/pyintelowl.svg)](https://badge.fury.io/py/pyintelowl)
 [![PyPI Supported Python Versions](https://img.shields.io/pypi/pyversions/pyintelowl.svg)](https://pypi.python.org/pypi/pyintelowl/)
+
+[![Pull request automation](https://github.com/intelowlproject/pyintelowl/actions/workflows/pull_request_automation.yml/badge.svg)](https://github.com/intelowlproject/pyintelowl/actions/workflows/pull_request_automation.yml)
+[![codecov](https://codecov.io/gh/intelowlproject/pyintelowl/branch/master/graph/badge.svg?token=JF62UMZ0U6)](https://codecov.io/gh/intelowlproject/pyintelowl)
 [![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/intelowlproject/pyintelowl.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/mlodic/pyintelowl/context:python)
 [![CodeFactor](https://www.codefactor.io/repository/github/intelowlproject/pyintelowl/badge)](https://www.codefactor.io/repository/github/intelowlproject/pyintelowl)
 
@@ -71,16 +74,18 @@ View [CHANGELOG.md](https://github.com/intelowlproject/pyintelowl/blob/master/.g
 ## FAQ
 
 #### Generate API key
-You need a valid API key to interact with the IntelOwl server. 
-Keys should be created from the admin interface of [IntelOwl](https://github.com/intelowlproject/intelowl): you have to go in the *Durin* section (click on `Auth tokens`) and generate a key there.
+
+You need a valid API key to interact with the IntelOwl server.
+Keys should be created from the admin interface of [IntelOwl](https://github.com/intelowlproject/intelowl): you have to go in the _Durin_ section (click on `Auth tokens`) and generate a key there.
 
 #### Incompatibility after version 3.0
 
 We did a complete rewrite of the PyIntelOwl client and CLI both for the version `3.0.0`. We very much recommend you to update to the latest version to enjoy all new features.
 
 #### (old auth method) JWT Token Authentication
+
 > this auth was available in IntelOwl versions <1.8.0 and pyintelowl versions <2.0.0
 
-From the admin interface of IntelOwl, you have to go in the *Outstanding tokens* section and generate a token there.
+From the admin interface of IntelOwl, you have to go in the _Outstanding tokens_ section and generate a token there.
 
 You can use it by pasting it into the file [api_token.txt](api_token.txt).

@@ -81,13 +81,18 @@ Usage as SDK/library
 .. Tip:: We very much **recommend** going through the :class:`pyintelowl.pyintelowl.IntelOwl` docs.
 
 Index
-======
+-------------------------------
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 2
+   :caption: Usage
 
-   Index <index>
    pyintelowl
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Development
+
    tests
 
 Indices and tables

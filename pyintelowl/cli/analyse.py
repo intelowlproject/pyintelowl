@@ -29,7 +29,7 @@ __analyse_options = [
         "--tags-list",
         type=str,
         default="",
-        help="Comma separated list of tag indices for respective job.",
+        help="Comma separated list of tag labels to assign (creates non-existing tags)",
     ),
     click.option(
         "-t",
@@ -78,21 +78,18 @@ def analyse():
 @click.pass_context
 def observable(
     ctx: ClickContext,
-    value,
+    value: str,
     analyzers_list: str,
     connectors_list: str,
     tags_list: str,
-    tlp,
+    tlp: str,
     check,
     runtime_config,
     should_poll: bool,
 ):
     analyzers_list = analyzers_list.split(",") if len(analyzers_list) else []
     connectors_list = connectors_list.split(",") if len(connectors_list) else []
-    if tags_list:
-        tags_list = list(map(int, tags_list.split(",")))
-    else:
-        tags_list = []
+    tags_labels = tags_list.split(",") if len(tags_list) else []
     if runtime_config:
         runtime_config = get_json_data(runtime_config)
     else:
@@ -106,7 +103,7 @@ def observable(
             analyzers_list,
             connectors_list,
             runtime_config,
-            tags_list,
+            tags_labels,
             should_poll,
         )
     except IntelOwlClientException as e:
@@ -123,17 +120,14 @@ def file(
     analyzers_list: str,
     connectors_list: str,
     tags_list: str,
-    tlp,
+    tlp: str,
     check,
     runtime_config,
     should_poll: bool,
 ):
     analyzers_list = analyzers_list.split(",") if len(analyzers_list) else []
     connectors_list = connectors_list.split(",") if len(connectors_list) else []
-    if tags_list:
-        tags_list = list(map(int, tags_list.split(",")))
-    else:
-        tags_list = []
+    tags_labels = tags_list.split(",") if len(tags_list) else []
     if runtime_config:
         runtime_config = get_json_data(runtime_config)
     else:
@@ -147,7 +141,7 @@ def file(
             analyzers_list,
             connectors_list,
             runtime_config,
-            tags_list,
+            tags_labels,
             should_poll,
         )
     except IntelOwlClientException as e:
