@@ -1,4 +1,4 @@
-from .utils import (
+from tests.utils import (
     MockResponse,
     get_file_data,
     ROOT_DIR,

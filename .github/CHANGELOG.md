@@ -1,6 +1,12 @@
 # Changelog
 
-## [4.1.0](https://github.com/intelowlproject/pyintelowl/releases/tag/4.1.0)
+## [4.1.1](https://github.com/intelowlproject/pyintelowl/releases/tag/4.1.1)
+
+- Documentation fixes and adjusts
+- Soften `click` package dependency to `click>=7.0` to avoid pip conflicts
+- Add support for python 3.10
+
+## [4.1.0](https://github.com/intelowlproject/pyintelowl/releases/tag/v4.1.0)
 
 > **This version supports only IntelOwl versions >=3.1.0.**
 
@@ -13,7 +19,7 @@
 
 - Bump dependencies. `click` -> 8.0.1, `rich` -> 10.12, `click-creds` -> 0.0.3.
 
-## [4.0.0](https://github.com/intelowlproject/pyintelowl/releases/tag/4.0.0)
+## [4.0.0](https://github.com/intelowlproject/pyintelowl/releases/tag/v4.0.0)
 
 > **This version supports only IntelOwl versions >=3.0.0 and includes many breaking changes.**
 
