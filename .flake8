@@ -6,3 +6,5 @@ ignore =
     W605, # invalid escape sequence (caused by regex)
 exclude =
     setup.py
+    *venv*
+    .tox

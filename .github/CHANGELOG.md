@@ -1,5 +1,9 @@
 # Changelog
 
+## [4.1.2](https://github.com/intelowlproject/pyintelowl/releases/tag/4.1.2)
+
+- Fix `runtime_configuration` bug in `IntelOwl.send_observable_analysis_request`
+
 ## [4.1.1](https://github.com/intelowlproject/pyintelowl/releases/tag/4.1.1)
 
 - Documentation fixes and adjusts
