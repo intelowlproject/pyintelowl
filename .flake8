@@ -7,5 +7,4 @@ ignore =
 exclude =
     setup.py
     *venv*
-    *opt*
     .tox
