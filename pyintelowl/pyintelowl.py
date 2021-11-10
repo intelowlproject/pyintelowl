@@ -259,9 +259,8 @@ class IntelOwl:
                 "connectors_requested": connectors_requested,
                 "tlp": tlp,
                 "tags_labels": tags_labels,
+                "runtime_configuration": runtime_configuration,
             }
-            if runtime_configuration:
-                data["runtime_configuration"] = json.dumps(runtime_configuration)
             answer = self.__send_analysis_request(data=data, files=None)
         except Exception as e:
             raise IntelOwlClientException(e)
