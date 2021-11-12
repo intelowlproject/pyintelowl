@@ -55,8 +55,8 @@ __analyse_options = [
         "--check-minutes-ago",
         type=int,
         default=None,
-        help="how many minutes ago we need to check for"
-        " the previous analysis. Default infinity",
+        help="Number of minutes ago to check for"
+        " a previous analysis. Default infinity.",
     ),
     click.option(
         "-r",
@@ -133,6 +133,7 @@ def file(
     tags_list: str,
     tlp: str,
     check,
+    check_minutes_ago: int,
     runtime_config,
     should_poll: bool,
 ):
@@ -154,6 +155,7 @@ def file(
             runtime_config,
             tags_labels,
             should_poll,
+            check_minutes_ago,
         )
     except IntelOwlClientException as e:
         ctx.obj.logger.fatal(str(e))

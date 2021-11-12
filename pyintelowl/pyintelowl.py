@@ -113,7 +113,7 @@ class IntelOwl:
             Check against all existing jobs. Defaults to ``False``.
             minutes_ago (int, optional):
             number of minutes to check back for analysis.
-            Default is None so the check does not have any time limits
+            Default is None so the check does not have any time limits.
 
         Raises:
             IntelOwlClientException: on client/HTTP error
@@ -509,7 +509,7 @@ class IntelOwl:
         runtime_configuration: Dict = None,
         tags_labels: List[str] = None,
         should_poll: bool = False,
-        check_minutes_ago: int = None,
+        minutes_ago: int = None,
     ) -> None:
         """
         For internal use by the pyintelowl CLI.
@@ -538,7 +538,7 @@ class IntelOwl:
                 md5,
                 analyzers_list,
                 True if check == "reported" else False,
-                check_minutes_ago,
+                minutes_ago,
             )
             status, job_id = resp.get("status", None), resp.get("job_id", None)
             if status != "not_available":
