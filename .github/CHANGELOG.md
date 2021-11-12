@@ -3,7 +3,7 @@
 ## [4.1.2](https://github.com/intelowlproject/pyintelowl/releases/tag/4.1.3)
 
 - Library: `IntelOwl.ask_analysis_availability` now accepts an argument `minutes_ago`. Use to specify number of minutes to go back when searching for a previous analysis.
-- CLI: `-m/--check-minutes-ago` flag in `analyse`
+- CLI: `-m/--check-minutes-ago` flag in `analyse`.
 
 ## [4.1.2](https://github.com/intelowlproject/pyintelowl/releases/tag/4.1.2)
 
