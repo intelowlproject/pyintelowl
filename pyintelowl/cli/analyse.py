@@ -51,12 +51,21 @@ __analyse_options = [
     """,
     ),
     click.option(
+        "-m",
+        "--check-minutes-ago",
+        type=int,
+        default=None,
+        help="how many minutes ago we need to check for"
+        " the previous analysis. Default infinity",
+    ),
+    click.option(
         "-r",
         "--runtime-config",
         help="Path to JSON file which contains runtime_configuration.",
         type=click.Path(exists=True, resolve_path=True),
     ),
     click.option(
+        "-p",
         "--poll",
         "should_poll",
         is_flag=True,
@@ -84,6 +93,7 @@ def observable(
     tags_list: str,
     tlp: str,
     check,
+    check_minutes_ago: int,
     runtime_config,
     should_poll: bool,
 ):
@@ -105,6 +115,7 @@ def observable(
             runtime_config,
             tags_labels,
             should_poll,
+            check_minutes_ago,
         )
     except IntelOwlClientException as e:
         ctx.obj.logger.fatal(str(e))

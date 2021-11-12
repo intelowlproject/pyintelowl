@@ -99,6 +99,7 @@ class IntelOwl:
         md5: str,
         analyzers: List[str] = None,
         check_reported_analysis_too: bool = False,
+        minutes_ago: int = None,
     ) -> Dict:
         """Search for already available analysis.\n
         Endpoint: ``/api/ask_analysis_availability``
@@ -110,6 +111,9 @@ class IntelOwl:
             Defaults to `None` meaning automatically select all configured analyzers.
             check_reported_analysis_too (bool, optional):
             Check against all existing jobs. Defaults to ``False``.
+            minutes_ago (int, optional):
+            number of minutes to check back for analysis.
+            Default is None so the check does not have any time limits
 
         Raises:
             IntelOwlClientException: on client/HTTP error
@@ -122,6 +126,8 @@ class IntelOwl:
         data = {"md5": md5, "analyzers": analyzers}
         if not check_reported_analysis_too:
             data["running_only"] = True
+        if minutes_ago:
+            data["minutes_ago"] = int(minutes_ago)
         url = self.instance + "/api/ask_analysis_availability"
         response = self.__make_request("POST", url=url, data=data)
         answer = response.json()
@@ -503,6 +509,7 @@ class IntelOwl:
         runtime_configuration: Dict = None,
         tags_labels: List[str] = None,
         should_poll: bool = False,
+        check_minutes_ago: int = None,
     ) -> None:
         """
         For internal use by the pyintelowl CLI.
@@ -526,8 +533,12 @@ class IntelOwl:
         # 1st step: ask analysis availability
         if check != "force-new":
             md5 = self.get_md5(obj, type_=type_)
+
             resp = self.ask_analysis_availability(
-                md5, analyzers_list, True if check == "reported" else False
+                md5,
+                analyzers_list,
+                True if check == "reported" else False,
+                check_minutes_ago,
             )
             status, job_id = resp.get("status", None), resp.get("job_id", None)
             if status != "not_available":
