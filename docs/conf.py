@@ -13,7 +13,7 @@
 import os
 import sys
 
-VERSION = "4.1.2"
+VERSION = "4.1.3"
 GITHUB_URL = "https://github.com/intelowlproject/pyintelowl"
 
 sys.path.append(os.path.abspath("../"))
@@ -22,7 +22,7 @@ sys.path.append(os.path.abspath("../"))
 # -- Project information -----------------------------------------------------
 
 project = "PyIntelOwl"
-copyright = "2020, Matteo Lodi"
+copyright = "2021, Matteo Lodi"
 author = "Matteo Lodi"
 
 # The full version, including alpha/beta/rc tags
