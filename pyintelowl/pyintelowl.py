@@ -608,7 +608,7 @@ class IntelOwl:
             ipaddress.ip_address(value)
         except ValueError:
             if re.match(
-                r"^(?:ht|f)tps?://[a-z\d-]{1,63}(?:\.[a-z\d-]{1,63})+"
+                r"^(?:htt|ft|tc)ps?://[a-z\d-]{1,63}(?:\.[a-z\d-]{1,63})+"
                 r"(?:/[a-z\d-]{1,63})*(?:\.\w+)?",
                 value,
             ):
