@@ -1,20 +1,14 @@
 from pyintelowl.exceptions import IntelOwlClientException
-
-from tests.utils import (
-    BaseTest,
-    mock_connections,
-    patch,
-    get_file_data,
-)
 from tests.mocked_requests import (
     mocked_analyzer_config,
-    mocked_ask_analysis_success,
-    mocked_ask_analysis_no_status,
     mocked_ask_analysis_no_job_id,
+    mocked_ask_analysis_no_status,
+    mocked_ask_analysis_success,
     mocked_connector_config,
-    mocked_send_analysis_success,
     mocked_raise_exception,
+    mocked_send_analysis_success,
 )
+from tests.utils import BaseTest, get_file_data, mock_connections, patch
 
 
 class TestGeneral(BaseTest):

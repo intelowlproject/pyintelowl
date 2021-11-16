@@ -31,6 +31,10 @@ jobs:
         flake8 . --count
         black . --check
 
+    - name: isort
+      run: |
+        isort . --profile black --filter-files --check-only --diff --skip venv
+
     - name: Run tox tests
       run: |
         unzip -P infected tests/test_files.zip -d ./tests/

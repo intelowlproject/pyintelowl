@@ -2,13 +2,9 @@
 import click
 import click_creds
 
+from .cli import cmds, groups
+from .cli._utils import ClickContext, get_logger, get_version_number
 from .pyintelowl import IntelOwl
-from .cli import groups, cmds
-from .cli._utils import (
-    get_logger,
-    ClickContext,
-    get_version_number,
-)
 
 
 @click.group(context_settings=dict(help_option_names=["-h", "--help"]))

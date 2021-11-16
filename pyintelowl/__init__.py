@@ -1,3 +1,3 @@
 # flake8: noqa
-from .pyintelowl import IntelOwl
 from .exceptions import IntelOwlClientException
+from .pyintelowl import IntelOwl

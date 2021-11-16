@@ -1,6 +1,7 @@
-import geocoder
 import os
 from datetime import datetime
+
+import geocoder
 from rich.console import Console
 
 console = Console()

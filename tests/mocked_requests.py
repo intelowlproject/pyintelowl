@@ -1,9 +1,4 @@
-from tests.utils import (
-    MockResponse,
-    get_file_data,
-    ROOT_DIR,
-    TEST_FILE,
-)
+from tests.utils import ROOT_DIR, TEST_FILE, MockResponse, get_file_data
 
 
 def mocked_raise_exception(*args, **kwargs):

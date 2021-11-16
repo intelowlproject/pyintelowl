@@ -1,18 +1,22 @@
 import time
-from typing_extensions import Literal
+
 from rich import box
+from rich.console import Console, RenderGroup
 from rich.panel import Panel
-from rich.table import Table
 from rich.progress import track
-from rich.console import RenderGroup, Console
+from rich.table import Table
+from typing_extensions import Literal
+
+from pyintelowl.exceptions import IntelOwlClientException
+
 from ..cli._utils import (
+    get_json_syntax,
     get_status_text,
     get_success_text,
     get_tags_str,
-    get_json_syntax,
 )
-from pyintelowl.exceptions import IntelOwlClientException
-from ..cli.domain_checkers import Checkers, console as checkers_console
+from ..cli.domain_checkers import Checkers
+from ..cli.domain_checkers import console as checkers_console
 
 
 def _display_single_job(

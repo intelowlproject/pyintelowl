@@ -1,11 +1,12 @@
-import click
-import logging
 import csv
 import json
+import logging
+
+import click
 from rich.emoji import Emoji
-from rich.text import Text
-from rich.syntax import Syntax
 from rich.logging import RichHandler
+from rich.syntax import Syntax
+from rich.text import Text
 
 from pyintelowl import IntelOwl
 

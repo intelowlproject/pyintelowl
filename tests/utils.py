@@ -3,19 +3,18 @@ from unittest import TestCase
 from unittest.mock import patch  # noqa: F401
 
 from pyintelowl.pyintelowl import IntelOwl
-
 from tests import (
     MOCK_CONNECTIONS,
     TEST_ANALYZER_NAME,
     TEST_CONNECTOR_NAME,
-    TEST_JOB_ID,
-    TEST_IP,
     TEST_DOMAIN,
-    TEST_URL,
-    TEST_HASH,
-    TEST_GENERIC,
     TEST_FILE,
     TEST_FILE_HASH,
+    TEST_GENERIC,
+    TEST_HASH,
+    TEST_IP,
+    TEST_JOB_ID,
+    TEST_URL,
 )
 
 ROOT_DIR = pathlib.Path(__file__).parent.parent

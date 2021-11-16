@@ -2,7 +2,8 @@
 
 ## [4.1.4](https://github.com/intelowlproject/pyintelowl/releases/tag/4.1.4)
 
-- Added support for URL that use TCP as protocol
+- Added support for URLs that use TCP as protocol
+- Updated linters + formatted code with `isort`
 
 ## [4.1.3](https://github.com/intelowlproject/pyintelowl/releases/tag/4.1.3)
 
