@@ -1,18 +1,13 @@
 from pyintelowl.exceptions import IntelOwlClientException
-
-from tests.utils import (
-    BaseTest,
-    mock_connections,
-    patch,
-)
 from tests.mocked_requests import (
+    mocked_create_tag,
+    mocked_delete_tag_by_id,
+    mocked_edit_tag,
     mocked_get_all_tags,
     mocked_get_tag_by_id,
-    mocked_create_tag,
-    mocked_edit_tag,
-    mocked_delete_tag_by_id,
     mocked_raise_exception,
 )
+from tests.utils import BaseTest, mock_connections, patch
 
 
 class TestTags(BaseTest):

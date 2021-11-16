@@ -1,5 +1,6 @@
 import json
 import typing
+
 from requests.exceptions import RequestException
 
 

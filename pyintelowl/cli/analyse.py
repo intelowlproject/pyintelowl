@@ -1,7 +1,8 @@
 import click
 
 from pyintelowl.exceptions import IntelOwlClientException
-from ..cli._utils import add_options, ClickContext, get_json_data
+
+from ..cli._utils import ClickContext, add_options, get_json_data
 
 __analyse_options = [
     click.option(

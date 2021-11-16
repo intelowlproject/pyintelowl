@@ -1,25 +1,19 @@
 from pyintelowl.exceptions import IntelOwlClientException
-
-from tests.utils import (
-    BaseTest,
-    mock_connections,
-    patch,
-    get_file_data,
-)
 from tests.mocked_requests import (
     mocked_analyzer_healthcheck,
     mocked_connector_healthcheck,
+    mocked_delete_job_by_id,
+    mocked_download_job_sample,
     mocked_get_all_jobs,
     mocked_get_job_by_id,
-    mocked_delete_job_by_id,
     mocked_kill_analyzer,
     mocked_kill_connector,
     mocked_kill_job,
-    mocked_download_job_sample,
     mocked_raise_exception,
     mocked_retry_analyzer,
     mocked_retry_connector,
 )
+from tests.utils import BaseTest, get_file_data, mock_connections, patch
 
 
 class TestJobs(BaseTest):

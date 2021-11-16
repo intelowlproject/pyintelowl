@@ -1,19 +1,22 @@
-import click
 import json
+
+import click
 from rich import print as rprint
 from rich.console import Console
+
 from pyintelowl.exceptions import IntelOwlClientException
-from ..cli._utils import (
-    ClickContext,
-    add_options,
-    json_flag_option,
-    get_action_status_text,
-)
+
 from ..cli._jobs_utils import (
     _display_all_jobs,
     _display_single_job,
-    _result_filter_and_tabular_print,
     _poll_for_job_cli,
+    _result_filter_and_tabular_print,
+)
+from ..cli._utils import (
+    ClickContext,
+    add_options,
+    get_action_status_text,
+    json_flag_option,
 )
 
 

@@ -1,5 +1,10 @@
 # Changelog
 
+## [4.1.4](https://github.com/intelowlproject/pyintelowl/releases/tag/4.1.4)
+
+- Added support for URLs that use TCP as protocol
+- Updated linters + formatted code with `isort`
+
 ## [4.1.3](https://github.com/intelowlproject/pyintelowl/releases/tag/4.1.3)
 
 - Library: `IntelOwl.ask_analysis_availability` now accepts an argument `minutes_ago`. Use to specify number of minutes to go back when searching for a previous analysis.

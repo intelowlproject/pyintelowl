@@ -1,24 +1,17 @@
+import hashlib
 import ipaddress
+import json
 import logging
 import pathlib
-import json
 import re
+from typing import Any, AnyStr, Callable, Dict, List, Optional, Union
+
 import requests
-import hashlib
-from typing import (
-    List,
-    Dict,
-    Any,
-    Optional,
-    Union,
-    AnyStr,
-    Callable,
-)
 from typing_extensions import Literal
 
 from pyintelowl.version import __version__
-from .exceptions import IntelOwlClientException
 
+from .exceptions import IntelOwlClientException
 
 TLPType = Literal["WHITE", "GREEN", "AMBER", "RED"]
 
@@ -608,7 +601,7 @@ class IntelOwl:
             ipaddress.ip_address(value)
         except ValueError:
             if re.match(
-                r"^(?:ht|f)tps?://[a-z\d-]{1,63}(?:\.[a-z\d-]{1,63})+"
+                r"^(?:htt|ft|tc)ps?://[a-z\d-]{1,63}(?:\.[a-z\d-]{1,63})+"
                 r"(?:/[a-z\d-]{1,63})*(?:\.\w+)?",
                 value,
             ):

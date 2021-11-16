@@ -1,19 +1,21 @@
-import click
 import json
 import re
-from rich.console import Console
-from rich.table import Table
+
+import click
 from rich import box
 from rich import print as rprint
+from rich.console import Console
+from rich.table import Table
+
+from pyintelowl.pyintelowl import IntelOwlClientException
 
 from ..cli._utils import (
     ClickContext,
-    get_success_text,
-    get_json_syntax,
     add_options,
+    get_json_syntax,
+    get_success_text,
     json_flag_option,
 )
-from pyintelowl.pyintelowl import IntelOwlClientException
 
 
 @click.command(
