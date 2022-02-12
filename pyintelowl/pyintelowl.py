@@ -10,9 +10,7 @@ import requests
 from typing_extensions import Literal
 
 from pyintelowl.version import __version__
-
 from .exceptions import IntelOwlClientException
-
 TLPType = Literal["WHITE", "GREEN", "AMBER", "RED"]
 
 
@@ -26,11 +24,13 @@ class IntelOwl:
         certificate: str = None,
         logger: logging.Logger = None,
         cli: bool = False,
+        proxies: str = None,
     ):
         self.token = token
         self.instance = instance_url
         self.certificate = certificate
         self.cli = cli
+        self.proxies = proxies
         if logger:
             self.logger = logger
         else:
@@ -122,7 +122,7 @@ class IntelOwl:
         if minutes_ago:
             data["minutes_ago"] = int(minutes_ago)
         url = self.instance + "/api/ask_analysis_availability"
-        response = self.__make_request("POST", url=url, data=data)
+        response = self.__make_request("POST", url=url, data=data, proxies=self.proxies)
         answer = response.json()
         status, job_id = answer.get("status", None), answer.get("job_id", None)
         # check sanity cases
@@ -314,10 +314,10 @@ class IntelOwl:
         response = None
         if files is None:
             url = self.instance + "/api/analyze_observable"
-            args = {"json": data}
+            args = {"json": data, "proxies":self.proxies}
         else:
             url = self.instance + "/api/analyze_file"
-            args = {"data": data, "files": files}
+            args = {"data": data, "files": files, "proxies":self.proxies}
 
         try:
             response = self.session.post(url, **args)
@@ -359,7 +359,7 @@ class IntelOwl:
         """
         url = self.instance + "/api/tags"
         data = {"label": label, "color": color}
-        response = self.__make_request("POST", url=url, data=data)
+        response = self.__make_request("POST", url=url, data=data, proxies=self.proxies)
         return response.json()
 
     def edit_tag(self, tag_id: Union[int, str], label: str, color: str):
@@ -373,7 +373,7 @@ class IntelOwl:
         """
         url = self.instance + "/api/tags/" + str(tag_id)
         data = {"label": label, "color": color}
-        response = self.__make_request("PUT", url=url, data=data)
+        response = self.__make_request("PUT", url=url, data=data, proxies=self.proxies)
         return response.json()
 
     def get_analyzer_configs(self):
@@ -382,7 +382,7 @@ class IntelOwl:
         Endpoint: ``/api/get_analyzer_configs``
         """
         url = self.instance + "/api/get_analyzer_configs"
-        response = self.__make_request("GET", url=url)
+        response = self.__make_request("GET", url=url, proxies=self.proxies)
         return response.json()
 
     def get_connector_configs(self):
@@ -391,7 +391,7 @@ class IntelOwl:
         Endpoint: ``/api/get_connector_configs``
         """
         url = self.instance + "/api/get_connector_configs"
-        response = self.__make_request("GET", url=url)
+        response = self.__make_request("GET", url=url, proxies=self.proxies)
         return response.json()
 
     def get_all_tags(self) -> List[Dict[str, str]]:
@@ -406,7 +406,7 @@ class IntelOwl:
             List[Dict[str, str]]: List of tags
         """
         url = self.instance + "/api/tags"
-        response = self.__make_request("GET", url=url)
+        response = self.__make_request("GET", url=url, proxies=self.proxies)
         return response.json()
 
     def get_all_jobs(self) -> List[Dict[str, Any]]:
@@ -421,7 +421,7 @@ class IntelOwl:
             List[Dict[str, Any]]: List of jobs
         """
         url = self.instance + "/api/jobs"
-        response = self.__make_request("GET", url=url)
+        response = self.__make_request("GET", url=url, proxies=self.proxies)
         return response.json()
 
     def get_tag_by_id(self, tag_id: Union[int, str]) -> Dict[str, str]:
@@ -439,7 +439,7 @@ class IntelOwl:
         """
 
         url = self.instance + "/api/tags/" + str(tag_id)
-        response = self.__make_request("GET", url=url)
+        response = self.__make_request("GET", url=url, proxies=self.proxies)
         return response.json()
 
     def get_job_by_id(self, job_id: Union[int, str]) -> Dict[str, Any]:
@@ -456,7 +456,7 @@ class IntelOwl:
             Dict[str, Any]: JSON body.
         """
         url = self.instance + "/api/jobs/" + str(job_id)
-        response = self.__make_request("GET", url=url)
+        response = self.__make_request("GET", url=url, proxies=self.proxies)
         return response.json()
 
     @staticmethod
@@ -646,7 +646,7 @@ class IntelOwl:
         """
 
         url = self.instance + f"/api/jobs/{job_id}/download_sample"
-        response = self.__make_request("GET", url=url)
+        response = self.__make_request("GET", url=url, proxies=self.proxies)
         return response.content
 
     def kill_running_job(self, job_id: int) -> bool:
@@ -666,7 +666,7 @@ class IntelOwl:
         """
 
         url = self.instance + f"/api/jobs/{job_id}/kill"
-        response = self.__make_request("PATCH", url=url)
+        response = self.__make_request("PATCH", url=url, proxies=self.proxies)
         killed = response.status_code == 204
         return killed
 
@@ -686,7 +686,7 @@ class IntelOwl:
             Bool: deleted or not
         """
         url = self.instance + "/api/jobs/" + str(job_id)
-        response = self.__make_request("DELETE", url=url)
+        response = self.__make_request("DELETE", url=url, proxies=self.proxies)
         deleted = response.status_code == 204
         return deleted
 
@@ -707,7 +707,7 @@ class IntelOwl:
         """
 
         url = self.instance + "/api/tags/" + str(tag_id)
-        response = self.__make_request("DELETE", url=url)
+        response = self.__make_request("DELETE", url=url, proxies=self.proxies)
         deleted = response.status_code == 204
         return deleted
 
@@ -720,7 +720,7 @@ class IntelOwl:
             self.instance
             + f"/api/job/{job_id}/{plugin_type}/{plugin_name}/{plugin_action}"
         )
-        response = self.__make_request("PATCH", url=url)
+        response = self.__make_request("PATCH", url=url, proxies=self.proxies)
         success = response.status_code == 204
         return success
 
@@ -847,7 +847,7 @@ class IntelOwl:
         """
 
         url = self.instance + f"/api/analyzer/{analyzer_name}/healthcheck"
-        response = self.__make_request("GET", url=url)
+        response = self.__make_request("GET", url=url, proxies=self.proxies)
         return response.json().get("status", None)
 
     def connector_healthcheck(self, connector_name: str) -> Optional[bool]:
@@ -868,5 +868,5 @@ class IntelOwl:
             }
         """
         url = self.instance + f"/api/connector/{connector_name}/healthcheck"
-        response = self.__make_request("GET", url=url)
+        response = self.__make_request("GET", url=url, proxies=self.proxies)
         return response.json().get("status", None)
