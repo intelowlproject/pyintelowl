@@ -143,6 +143,7 @@ class IntelOwl:
         filename: str,
         binary: bytes,
         tlp: TLPType = None,
+        free: bool = False,
         analyzers_requested: List[str] = None,
         connectors_requested: List[str] = None,
         runtime_configuration: Dict = None,
@@ -166,6 +167,9 @@ class IntelOwl:
             tlp (str, optional):
                 TLP for the analysis.
                 (options: ``WHITE, GREEN, AMBER, RED``). Defaults to ``WHITE``.
+            free (bool, optional):
+                Whether to filter out non-free analyzers.
+                Defaults to ``False``.
             runtime_configuration (Dict, optional):
                 Overwrite configuration for analyzers. Defaults to ``{}``.
             tags_labels (List[str], optional):
@@ -193,6 +197,7 @@ class IntelOwl:
                 "analyzers_requested": analyzers_requested,
                 "connectors_requested": connectors_requested,
                 "tlp": tlp,
+                "free": free,
                 "tags_labels": tags_labels,
             }
             if runtime_configuration:
@@ -207,6 +212,7 @@ class IntelOwl:
         self,
         observable_name: str,
         tlp: TLPType = None,
+        free: bool = False,
         analyzers_requested: List[str] = None,
         connectors_requested: List[str] = None,
         runtime_configuration: Dict = None,
@@ -227,6 +233,9 @@ class IntelOwl:
             tlp (str, optional):
                 TLP for the analysis.
                 (options: ``WHITE, GREEN, AMBER, RED``). Defaults to ``WHITE``.
+            free (bool, optional):
+                Whether to filter out non-free analyzers.
+                Defaults to ``False``.
             runtime_configuration (Dict, optional):
                 Overwrite configuration for analyzers. Defaults to ``{}``.
             tags_labels (List[str], optional):
@@ -257,6 +266,7 @@ class IntelOwl:
                 "analyzers_requested": analyzers_requested,
                 "connectors_requested": connectors_requested,
                 "tlp": tlp,
+                "free": free,
                 "tags_labels": tags_labels,
                 "runtime_configuration": runtime_configuration,
             }
@@ -275,7 +285,7 @@ class IntelOwl:
         Args:
             rows (List[Dict]):
                 Each row should be a dictionary with keys,
-                `value`, `type`, `check`, `tlp`,
+                `value`, `type`, `check`, `tlp`, `free`,
                 `analyzers_list`, `connectors_list`, `runtime_config`
                 `tags_list`.
         """
@@ -298,6 +308,7 @@ class IntelOwl:
                     obj["type"],
                     obj.get("check", None),
                     obj.get("tlp", "WHITE"),
+                    obj.get("free", False),
                     analyzers_list,
                     connectors_list,
                     runtime_config,
@@ -497,6 +508,7 @@ class IntelOwl:
         type_: str,
         check,
         tlp: TLPType = "WHITE",
+        free: bool = False,
         analyzers_list: List[str] = None,
         connectors_list: List[str] = None,
         runtime_configuration: Dict = None,
@@ -521,6 +533,7 @@ class IntelOwl:
             analyzers: [i green]{analyzers_list if analyzers_list else 'all'}[/]
             connectors: [i green]{connectors_list if connectors_list else 'all'}[/]
             tags: [i green]{tags_labels}[/]
+            free: [i green]{free}[/]
             """
         )
         # 1st step: ask analysis availability
@@ -549,6 +562,7 @@ class IntelOwl:
             resp2 = self.send_observable_analysis_request(
                 observable_name=obj,
                 tlp=tlp,
+                free=free,
                 analyzers_requested=analyzers_list,
                 connectors_requested=connectors_list,
                 runtime_configuration=runtime_configuration,
@@ -560,6 +574,7 @@ class IntelOwl:
                 filename=path.name,
                 binary=path.read_bytes(),
                 tlp=tlp,
+                free=free,
                 analyzers_requested=analyzers_list,
                 connectors_requested=connectors_list,
                 runtime_configuration=runtime_configuration,
