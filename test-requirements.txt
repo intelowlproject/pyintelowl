@@ -2,6 +2,6 @@ black==22.1.0
 flake8==4.0.1
 isort==5.10.1
 pre-commit==2.17.0
-tox==3.24.4
+tox==3.24.5
 tox-gh-actions==2.9.1
 codecov==2.1.12
