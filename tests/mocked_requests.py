@@ -21,7 +21,7 @@ def mocked_analyzer_config(*args, **kwargs):
             }
         },
         200,
-        "/api/get_analyzer_configs",
+        "api/get_analyzer_configs",
     )
 
 
@@ -38,7 +38,7 @@ def mocked_connector_config(*args, **kwargs):
             }
         },
         200,
-        "/api/get_connector_configs",
+        "api/get_connector_configs",
     )
 
 
@@ -50,7 +50,7 @@ def mocked_ask_analysis_success(*args, **kwargs):
             "analyzers_to_execute": ["test_1", "test_2"],
         },
         200,
-        "/api/ask_analysis_availability",
+        "api/ask_analysis_availability",
     )
 
 
@@ -60,7 +60,7 @@ def mocked_ask_analysis_no_status(*args, **kwargs):
             "job_id": 1,
         },
         200,
-        "/api/ask_analysis_availability",
+        "api/ask_analysis_availability",
     )
 
 
@@ -73,7 +73,7 @@ def mocked_send_analysis_success(*args, **kwargs):
             "analyzers_running": ["test_1", "test_2"],
         },
         200,
-        "/api/analyze_observable",
+        "api/analyze_observable",
     )
 
 
@@ -83,7 +83,7 @@ def mocked_ask_analysis_no_job_id(*args, **kwargs):
             "status": "running",
         },
         200,
-        "/api/ask_analysis_availability",
+        "api/ask_analysis_availability",
     )
 
 
@@ -107,7 +107,7 @@ def mocked_get_job_by_id(*args, **kwargs):
             ],
         },
         200,
-        "/api/jobs/1",
+        "/api/job/1",
     )
 
 
@@ -139,7 +139,7 @@ def mocked_kill_analyzer(*args, **kwargs):
     return MockResponse(
         True,
         204,
-        "/api/jobs/1/analyzer/MISP/kill",
+        "/api/job/1/analyzer/MISP/kill",
     )
 
 
@@ -147,7 +147,7 @@ def mocked_kill_connector(*args, **kwargs):
     return MockResponse(
         True,
         204,
-        "/api/jobs/1/connector/MISP/kill",
+        "/api/job/1/connector/MISP/kill",
     )
 
 
@@ -155,7 +155,7 @@ def mocked_retry_analyzer(*args, **kwargs):
     return MockResponse(
         True,
         204,
-        "/api/jobs/1/analyzer/MISP/retry",
+        "/api/job/1/analyzer/MISP/retry",
     )
 
 
@@ -163,7 +163,7 @@ def mocked_retry_connector(*args, **kwargs):
     return MockResponse(
         True,
         204,
-        "/api/jobs/1/connector/MISP/retry",
+        "/api/job/1/connector/MISP/retry",
     )
 
 
