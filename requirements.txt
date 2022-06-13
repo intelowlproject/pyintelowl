@@ -1,4 +1,4 @@
-requests~=2.26
+requests~=2.27
 geocoder~=1.38
 click>=7.0
 rich~=10.13

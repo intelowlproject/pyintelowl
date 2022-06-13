@@ -1,5 +1,10 @@
 # Changelog
 
+## [4.1.5](https://github.com/intelowlproject/pyintelowl/releases/tag/4.1.5)
+
+- dependencies upgrade
+- #163
+
 ## [4.1.4](https://github.com/intelowlproject/pyintelowl/releases/tag/4.1.4)
 
 - Added support for URLs that use TCP as protocol
