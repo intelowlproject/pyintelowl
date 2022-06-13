@@ -211,6 +211,7 @@ class IntelOwl:
         connectors_requested: List[str] = None,
         runtime_configuration: Dict = None,
         tags_labels: List[str] = None,
+        observable_classification: str = None,
     ) -> Dict:
         """Send analysis request for an observable.\n
         Endpoint: ``/api/analyze_observable``
@@ -231,9 +232,14 @@ class IntelOwl:
                 Overwrite configuration for analyzers. Defaults to ``{}``.
             tags_labels (List[str], optional):
                 List of tag labels to assign (creates non-existing tags)
+            observable_classification (str):
+                Observable classification, Default to None.
+                By default (None) it launch analysis with an automatic classification of observable_name.
+                (options: ``url, domain, hash, ip, generic``)
 
         Raises:
             IntelOwlClientException: on client/HTTP error
+            IntelOwlClientException: on wrong observable_classification
 
         Returns:
             Dict: JSON body
@@ -249,11 +255,16 @@ class IntelOwl:
                 tags_labels = []
             if not runtime_configuration:
                 runtime_configuration = {}
+            if not observable_classification:
+                observable_classification = self._get_observable_classification(
+                    observable_name
+                )
+            elif observable_classification not in ['generic', 'hash', 'ip', 'domain', 'url']:
+                raise IntelOwlClientException("Observable classification only handle"
+                                              " 'generic', 'hash', 'ip', 'domain' and 'url' ")
             data = {
                 "observable_name": observable_name,
-                "observable_classification": self._get_observable_classification(
-                    observable_name
-                ),
+                "observable_classification": observable_classification,
                 "analyzers_requested": analyzers_requested,
                 "connectors_requested": connectors_requested,
                 "tlp": tlp,
