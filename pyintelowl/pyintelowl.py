@@ -234,7 +234,7 @@ class IntelOwl:
                 List of tag labels to assign (creates non-existing tags)
             observable_classification (str):
                 Observable classification, Default to None.
-                By default (None) it launch analysis with an automatic classification of observable_name.
+                By default launch analysis with an automatic classification.
                 (options: ``url, domain, hash, ip, generic``)
 
         Raises:
@@ -259,9 +259,17 @@ class IntelOwl:
                 observable_classification = self._get_observable_classification(
                     observable_name
                 )
-            elif observable_classification not in ['generic', 'hash', 'ip', 'domain', 'url']:
-                raise IntelOwlClientException("Observable classification only handle"
-                                              " 'generic', 'hash', 'ip', 'domain' and 'url' ")
+            elif observable_classification not in [
+                "generic",
+                "hash",
+                "ip",
+                "domain",
+                "url",
+            ]:
+                raise IntelOwlClientException(
+                    "Observable classification only handle"
+                    " 'generic', 'hash', 'ip', 'domain' and 'url' "
+                )
             data = {
                 "observable_name": observable_name,
                 "observable_classification": observable_classification,

@@ -117,12 +117,12 @@ class TestGeneral(BaseTest):
     @mock_connections(
         patch("requests.Session.post", side_effect=mocked_raise_exception)
     )
-    def test_send_observable_analysis_request_failed(self, mocked_requests):
+    def test_send_observable_analysis_request_failure_classify(self, mocked_requests):
         observable_name = self.domain
         analyzers_requested = ["test_1", "test_2"]
         connectors_requested = ["test_1", "test_2"]
         runtime_config = {"test_key": "test_param"}
-        observable_classification = 'unavailable'
+        observable_classification = "unavailable"
         with self.assertRaises(IntelOwlClientException):
             self.client.send_observable_analysis_request(
                 observable_name,
@@ -169,24 +169,6 @@ class TestGeneral(BaseTest):
                 connectors_requested=connectors_requested,
                 runtime_configuration=runtime_config,
             )
-
-    def test_send_file_analysis_request(self, mocked_requests):
-        analyzers_requested = ["test_1", "test_2"]
-        connectors_requested = ["test_1", "test_2"]
-        filename = self.filepath
-        binary = get_file_data(self.filepath)
-        runtime_config = {"test_key": "test_param"}
-        result = self.client.send_file_analysis_request(
-            filename,
-            binary,
-            analyzers_requested=analyzers_requested,
-            connectors_requested=connectors_requested,
-            runtime_configuration=runtime_config,
-        )
-        self.assertIn("status", result)
-        self.assertIn("job_id", result)
-        self.assertIn("analyzers_running", result)
-
 
     def test_get_md5_observable(self):
         type_ = "observable"
