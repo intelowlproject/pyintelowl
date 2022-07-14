@@ -1,5 +1,11 @@
 # Changelog
 
+## [4.2.0](https://github.com/intelowlproject/pyintelowl/releases/tag/4.2.0)
+
+- this version is fully compatible with IntelOwl v4 (#165)
+- fixed some errors in `jobs view` and `jobs ls`
+- updated all dependencies and softened their requirements
+
 ## [4.1.5](https://github.com/intelowlproject/pyintelowl/releases/tag/4.1.5)
 
 - dependencies upgrade

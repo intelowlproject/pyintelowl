@@ -437,7 +437,7 @@ class IntelOwl:
             IntelOwlClientException: on client/HTTP error
 
         Returns:
-            List[Dict[str, Any]]: List of jobs
+            Dict: Dict with 3 keys: "count", "total_pages", "results"
         """
         url = self.instance + "/api/jobs"
         response = self.__make_request("GET", url=url)
@@ -463,7 +463,7 @@ class IntelOwl:
 
     def get_job_by_id(self, job_id: Union[int, str]) -> Dict[str, Any]:
         """Fetch job info by ID.
-        Endpoint: ``/api/job/{job_id}``
+        Endpoint: ``/api/jobs/{job_id}``
 
         Args:
             job_id (Union[int, str]): Job ID
@@ -737,7 +737,7 @@ class IntelOwl:
         response = None
         url = (
             self.instance
-            + f"/api/job/{job_id}/{plugin_type}/{plugin_name}/{plugin_action}"
+            + f"/api/jobs/{job_id}/{plugin_type}/{plugin_name}/{plugin_action}"
         )
         response = self.__make_request("PATCH", url=url)
         success = response.status_code == 204
@@ -746,7 +746,7 @@ class IntelOwl:
     def kill_analyzer(self, job_id: int, analyzer_name: str) -> bool:
         """Send kill running/pending analyzer request.\n
         Method: PATCH
-        Endpoint: ``/api/job/{job_id}/analyzer/{analyzer_name}/kill``
+        Endpoint: ``/api/jobs/{job_id}/analyzer/{analyzer_name}/kill``
 
         Args:
             job_id (int):
@@ -772,7 +772,7 @@ class IntelOwl:
     def kill_connector(self, job_id: int, connector_name: str) -> bool:
         """Send kill running/pending connector request.\n
         Method: PATCH
-        Endpoint: ``/api/job/{job_id}/connector/{connector_name}/kill``
+        Endpoint: ``/api/jobs/{job_id}/connector/{connector_name}/kill``
 
         Args:
             job_id (int):
@@ -798,7 +798,7 @@ class IntelOwl:
     def retry_analyzer(self, job_id: int, analyzer_name: str) -> bool:
         """Send retry failed/killed analyzer request.\n
         Method: PATCH
-        Endpoint: ``/api/job/{job_id}/analyzer/{analyzer_name}/retry``
+        Endpoint: ``/api/jobs/{job_id}/analyzer/{analyzer_name}/retry``
 
         Args:
             job_id (int):
@@ -824,7 +824,7 @@ class IntelOwl:
     def retry_connector(self, job_id: int, connector_name: str) -> bool:
         """Send retry failed/killed connector request.\n
         Method: PATCH
-        Endpoint: ``/api/job/{job_id}/connector/{connector_name}/retry``
+        Endpoint: ``/api/jobs/{job_id}/connector/{connector_name}/retry``
 
         Args:
             job_id (int):
@@ -860,9 +860,7 @@ class IntelOwl:
             IntelOwlClientException: on client/HTTP error
 
         Returns:
-            Dict: {
-                `status`: `True/False/None`
-            }
+            Bool: success or not
         """
 
         url = self.instance + f"/api/analyzer/{analyzer_name}/healthcheck"
@@ -882,9 +880,7 @@ class IntelOwl:
             IntelOwlClientException: on client/HTTP error
 
         Returns:
-            Dict: {
-                `status`: `True/False/None`
-            }
+            Bool: success or not
         """
         url = self.instance + f"/api/connector/{connector_name}/healthcheck"
         response = self.__make_request("GET", url=url)

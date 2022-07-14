@@ -1,7 +1,7 @@
 import time
 
 from rich import box
-from rich.console import Console, RenderGroup
+from rich.console import Console, Group
 from rich.panel import Panel
 from rich.progress import track
 from rich.table import Table
@@ -74,9 +74,11 @@ def _render_job_attributes(data):
         else data["file_mimetype"]
     )
     status: str = get_status_text(data["status"], as_text=False)
-    r = RenderGroup(
+    console = Console()
+    console.print(data)
+    r = Group(
         f"{style}Job ID:[/] {str(data['id'])}",
-        f"{style}User:[/] {data['source']}",
+        f"{style}User:[/] {data['user']['username']}",
         f"{style}MD5:[/] {data['md5']}",
         f"{style}Name:[/] {name}",
         f"{style}Classification:[/] {clsfn}",
@@ -114,14 +116,14 @@ def _display_all_jobs(logger, rows):
                 if el["observable_classification"]
                 else el["file_mimetype"],
                 ", ".join([t["label"] for t in el["tags"]]),
-                el["no_of_analyzers_executed"],
-                el["no_of_connectors_executed"],
+                ", ".join(el["analyzers_to_execute"]),
+                ", ".join(el["connectors_to_execute"]),
                 str(el["process_time"]),
                 get_status_text(el["status"]),
             )
         console.print(table, justify="center")
     except Exception as e:
-        logger.fatal(e)
+        logger.fatal(e, exc_info=True)
 
 
 def _result_filter_and_tabular_print(result, observable: str, obs_clsfn: str):
