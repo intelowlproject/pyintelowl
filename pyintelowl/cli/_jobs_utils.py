@@ -74,9 +74,11 @@ def _render_job_attributes(data):
         else data["file_mimetype"]
     )
     status: str = get_status_text(data["status"], as_text=False)
+    console = Console()
+    console.print(data)
     r = Group(
         f"{style}Job ID:[/] {str(data['id'])}",
-        f"{style}User:[/] {data['source']}",
+        f"{style}User:[/] {data['user']['username']}",
         f"{style}MD5:[/] {data['md5']}",
         f"{style}Name:[/] {name}",
         f"{style}Classification:[/] {clsfn}",
@@ -106,7 +108,6 @@ def _display_all_jobs(logger, rows):
     )
     table.add_column(header="Status", header_style=header_style)
     try:
-        print(rows)
         for el in rows:
             table.add_row(
                 str(el["id"]),
