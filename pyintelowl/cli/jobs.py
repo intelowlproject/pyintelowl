@@ -48,12 +48,14 @@ def ls(ctx: ClickContext, status: str, as_json: bool):
     ctx.obj.logger.info("Requesting list of jobs..")
     try:
         ans = ctx.obj.get_all_jobs()
+        results = ans.get("results", [])
+        ctx.obj.logger.info(results)
         if status:
-            ans = [el for el in ans if el["status"].lower() == status.lower()]
+            ans = [el for el in results if el["status"].lower() == status.lower()]
         if as_json:
             rprint(json.dumps(ans, indent=4))
         else:
-            _display_all_jobs(ctx.obj.logger, ans)
+            _display_all_jobs(ctx.obj.logger, results)
     except IntelOwlClientException as e:
         ctx.obj.logger.fatal(str(e))
 

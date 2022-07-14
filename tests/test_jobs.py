@@ -20,7 +20,7 @@ class TestJobs(BaseTest):
     @mock_connections(patch("requests.Session.get", side_effect=mocked_get_all_jobs))
     def test_get_all_jobs_success(self, mock_requests):
         all_jobs = self.client.get_all_jobs()
-        self.assertIsInstance(all_jobs, list)
+        self.assertIsInstance(all_jobs, dict)
 
     @mock_connections(patch("requests.Session.get", side_effect=mocked_raise_exception))
     def test_get_all_jobs_failure(self, mock_requests):

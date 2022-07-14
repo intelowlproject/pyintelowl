@@ -113,7 +113,7 @@ def mocked_get_job_by_id(*args, **kwargs):
 
 def mocked_get_all_jobs(*args, **kwargs):
     return MockResponse(
-        [],
+        {"count": 1, "total_pages": 1, "results": []},
         200,
         "/api/jobs",
     )

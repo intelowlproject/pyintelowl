@@ -437,7 +437,7 @@ class IntelOwl:
             IntelOwlClientException: on client/HTTP error
 
         Returns:
-            List[Dict[str, Any]]: List of jobs
+            Dict: Dict with 3 keys: "count", "total_pages", "results"
         """
         url = self.instance + "/api/jobs"
         response = self.__make_request("GET", url=url)
