@@ -1,4 +1,4 @@
-Sphinx==5.0.1
+Sphinx==5.0.2
 sphinx-rtd-theme
 sphinxcontrib.asciinema
 sphinxcontrib-napoleon
