@@ -467,12 +467,12 @@ class IntelOwl:
         if files is None:
             url = self.instance + "/api/analyze_observable"
             if playbook_mode:
-                url = self.instance + "/api/playbook/analyze_multiple_observable"
+                url = self.instance + "/api/playbook/analyze_multiple_observables"
             args = {"json": data}
         else:
             url = self.instance + "/api/analyze_file"
             if playbook_mode:
-                url = self.instance + "/api/playbook/analyze_multiple_file"
+                url = self.instance + "/api/playbook/analyze_multiple_files"
             args = {"data": data, "files": files}
         try:
             response = self.session.post(url, **args)
