@@ -487,7 +487,7 @@ class IntelOwl:
             answer = response.json()
             if playbook_mode:
                 # right now, we are only supporting single input result
-                answer = answer.get("results", [])
+                answer = answer.get("results", [])[0]
 
             warnings = answer.get("warnings", [])
             if self.cli:
