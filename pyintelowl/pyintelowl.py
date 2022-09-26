@@ -203,6 +203,65 @@ class IntelOwl:
             raise IntelOwlClientException(e)
         return answer
 
+    def send_file_analysis_playbook_request(
+        self,
+        filename: str,
+        binary: bytes,
+        tlp: TLPType = None,
+        playbooks_requested: List[str] = None,
+        runtime_configuration: Dict = None,
+        tags_labels: List[str] = None,
+    ) -> Dict:
+        """Send playbook analysis request for a file.\n
+        Endpoint: ``/api/playbook/analyze_file``
+
+        Args:
+
+            filename (str):
+                Filename
+            binary (bytes):
+                File contents as bytes
+            playbooks_requested (List[str], optional):
+                List of specific playbooks to invoke.
+                Defaults to ``[]`` i.e. all playbooks.
+            tlp (str, optional):
+                TLP for the analysis.
+                (options: ``WHITE, GREEN, AMBER, RED``). Defaults to ``WHITE``.
+            runtime_configuration (Dict, optional):
+                Overwrite configuration for analyzers. Defaults to ``{}``.
+            tags_labels (List[str], optional):
+                List of tag labels to assign (creates non-existing tags)
+
+        Raises:
+            IntelOwlClientException: on client/HTTP error
+
+        Returns:
+            Dict: JSON body
+        """
+        try:
+            if not tlp:
+                tlp = "WHITE"
+            if not playbooks_requested:
+                playbooks_requested = []
+            if not tags_labels:
+                tags_labels = []
+            if not runtime_configuration:
+                runtime_configuration = {}
+            data = {
+                "playbooks_requested": playbooks_requested,
+                "tlp": tlp,
+                "tags_labels": tags_labels,
+            }
+            
+            if runtime_configuration:
+                data["runtime_configuration"] = json.dumps(runtime_configuration)
+            files = {"file": (filename, binary)}
+            answer = self.__send_analysis_request(data=data, files=files)
+        except Exception as e:
+            raise IntelOwlClientException(e)
+        return answer
+
+
     def send_observable_analysis_request(
         self,
         observable_name: str,
@@ -284,6 +343,80 @@ class IntelOwl:
             raise IntelOwlClientException(e)
         return answer
 
+    def send_observable_analysis_playbook_request(
+        self,
+        observable_name: str,
+        tlp: TLPType = None,
+        playbooks_requested: List[str] = None,
+        runtime_configuration: Dict = None,
+        tags_labels: List[str] = None,
+        observable_classification: str = None,
+    ) -> Dict:
+        """Send playbook analysis request for an observable.\n
+        Endpoint: ``/api/playbook/analyze_observable``
+
+        Args:
+            observable_name (str):
+                Observable value
+            playbooks_requested (List[str], optional):
+                List of specific playbooks to invoke.
+                Defaults to ``[]`` i.e. all playbooks.
+            tlp (str, optional):
+                TLP for the analysis.
+                (options: ``WHITE, GREEN, AMBER, RED``). Defaults to ``WHITE``.
+            runtime_configuration (Dict, optional): 
+                Overwrite configuration for analyzers. Defaults to ``{}``.
+            tags_labels (List[str], optional):
+                List of tag labels to assign (creates non-existing tags)
+            observable_classification (str):
+                Observable classification, Default to None.
+                By default launch analysis with an automatic classification.
+                (options: ``url, domain, hash, ip, generic``)
+
+        Raises:
+            IntelOwlClientException: on client/HTTP error
+            IntelOwlClientException: on wrong observable_classification
+
+        Returns:
+            Dict: JSON body
+        """
+        try:
+            if not tlp:
+                tlp = "WHITE"
+            if not playbooks_requested:
+                playbooks_requested = []
+            if not tags_labels:
+                tags_labels = []
+            if not runtime_configuration:
+                runtime_configuration = {}
+            if not observable_classification:
+                observable_classification = self._get_observable_classification(
+                    observable_name
+                )
+            elif observable_classification not in [
+                "generic",
+                "hash",
+                "ip",
+                "domain",
+                "url",
+            ]:
+                raise IntelOwlClientException(
+                    "Observable classification only handle"
+                    " 'generic', 'hash', 'ip', 'domain' and 'url' "
+                )
+            data = {
+                "observables": [[observable_classification, observable_name]],
+                "playbooks_requested": playbooks_requested,
+                "tlp": tlp,
+                "tags_labels": tags_labels,
+                "runtime_configuration": runtime_configuration,
+            }
+            answer = self.__send_analysis_request(data=data, files=None, playbook_mode=True)
+        except Exception as e:
+            raise IntelOwlClientException(e)
+        return answer
+
+
     def send_analysis_batch(self, rows: List[Dict]):
         """
         Send multiple analysis requests.
@@ -326,18 +459,21 @@ class IntelOwl:
             except IntelOwlClientException as e:
                 self.logger.fatal(str(e))
 
-    def __send_analysis_request(self, data=None, files=None):
+    def __send_analysis_request(self, data=None, files=None, playbook_mode=False):
         """
         Internal use only.
         """
         response = None
         if files is None:
             url = self.instance + "/api/analyze_observable"
+            if playbook_mode:
+                url = self.instance + "/api/playbook/analyze_multiple_observable"
             args = {"json": data}
         else:
             url = self.instance + "/api/analyze_file"
+            if playbook_mode:
+                url = self.instance + "/api/playbook/analyze_multiple_file"
             args = {"data": data, "files": files}
-
         try:
             response = self.session.post(url, **args)
             self.logger.debug(
@@ -349,6 +485,10 @@ class IntelOwl:
                 }
             )
             answer = response.json()
+            if playbook_mode:
+                # right now, we are only supporting single input result
+                answer = answer.get("results", [])
+
             warnings = answer.get("warnings", [])
             if self.cli:
                 info_log = f"""New Job running..
@@ -410,6 +550,15 @@ class IntelOwl:
         Endpoint: ``/api/get_connector_configs``
         """
         url = self.instance + "/api/get_connector_configs"
+        response = self.__make_request("GET", url=url)
+        return response.json()
+
+    def get_playbook_configs(self):
+        """
+        Get current state of `playbook_config.json` from the IntelOwl instance.\n
+        Endpoint: ``/api/get_playbook_configs``
+        """
+        url = self.instance + "/api/get_playbook_configs"
         response = self.__make_request("GET", url=url)
         return response.json()
 
@@ -599,6 +748,72 @@ class IntelOwl:
         Execute [i blue]pyintelowl jobs view {job_id}[/] to view the result
                 """
             )
+
+    def _new_analysis_playbook_cli(
+        self,
+        obj: str,
+        type_: str,
+        check,
+        tlp: TLPType = "WHITE",
+        playbooks_list: List[str] = None,
+        runtime_configuration: Dict = None,
+        tags_labels: List[str] = None,
+        should_poll: bool = False,
+        minutes_ago: int = None,
+    ) -> None:
+        """
+        For internal use by the pyintelowl CLI.
+        """
+        if not playbooks_list:
+            playbooks_list = []
+        if not runtime_configuration:
+            runtime_configuration = {}
+        if not tags_labels:
+            tags_labels = []
+        self.logger.info(
+            f"""Requesting analysis..
+            {type_}: [blue]{obj}[/]
+            playbooks: [i green]{playbooks_list if playbooks_list else 'all'}[/]
+            tags: [i green]{tags_labels}[/]
+            """
+        )
+
+        # 1st step, make request
+        if type_ == "observable":
+            resp = self.send_observable_analysis_playbook_request(
+                observable_name=obj,
+                tlp=tlp,
+                playbooks_requested=playbooks_list,
+                runtime_configuration=runtime_configuration,
+                tags_labels=tags_labels,
+            )
+        else:
+            path = pathlib.Path(obj)
+            resp = self.send_file_analysis_playbook_request(
+                filename=path.name,
+                binary=path.read_bytes(),
+                tlp=tlp,
+                playbooks_requested=playbooks_list,
+                runtime_configuration=runtime_configuration,
+                tags_labels=tags_labels,
+            )
+
+        # 2nd step: poll for result
+        if should_poll:
+            if resp["status"] != "accepted":
+                self.logger.fatal("Can't poll a failed job")
+            # import poll function
+            from .cli._jobs_utils import _poll_for_job_cli
+
+            job_id = resp["job_id"]
+            _ = _poll_for_job_cli(self, job_id)
+            self.logger.info(
+                f"""
+                    Polling finished.
+                    Execute [i blue]pyintelowl jobs view {job_id}[/] to view the result
+                """
+            )
+
 
     def _get_observable_classification(self, value: str) -> str:
         """Returns observable classification for the given value.\n
