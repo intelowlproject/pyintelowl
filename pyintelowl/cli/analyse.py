@@ -82,7 +82,7 @@ __playbook_analyse_options.pop(0)
 __playbook_analyse_options.append(
     click.option(
         "-cl",
-        "--connectors-list",
+        "--playbooks-list",
         type=str,
         default="",
         help="""
