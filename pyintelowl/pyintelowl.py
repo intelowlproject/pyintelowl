@@ -252,7 +252,7 @@ class IntelOwl:
                 "tlp": tlp,
                 "tags_labels": tags_labels,
             }
-            
+
             if runtime_configuration:
                 data["runtime_configuration"] = json.dumps(runtime_configuration)
             files = {"file": (filename, binary)}
@@ -260,7 +260,6 @@ class IntelOwl:
         except Exception as e:
             raise IntelOwlClientException(e)
         return answer
-
 
     def send_observable_analysis_request(
         self,
@@ -364,7 +363,7 @@ class IntelOwl:
             tlp (str, optional):
                 TLP for the analysis.
                 (options: ``WHITE, GREEN, AMBER, RED``). Defaults to ``WHITE``.
-            runtime_configuration (Dict, optional): 
+            runtime_configuration (Dict, optional):
                 Overwrite configuration for analyzers. Defaults to ``{}``.
             tags_labels (List[str], optional):
                 List of tag labels to assign (creates non-existing tags)
@@ -411,11 +410,12 @@ class IntelOwl:
                 "tags_labels": tags_labels,
                 "runtime_configuration": runtime_configuration,
             }
-            answer = self.__send_analysis_request(data=data, files=None, playbook_mode=True)
+            answer = self.__send_analysis_request(
+                data=data, files=None, playbook_mode=True
+            )
         except Exception as e:
             raise IntelOwlClientException(e)
         return answer
-
 
     def send_analysis_batch(self, rows: List[Dict]):
         """
@@ -813,7 +813,6 @@ class IntelOwl:
                     Execute [i blue]pyintelowl jobs view {job_id}[/] to view the result
                 """
             )
-
 
     def _get_observable_classification(self, value: str) -> str:
         """Returns observable classification for the given value.\n

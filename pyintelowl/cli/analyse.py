@@ -92,11 +92,13 @@ __playbook_analyse_options.append(
     ),
 )
 
+
 @click.group("analyse")
 def analyse():
     """
     Send new analysis request
     """
+
 
 @analyse.command(help="Send analysis request for an observable")
 @click.argument("value")
@@ -136,6 +138,7 @@ def observable(
         )
     except IntelOwlClientException as e:
         ctx.obj.logger.fatal(str(e))
+
 
 @analyse.command(help="Send analysis request for a file")
 @click.argument("filepath", type=click.Path(exists=True, resolve_path=True))
@@ -181,7 +184,7 @@ def file(
 @click.argument("value")
 @add_options(__playbook_analyse_options)
 @click.pass_context
-def observable(
+def playbook_observable(
     ctx: ClickContext,
     value: str,
     playbooks_list: str,
@@ -218,7 +221,7 @@ def observable(
 @click.argument("filepath", type=click.Path(exists=True, resolve_path=True))
 @add_options(__playbook_analyse_options)
 @click.pass_context
-def observable(
+def playbook_file(
     ctx: ClickContext,
     filepath: str,
     playbooks_list: str,
