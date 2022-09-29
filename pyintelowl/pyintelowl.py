@@ -256,7 +256,9 @@ class IntelOwl:
             if runtime_configuration:
                 data["runtime_configuration"] = json.dumps(runtime_configuration)
             files = {"file": (filename, binary)}
-            answer = self.__send_analysis_request(data=data, files=files)
+            answer = self.__send_analysis_request(
+                data=data, files=files, playbook_mode=True
+            )
         except Exception as e:
             raise IntelOwlClientException(e)
         return answer
