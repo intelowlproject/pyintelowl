@@ -192,7 +192,7 @@ class TestGeneral(BaseTest):
             runtime_configuration=runtime_config,
         )
 
-        result = result.get("results")
+        result = result_.get("results")
         self.assertIn("status", result)
         self.assertIn("job_id", result)
         self.assertIn("analyzers_running", result)
@@ -207,13 +207,13 @@ class TestGeneral(BaseTest):
         filename = self.filepath
         binary = get_file_data(self.filepath)
         runtime_config = {"test_key": "test_param"}
-        result = self.client.send_file_analysis_playbook_request(
+        result_ = self.client.send_file_analysis_playbook_request(
             filename,
             binary,
             playbooks_requested=playbooks_requested,
             runtime_configuration=runtime_config,
         )
-        result = result.get("results")
+        result = result_.get("results")
 
         self.assertIn("status", result)
         self.assertIn("job_id", result)
