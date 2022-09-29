@@ -186,11 +186,13 @@ class TestGeneral(BaseTest):
         observable_name = self.domain
         runtime_config = {"test_key": "test_param"}
         playbooks_requested = ["TEST_PLAYBOOK"]
-        result = self.client.send_observable_analysis_playbook_request(
+        result_ = self.client.send_observable_analysis_playbook_request(
             observable_name,
             playbooks_requested=playbooks_requested,
             runtime_configuration=runtime_config,
         )
+
+        result = result.get("results")
         self.assertIn("status", result)
         self.assertIn("job_id", result)
         self.assertIn("analyzers_running", result)
@@ -211,6 +213,7 @@ class TestGeneral(BaseTest):
             playbooks_requested=playbooks_requested,
             runtime_configuration=runtime_config,
         )
+        result = result.get("results")
 
         self.assertIn("status", result)
         self.assertIn("job_id", result)
