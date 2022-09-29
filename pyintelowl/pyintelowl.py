@@ -9,7 +9,6 @@ from typing import Any, AnyStr, Callable, Dict, List, Optional, Union
 import requests
 from typing_extensions import Literal
 
-from pyintelowl.cli.domain_checkers import MyColors
 from pyintelowl.version import __version__
 
 from .exceptions import IntelOwlClientException
@@ -773,7 +772,7 @@ class IntelOwl:
             tags_labels = []
 
         if len(playbooks_list) == 0:
-            print((MyColors.Foreground.red + "No Playbooks selected!\n"))
+            print(("No Playbooks selected!\n"))
             return
 
         self.logger.info(
