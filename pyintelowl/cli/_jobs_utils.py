@@ -121,7 +121,7 @@ def _display_all_jobs(logger, rows):
                 ", ".join([t["label"] for t in el["tags"]]),
                 ", ".join(el["analyzers_to_execute"]),
                 ", ".join(el["connectors_to_execute"]),
-                ", ".join(el["connectors_to_execute"]),
+                ", ".join(el["playbooks_to_execute"]),
                 str(el["process_time"]),
                 get_status_text(el["status"]),
             )
