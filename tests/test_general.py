@@ -205,7 +205,7 @@ class TestGeneral(BaseTest):
         filename = self.filepath
         binary = get_file_data(self.filepath)
         runtime_config = {"test_key": "test_param"}
-        result = self.client.send_file_analysis_request(
+        result = self.client.send_file_analysis_playbook_request(
             filename,
             binary,
             playbooks_requested=playbooks_requested,
