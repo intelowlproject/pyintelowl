@@ -9,6 +9,7 @@ from typing import Any, AnyStr, Callable, Dict, List, Optional, Union
 import requests
 from typing_extensions import Literal
 
+from pyintelowl.cli.domain_checkers import MyColors
 from pyintelowl.version import __version__
 
 from .exceptions import IntelOwlClientException
@@ -213,7 +214,7 @@ class IntelOwl:
         tags_labels: List[str] = None,
     ) -> Dict:
         """Send playbook analysis request for a file.\n
-        Endpoint: ``/api/playbook/analyze_file``
+        Endpoint: ``/api/playbook/analyze_multiple_files``
 
         Args:
 
@@ -352,7 +353,7 @@ class IntelOwl:
         observable_classification: str = None,
     ) -> Dict:
         """Send playbook analysis request for an observable.\n
-        Endpoint: ``/api/playbook/analyze_observable``
+        Endpoint: ``/api/playbook/analyze_multiple_observables``
 
         Args:
             observable_name (str):
@@ -770,10 +771,15 @@ class IntelOwl:
             runtime_configuration = {}
         if not tags_labels:
             tags_labels = []
+
+        if len(playbooks_list) == 0:
+            print((MyColors.Foreground.red + "No Playbooks selected!\n"))
+            return
+
         self.logger.info(
             f"""Requesting analysis..
             {type_}: [blue]{obj}[/]
-            playbooks: [i green]{playbooks_list if playbooks_list else 'all'}[/]
+            playbooks: [i green]{playbooks_list}[/]
             tags: [i green]{tags_labels}[/]
             """
         )
