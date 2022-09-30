@@ -74,7 +74,7 @@ __analyse_options = [
     ),
 ]
 
-__playbook_analyse_options = __analyse_options
+__playbook_analyse_options = __analyse_options.copy()
 # doing it twice to remove --analyzers-list and --connectors-list
 __playbook_analyse_options.pop(0)
 __playbook_analyse_options.pop(0)
