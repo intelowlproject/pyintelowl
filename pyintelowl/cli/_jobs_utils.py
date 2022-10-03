@@ -104,6 +104,9 @@ def _display_all_jobs(logger, rows):
         header="Connectors\nCalled", justify="center", header_style=header_style
     )
     table.add_column(
+        header="Playbooks\nCalled", justify="center", header_style=header_style
+    )
+    table.add_column(
         header="Process\nTime(s)", justify="center", header_style=header_style
     )
     table.add_column(header="Status", header_style=header_style)
@@ -118,6 +121,7 @@ def _display_all_jobs(logger, rows):
                 ", ".join([t["label"] for t in el["tags"]]),
                 ", ".join(el["analyzers_to_execute"]),
                 ", ".join(el["connectors_to_execute"]),
+                ", ".join(el["playbooks_to_execute"]),
                 str(el["process_time"]),
                 get_status_text(el["status"]),
             )
