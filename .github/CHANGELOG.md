@@ -1,5 +1,8 @@
 # Changelog
 
+## [4.3.0](https://github.com/intelowlproject/pyintelowl/releases/tag/4.3.0)
+- this version supports the new Playbooks feature released with IntelOwl v4.1.0
+
 ## [4.2.0](https://github.com/intelowlproject/pyintelowl/releases/tag/4.2.0)
 
 - this version is fully compatible with IntelOwl v4 (#165)
