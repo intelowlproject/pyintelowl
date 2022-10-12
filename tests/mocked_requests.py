@@ -42,6 +42,29 @@ def mocked_connector_config(*args, **kwargs):
     )
 
 
+def mocked_playbook_config(*args, **kwargs):
+    return MockResponse(
+        {
+            "test_playbook": {
+                "name": "test_playbook",
+                "supports": ["ip", "url", "domain", "generic", "hash"],
+                "python_module": "",
+                "disabled": False,
+                "description": "a test playbook",
+                "analyzers": {
+                    "Classic_DNS": {
+                        "query_type": "A",
+                    },
+                },
+                "connectors": {},
+                "verification": {},
+            }
+        },
+        200,
+        "/api/get_playbook_configs",
+    )
+
+
 def mocked_ask_analysis_success(*args, **kwargs):
     return MockResponse(
         {
@@ -74,6 +97,28 @@ def mocked_send_analysis_success(*args, **kwargs):
         },
         200,
         "/api/analyze_observable",
+    )
+
+
+def mocked_send_playbook_analysis_success(*args, **kwargs):
+    return MockResponse(
+        {
+            "count": 1,
+            "results": [
+                {
+                    "job_id": 266,
+                    "status": "accepted",
+                    "warnings": [],
+                    "analyzers_running": [
+                        "TEST_ANALYZER",
+                    ],
+                    "connectors_running": [],
+                    "playbooks_running": ["FREE_PLAYBOOK"],
+                }
+            ],
+        },
+        200,
+        "/api/playbook/analyze_multiple_observables",
     )
 
 

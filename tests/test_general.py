@@ -5,8 +5,10 @@ from tests.mocked_requests import (
     mocked_ask_analysis_no_status,
     mocked_ask_analysis_success,
     mocked_connector_config,
+    mocked_playbook_config,
     mocked_raise_exception,
     mocked_send_analysis_success,
+    mocked_send_playbook_analysis_success,
 )
 from tests.utils import BaseTest, get_file_data, mock_connections, patch
 
@@ -73,6 +75,11 @@ class TestGeneral(BaseTest):
     )
     def test_get_connector_config_success(self, mocked_requests):
         cc = self.client.get_connector_configs()
+        self.assertNotEqual({}, cc)
+
+    @mock_connections(patch("requests.Session.get", side_effect=mocked_playbook_config))
+    def test_get_playbook_config_success(self, mocked_requests):
+        cc = self.client.get_playbook_configs()
         self.assertNotEqual({}, cc)
 
     @mock_connections(patch("requests.Session.get", side_effect=mocked_raise_exception))
@@ -169,6 +176,46 @@ class TestGeneral(BaseTest):
                 connectors_requested=connectors_requested,
                 runtime_configuration=runtime_config,
             )
+
+    @mock_connections(
+        patch(
+            "requests.Session.post", side_effect=mocked_send_playbook_analysis_success
+        )
+    )
+    def test_send_observable_playbook_analysis_request(self, mocked_requests):
+        observable_name = self.domain
+        runtime_config = {"test_key": "test_param"}
+        playbooks_requested = ["TEST_PLAYBOOK"]
+        result = self.client.send_observable_analysis_playbook_request(
+            observable_name,
+            playbooks_requested=playbooks_requested,
+            runtime_configuration=runtime_config,
+        )
+
+        self.assertIn("status", result)
+        self.assertIn("job_id", result)
+        self.assertIn("analyzers_running", result)
+
+    @mock_connections(
+        patch(
+            "requests.Session.post", side_effect=mocked_send_playbook_analysis_success
+        )
+    )
+    def test_send_file_playbook_analysis_request(self, mocked_requests):
+        playbooks_requested = ["TEST_PLAYBOOK"]
+        filename = self.filepath
+        binary = get_file_data(self.filepath)
+        runtime_config = {"test_key": "test_param"}
+        result = self.client.send_file_analysis_playbook_request(
+            filename,
+            binary,
+            playbooks_requested=playbooks_requested,
+            runtime_configuration=runtime_config,
+        )
+
+        self.assertIn("status", result)
+        self.assertIn("job_id", result)
+        self.assertIn("analyzers_running", result)
 
     def test_get_md5_observable(self):
         type_ = "observable"
