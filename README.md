@@ -62,7 +62,7 @@ Commands:
 
 ```python
 from pyintelowl import IntelOwl
-obj = IntelOwl("<your_api_key>", "<your_intelowl_instance_url>", "optional<path_to_pem_file>")
+obj = IntelOwl("<your_api_key>", "<your_intelowl_instance_url>", "optional<path_to_pem_file>", "optional<proxies>")
 ```
 
 For more comprehensive documentation, please see https://pyintelowl.readthedocs.io/.

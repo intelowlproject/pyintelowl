@@ -70,6 +70,7 @@ Usage as SDK/library
       "<your_api_key>",
       "<your_intelowl_instance_url>",
       "optional<path_to_pem_file>"
+      "optional<proxies>"
    )
    """
 

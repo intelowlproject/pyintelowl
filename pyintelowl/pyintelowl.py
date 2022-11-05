@@ -24,17 +24,21 @@ class IntelOwl:
         token: str,
         instance_url: str,
         certificate: str = None,
+        proxies: dict = None,
         logger: logging.Logger = None,
         cli: bool = False,
     ):
         self.token = token
         self.instance = instance_url
         self.certificate = certificate
-        self.cli = cli
         if logger:
             self.logger = logger
         else:
             self.logger = logging.getLogger(__name__)
+        if proxies and not isinstance(proxies, dict):
+            raise TypeError("proxies param must be a dictionary")
+        self.proxies = proxies
+        self.cli = cli
 
     @property
     def session(self) -> requests.Session:
@@ -45,6 +49,8 @@ class IntelOwl:
             session = requests.Session()
             if self.certificate is not True:
                 session.verify = self.certificate
+            if self.proxies:
+                session.proxies = self.proxies
             session.headers.update(
                 {
                     "Authorization": f"Token {self.token}",

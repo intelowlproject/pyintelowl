@@ -27,7 +27,7 @@ def cli(ctx: ClickContext, debug: bool):
             cert = False
         elif cert in ["None", "True"]:
             cert = True
-        ctx.obj = IntelOwl(api_key, url, cert, logger, cli=True)
+        ctx.obj = IntelOwl(api_key, url, cert, {}, logger, cli=True)
 
 
 # Compile all groups and commands
