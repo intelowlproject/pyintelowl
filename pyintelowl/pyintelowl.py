@@ -26,11 +26,13 @@ class IntelOwl:
         certificate: str = None,
         logger: logging.Logger = None,
         cli: bool = False,
+        proxies: dict = None
     ):
         self.token = token
         self.instance = instance_url
         self.certificate = certificate
         self.cli = cli
+        self.proxies = proxies
         if logger:
             self.logger = logger
         else:
@@ -45,6 +47,8 @@ class IntelOwl:
             session = requests.Session()
             if self.certificate is not True:
                 session.verify = self.certificate
+            if self.proxies:
+                session.proxies.update(self.proxies)
             session.headers.update(
                 {
                     "Authorization": f"Token {self.token}",
