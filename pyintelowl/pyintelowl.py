@@ -472,6 +472,7 @@ class IntelOwl:
         Internal use only.
         """
         response = None
+        answer = {}
         if files is None:
             url = self.instance + "/api/analyze_observable"
             if playbook_mode:
@@ -495,7 +496,9 @@ class IntelOwl:
             answer = response.json()
             if playbook_mode:
                 # right now, we are only supporting single input result
-                answer = answer.get("results", [])[0]
+                answers = answer.get("results", [])
+                if answers:
+                    answer = answer[0]
 
             warnings = answer.get("warnings", [])
             if self.cli:
@@ -813,12 +816,12 @@ class IntelOwl:
 
         # 2nd step: poll for result
         if should_poll:
-            if resp["status"] != "accepted":
+            if resp.get("status", "") != "accepted":
                 self.logger.fatal("Can't poll a failed job")
             # import poll function
             from .cli._jobs_utils import _poll_for_job_cli
 
-            job_id = resp["job_id"]
+            job_id = resp.get("job_id", 0)
             _ = _poll_for_job_cli(self, job_id)
             self.logger.info(
                 f"""
