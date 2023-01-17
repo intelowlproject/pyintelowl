@@ -261,6 +261,9 @@ class IntelOwl:
 
             if runtime_configuration:
                 data["runtime_configuration"] = json.dumps(runtime_configuration)
+            # `files` is wanted to be different from the other
+            # /api/analyze_file endpoint
+            # because the server is using different serializers
             files = {"files": (filename, binary)}
             answer = self.__send_analysis_request(
                 data=data, files=files, playbook_mode=True
