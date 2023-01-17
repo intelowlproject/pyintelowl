@@ -501,7 +501,7 @@ class IntelOwl:
                 # right now, we are only supporting single input result
                 answers = answer.get("results", [])
                 if answers:
-                    answer = answer[0]
+                    answer = answers[0]
 
             warnings = answer.get("warnings", [])
             if self.cli:
