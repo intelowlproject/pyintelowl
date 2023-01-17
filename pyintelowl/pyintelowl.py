@@ -508,11 +508,12 @@ class IntelOwl:
                     [i yellow]{warnings if warnings else None}[/]
                 """
             else:
-                info_log = f"""New Job running..
-                    ID: {answer['job_id']} | Status: {answer['status']}.
-                    Got {len(warnings)} warnings:
-                    {warnings if warnings else None}
-                """
+                info_log = (
+                    f"New Job running.. ID: {answer['job_id']} "
+                    f"| Status: {answer['status']}."
+                    f" Got {len(warnings)} warnings:"
+                    f" {warnings if warnings else None}"
+                )
             self.logger.info(info_log)
             response.raise_for_status()
         except Exception as e:
