@@ -261,7 +261,10 @@ class IntelOwl:
 
             if runtime_configuration:
                 data["runtime_configuration"] = json.dumps(runtime_configuration)
-            files = {"file": (filename, binary)}
+            # `files` is wanted to be different from the other
+            # /api/analyze_file endpoint
+            # because the server is using different serializers
+            files = {"files": (filename, binary)}
             answer = self.__send_analysis_request(
                 data=data, files=files, playbook_mode=True
             )
@@ -472,6 +475,7 @@ class IntelOwl:
         Internal use only.
         """
         response = None
+        answer = {}
         if files is None:
             url = self.instance + "/api/analyze_observable"
             if playbook_mode:
@@ -495,7 +499,9 @@ class IntelOwl:
             answer = response.json()
             if playbook_mode:
                 # right now, we are only supporting single input result
-                answer = answer.get("results", [])[0]
+                answers = answer.get("results", [])
+                if answers:
+                    answer = answers[0]
 
             warnings = answer.get("warnings", [])
             if self.cli:
@@ -505,11 +511,12 @@ class IntelOwl:
                     [i yellow]{warnings if warnings else None}[/]
                 """
             else:
-                info_log = f"""New Job running..
-                    ID: {answer['job_id']} | Status: {answer['status']}.
-                    Got {len(warnings)} warnings:
-                    {warnings if warnings else None}
-                """
+                info_log = (
+                    f"New Job running.. ID: {answer['job_id']} "
+                    f"| Status: {answer['status']}."
+                    f" Got {len(warnings)} warnings:"
+                    f" {warnings if warnings else None}"
+                )
             self.logger.info(info_log)
             response.raise_for_status()
         except Exception as e:
@@ -813,12 +820,12 @@ class IntelOwl:
 
         # 2nd step: poll for result
         if should_poll:
-            if resp["status"] != "accepted":
+            if resp.get("status", "") != "accepted":
                 self.logger.fatal("Can't poll a failed job")
             # import poll function
             from .cli._jobs_utils import _poll_for_job_cli
 
-            job_id = resp["job_id"]
+            job_id = resp.get("job_id", 0)
             _ = _poll_for_job_cli(self, job_id)
             self.logger.info(
                 f"""
