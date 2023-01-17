@@ -1,5 +1,9 @@
 # Changelog
 
+## [4.4.1](https://github.com/intelowlproject/pyintelowl/releases/tag/4.4.1)
+- Analyzing a File with a Playbook now works correctly
+- other little bug fixing
+
 ## [4.4.0](https://github.com/intelowlproject/pyintelowl/releases/tag/4.4.0)
 - this version supports the usage of a proxy while connecting to IntelOwl via Python code.
 
