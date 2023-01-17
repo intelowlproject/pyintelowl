@@ -261,7 +261,7 @@ class IntelOwl:
 
             if runtime_configuration:
                 data["runtime_configuration"] = json.dumps(runtime_configuration)
-            files = {"file": (filename, binary)}
+            files = {"files": (filename, binary)}
             answer = self.__send_analysis_request(
                 data=data, files=files, playbook_mode=True
             )
