@@ -1,5 +1,8 @@
 # Changelog
 
+## [4.4.2](https://github.com/intelowlproject/pyintelowl/releases/tag/4.4.2)
+- Added support for TLP:CLEAR
+
 ## [4.4.1](https://github.com/intelowlproject/pyintelowl/releases/tag/4.4.1)
 - Analyzing a File with a Playbook now works correctly
 - other little bug fixing
