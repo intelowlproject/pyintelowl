@@ -13,7 +13,7 @@ from pyintelowl.version import __version__
 
 from .exceptions import IntelOwlClientException
 
-TLPType = Literal["WHITE", "GREEN", "AMBER", "RED"]
+TLPType = Literal["WHITE", "GREEN", "AMBER", "RED", "CLEAR"]
 
 
 class IntelOwl:
@@ -679,7 +679,7 @@ class IntelOwl:
         obj: str,
         type_: str,
         check,
-        tlp: TLPType = "WHITE",
+        tlp: TLPType = "CLEAR",
         analyzers_list: List[str] = None,
         connectors_list: List[str] = None,
         runtime_configuration: Dict = None,
@@ -769,7 +769,7 @@ class IntelOwl:
         obj: str,
         type_: str,
         check,
-        tlp: TLPType = "WHITE",
+        tlp: TLPType = "CLEAR",
         playbooks_list: List[str] = None,
         runtime_configuration: Dict = None,
         tags_labels: List[str] = None,
