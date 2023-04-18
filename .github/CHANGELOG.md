@@ -1,5 +1,8 @@
 # Changelog
 
+## [4.4.3](https://github.com/intelowlproject/pyintelowl/releases/tag/4.4.3)
+- Fixed client results management in case of errors
+
 ## [4.4.2](https://github.com/intelowlproject/pyintelowl/releases/tag/4.4.2)
 - Added support for TLP:CLEAR
 
