@@ -504,11 +504,14 @@ class IntelOwl:
                     answer = answers[0]
 
             warnings = answer.get("warnings", [])
+            errors = answer.get("errors", {})
             if self.cli:
                 info_log = f"""New Job running..
                     ID: {answer['job_id']} | Status: [u blue]{answer['status']}[/].
                     Got {len(warnings)} warnings:
                     [i yellow]{warnings if warnings else None}[/]
+                    Got {len(errors)} errors:
+                    [i red]{errors if errors else None}[/]
                 """
             else:
                 info_log = (
@@ -516,6 +519,8 @@ class IntelOwl:
                     f"| Status: {answer['status']}."
                     f" Got {len(warnings)} warnings:"
                     f" {warnings if warnings else None}"
+                    f" Got {len(errors)} errors:"
+                    f" {errors if errors else None}"
                 )
             self.logger.info(info_log)
             response.raise_for_status()

@@ -44,13 +44,13 @@ setup(
         "Environment :: Web Environment",
         # Pick your license as you wish (should match "license" above)
         "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)",
-        "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
     packages=find_packages(),
-    python_requires=">=3.7",
+    python_requires=">=3.8",
     include_package_data=True,
     install_requires=requirements,
     project_urls={

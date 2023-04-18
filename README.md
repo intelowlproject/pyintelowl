@@ -5,7 +5,6 @@
 
 [![Pull request automation](https://github.com/intelowlproject/pyintelowl/actions/workflows/pull_request_automation.yml/badge.svg)](https://github.com/intelowlproject/pyintelowl/actions/workflows/pull_request_automation.yml)
 [![codecov](https://codecov.io/gh/intelowlproject/pyintelowl/branch/master/graph/badge.svg?token=JF62UMZ0U6)](https://codecov.io/gh/intelowlproject/pyintelowl)
-[![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/intelowlproject/pyintelowl.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/mlodic/pyintelowl/context:python)
 [![CodeFactor](https://www.codefactor.io/repository/github/intelowlproject/pyintelowl/badge)](https://www.codefactor.io/repository/github/intelowlproject/pyintelowl)
 
 Robust Python **SDK** and **Command Line Client** for interacting with [IntelOwl](https://github.com/intelowlproject/IntelOwl)'s API.
