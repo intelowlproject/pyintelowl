@@ -4,5 +4,11 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+      day: "tuesday"
     target-branch: "develop"
-    open-pull-requests-limit: 1
+    open-pull-requests-limit: 5
+    ignore:
+      # ignore all patch updates since we are using ~=
+      # this does not work for security updates
+      - dependency-name: "*"
+        update-types: [ "version-update:semver-patch" ]
