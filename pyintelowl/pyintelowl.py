@@ -517,7 +517,7 @@ class IntelOwl:
             else:
                 info_log = (
                     f"New Job running.. ID: {answer.get('job_id')} "
-                    f"| Status: {answer('status')}."
+                    f"| Status: {answer.get('status')}."
                     f" Got {len(warnings)} warnings:"
                     f" {warnings if warnings else None}"
                     f" Got {len(errors)} errors:"
