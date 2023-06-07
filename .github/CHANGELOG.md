@@ -1,5 +1,8 @@
 # Changelog
 
+## [4.4.4](https://github.com/intelowlproject/pyintelowl/releases/tag/4.4.4)
+- Little fixes
+
 ## [4.4.3](https://github.com/intelowlproject/pyintelowl/releases/tag/4.4.3)
 - Fixed client results management in case of errors
 - Removed support for Python 3.7
