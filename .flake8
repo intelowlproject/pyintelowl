@@ -4,6 +4,7 @@ ignore =
     W503, # line break before binary operator
     E231, # missing whitespace after ',' (caused by black style)
     W605, # invalid escape sequence (caused by regex)
+    W291 # trailing whitespace
 exclude =
     setup.py
     *venv*
