@@ -171,7 +171,7 @@ class IntelOwl:
                 Defaults to ``[]`` i.e. all connectors.
             tlp (str, optional):
                 TLP for the analysis.
-                (options: ``WHITE, GREEN, AMBER, RED``). Defaults to ``WHITE``.
+                (options: ``WHITE, GREEN, AMBER, RED``).
             runtime_configuration (Dict, optional):
                 Overwrite configuration for analyzers. Defaults to ``{}``.
             tags_labels (List[str], optional):
@@ -184,8 +184,6 @@ class IntelOwl:
             Dict: JSON body
         """
         try:
-            if not tlp:
-                tlp = "WHITE"
             if not analyzers_requested:
                 analyzers_requested = []
             if not connectors_requested:
@@ -232,7 +230,7 @@ class IntelOwl:
                 Defaults to ``[]`` i.e. all playbooks.
             tlp (str, optional):
                 TLP for the analysis.
-                (options: ``WHITE, GREEN, AMBER, RED``). Defaults to ``WHITE``.
+                (options: ``WHITE, GREEN, AMBER, RED``).
             runtime_configuration (Dict, optional):
                 Overwrite configuration for analyzers. Defaults to ``{}``.
             tags_labels (List[str], optional):
@@ -245,8 +243,6 @@ class IntelOwl:
             Dict: JSON body
         """
         try:
-            if not tlp:
-                tlp = "WHITE"
             if not playbooks_requested:
                 playbooks_requested = []
             if not tags_labels:
@@ -296,7 +292,7 @@ class IntelOwl:
                 Defaults to ``[]`` i.e. all connectors.
             tlp (str, optional):
                 TLP for the analysis.
-                (options: ``WHITE, GREEN, AMBER, RED``). Defaults to ``WHITE``.
+                (options: ``WHITE, GREEN, AMBER, RED``).
             runtime_configuration (Dict, optional):
                 Overwrite configuration for analyzers. Defaults to ``{}``.
             tags_labels (List[str], optional):
@@ -314,8 +310,6 @@ class IntelOwl:
             Dict: JSON body
         """
         try:
-            if not tlp:
-                tlp = "WHITE"
             if not analyzers_requested:
                 analyzers_requested = []
             if not connectors_requested:
@@ -373,7 +367,7 @@ class IntelOwl:
                 Defaults to ``[]`` i.e. all playbooks.
             tlp (str, optional):
                 TLP for the analysis.
-                (options: ``WHITE, GREEN, AMBER, RED``). Defaults to ``WHITE``.
+                (options: ``WHITE, GREEN, AMBER, RED``).
             runtime_configuration (Dict, optional):
                 Overwrite configuration for analyzers. Defaults to ``{}``.
             tags_labels (List[str], optional):
@@ -391,8 +385,6 @@ class IntelOwl:
             Dict: JSON body
         """
         try:
-            if not tlp:
-                tlp = "WHITE"
             if not playbooks_requested:
                 playbooks_requested = []
             if not tags_labels:
@@ -685,7 +677,7 @@ class IntelOwl:
         obj: str,
         type_: str,
         check,
-        tlp: TLPType = "CLEAR",
+        tlp: TLPType = None,
         analyzers_list: List[str] = None,
         connectors_list: List[str] = None,
         runtime_configuration: Dict = None,
@@ -775,7 +767,7 @@ class IntelOwl:
         obj: str,
         type_: str,
         check,
-        tlp: TLPType = "CLEAR",
+        tlp: TLPType = None,
         playbooks_list: List[str] = None,
         runtime_configuration: Dict = None,
         tags_labels: List[str] = None,
