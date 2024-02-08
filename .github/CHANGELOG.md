@@ -1,5 +1,9 @@
 # Changelog
 
+## [4.4.6](https://github.com/intelowlproject/pyintelowl/releases/tag/4.4.6)
+- Readded default TLP for analysis as TLP:CLEAR for "classic" analyses only (the ones that do not leverage a Playbook)
+
+
 ## [4.4.5](https://github.com/intelowlproject/pyintelowl/releases/tag/4.4.5)
 - Default TLP for analysis is not TLP:CLEAR anymore. For instance, this prevents the client to overwrite the TLP configuration of a Playbook.
 
