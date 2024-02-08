@@ -20,14 +20,28 @@ from tests import (
 ROOT_DIR = pathlib.Path(__file__).parent.parent
 
 
+class MockRequest:
+    def __init__(self, headers):
+        self.headers = headers
+
+
 # class for mocking responses
 class MockResponse:
-    def __init__(self, json_data, status_code, uri, content=None, headers=None):
+    def __init__(
+        self,
+        json_data,
+        status_code,
+        uri,
+        content=None,
+        headers=None,
+        request_headers=None,
+    ):
         self.headers = headers
         self.json_data = json_data
         self.status_code = status_code
         self.content = content
         self.url = "http://localhost:80" + uri
+        self.request = MockRequest(request_headers)
 
     def json(self):
         return self.json_data
