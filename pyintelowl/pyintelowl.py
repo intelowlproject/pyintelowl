@@ -148,7 +148,7 @@ class IntelOwl:
         self,
         filename: str,
         binary: bytes,
-        tlp: TLPType = None,
+        tlp: TLPType = "CLEAR",
         analyzers_requested: List[str] = None,
         connectors_requested: List[str] = None,
         runtime_configuration: Dict = None,
@@ -171,7 +171,7 @@ class IntelOwl:
                 Defaults to ``[]`` i.e. all connectors.
             tlp (str, optional):
                 TLP for the analysis.
-                (options: ``WHITE, GREEN, AMBER, RED``).
+                (options: ``CLEAR, GREEN, AMBER, RED``).
             runtime_configuration (Dict, optional):
                 Overwrite configuration for analyzers. Defaults to ``{}``.
             tags_labels (List[str], optional):
@@ -184,6 +184,8 @@ class IntelOwl:
             Dict: JSON body
         """
         try:
+            if not tlp:
+                tlp = "CLEAR"
             if not analyzers_requested:
                 analyzers_requested = []
             if not connectors_requested:
@@ -271,7 +273,7 @@ class IntelOwl:
     def send_observable_analysis_request(
         self,
         observable_name: str,
-        tlp: TLPType = None,
+        tlp: TLPType = "CLEAR",
         analyzers_requested: List[str] = None,
         connectors_requested: List[str] = None,
         runtime_configuration: Dict = None,
@@ -292,7 +294,7 @@ class IntelOwl:
                 Defaults to ``[]`` i.e. all connectors.
             tlp (str, optional):
                 TLP for the analysis.
-                (options: ``WHITE, GREEN, AMBER, RED``).
+                (options: ``CLEAR, GREEN, AMBER, RED``).
             runtime_configuration (Dict, optional):
                 Overwrite configuration for analyzers. Defaults to ``{}``.
             tags_labels (List[str], optional):
@@ -310,6 +312,8 @@ class IntelOwl:
             Dict: JSON body
         """
         try:
+            if not tlp:
+                tlp = "CLEAR"
             if not analyzers_requested:
                 analyzers_requested = []
             if not connectors_requested:
@@ -484,6 +488,7 @@ class IntelOwl:
                 msg={
                     "url": response.url,
                     "code": response.status_code,
+                    "request": response.request.headers,
                     "headers": response.headers,
                     "body": response.json(),
                 }
