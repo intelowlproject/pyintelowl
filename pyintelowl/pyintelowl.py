@@ -253,9 +253,12 @@ class IntelOwl:
                 runtime_configuration = {}
             data = {
                 "playbooks_requested": playbooks_requested,
-                "tlp": tlp,
                 "tags_labels": tags_labels,
             }
+            # send this value only if populated,
+            # otherwise the backend would give you 400
+            if tlp:
+                data["tlp"] = tlp
 
             if runtime_configuration:
                 data["runtime_configuration"] = json.dumps(runtime_configuration)
@@ -413,10 +416,13 @@ class IntelOwl:
             data = {
                 "observables": [[observable_classification, observable_name]],
                 "playbooks_requested": playbooks_requested,
-                "tlp": tlp,
                 "tags_labels": tags_labels,
                 "runtime_configuration": runtime_configuration,
             }
+            # send this value only if populated,
+            # otherwise the backend would give you 400
+            if tlp:
+                data["tlp"] = tlp
             answer = self.__send_analysis_request(
                 data=data, files=None, playbook_mode=True
             )

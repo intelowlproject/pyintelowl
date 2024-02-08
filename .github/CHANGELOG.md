@@ -1,5 +1,8 @@
 # Changelog
 
+## [4.4.7](https://github.com/intelowlproject/pyintelowl/releases/tag/4.4.7)
+- Fixed Running Playbook without TLP set
+
 ## [4.4.6](https://github.com/intelowlproject/pyintelowl/releases/tag/4.4.6)
 - Readded default TLP for analysis as TLP:CLEAR for "classic" analyses only (the ones that do not leverage a Playbook)
 
