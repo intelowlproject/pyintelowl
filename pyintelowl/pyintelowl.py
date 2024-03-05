@@ -213,8 +213,8 @@ class IntelOwl:
         self,
         filename: str,
         binary: bytes,
-        tlp: TLPType = None,
-        playbooks_requested: List[str] = None,
+        playbook_requested: str,
+        tlp: TLPType = "CLEAR",
         runtime_configuration: Dict = None,
         tags_labels: List[str] = None,
     ) -> Dict:
@@ -227,9 +227,7 @@ class IntelOwl:
                 Filename
             binary (bytes):
                 File contents as bytes
-            playbooks_requested (List[str], optional):
-                List of specific playbooks to invoke.
-                Defaults to ``[]`` i.e. all playbooks.
+            playbook_requested (str, optional):
             tlp (str, optional):
                 TLP for the analysis.
                 (options: ``WHITE, GREEN, AMBER, RED``).
@@ -245,14 +243,12 @@ class IntelOwl:
             Dict: JSON body
         """
         try:
-            if not playbooks_requested:
-                playbooks_requested = []
             if not tags_labels:
                 tags_labels = []
             if not runtime_configuration:
                 runtime_configuration = {}
             data = {
-                "playbooks_requested": playbooks_requested,
+                "playbook_requested": playbook_requested,
                 "tags_labels": tags_labels,
             }
             # send this value only if populated,
@@ -357,8 +353,8 @@ class IntelOwl:
     def send_observable_analysis_playbook_request(
         self,
         observable_name: str,
-        tlp: TLPType = None,
-        playbooks_requested: List[str] = None,
+        playbook_requested: str,
+        tlp: TLPType = "CLEAR",
         runtime_configuration: Dict = None,
         tags_labels: List[str] = None,
         observable_classification: str = None,
@@ -369,9 +365,7 @@ class IntelOwl:
         Args:
             observable_name (str):
                 Observable value
-            playbooks_requested (List[str], optional):
-                List of specific playbooks to invoke.
-                Defaults to ``[]`` i.e. all playbooks.
+            playbook_requested str:
             tlp (str, optional):
                 TLP for the analysis.
                 (options: ``WHITE, GREEN, AMBER, RED``).
@@ -392,8 +386,6 @@ class IntelOwl:
             Dict: JSON body
         """
         try:
-            if not playbooks_requested:
-                playbooks_requested = []
             if not tags_labels:
                 tags_labels = []
             if not runtime_configuration:
@@ -415,7 +407,7 @@ class IntelOwl:
                 )
             data = {
                 "observables": [[observable_classification, observable_name]],
-                "playbooks_requested": playbooks_requested,
+                "playbook_requested": playbook_requested,
                 "tags_labels": tags_labels,
                 "runtime_configuration": runtime_configuration,
             }
@@ -778,8 +770,8 @@ class IntelOwl:
         obj: str,
         type_: str,
         check,
+        playbook: str,
         tlp: TLPType = None,
-        playbooks_list: List[str] = None,
         runtime_configuration: Dict = None,
         tags_labels: List[str] = None,
         should_poll: bool = False,
@@ -788,21 +780,17 @@ class IntelOwl:
         """
         For internal use by the pyintelowl CLI.
         """
-        if not playbooks_list:
-            playbooks_list = []
         if not runtime_configuration:
             runtime_configuration = {}
         if not tags_labels:
             tags_labels = []
 
-        if len(playbooks_list) == 0:
-            print(("No Playbooks selected!\n"))
             return
 
         self.logger.info(
             f"""Requesting analysis..
             {type_}: [blue]{obj}[/]
-            playbooks: [i green]{playbooks_list}[/]
+            playbook: [i green]{playbook}[/]
             tags: [i green]{tags_labels}[/]
             """
         )
@@ -812,7 +800,7 @@ class IntelOwl:
             resp = self.send_observable_analysis_playbook_request(
                 observable_name=obj,
                 tlp=tlp,
-                playbooks_requested=playbooks_list,
+                playbook_requested=playbook,
                 runtime_configuration=runtime_configuration,
                 tags_labels=tags_labels,
             )
@@ -822,7 +810,7 @@ class IntelOwl:
                 filename=path.name,
                 binary=path.read_bytes(),
                 tlp=tlp,
-                playbooks_requested=playbooks_list,
+                playbook_requested=playbook,
                 runtime_configuration=runtime_configuration,
                 tags_labels=tags_labels,
             )
