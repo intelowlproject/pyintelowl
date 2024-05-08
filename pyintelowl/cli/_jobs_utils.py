@@ -59,7 +59,7 @@ def _render_job_reports_table(rows, title: str, verbose=False):
         ]
         if verbose:
             for field in ["report", "errors", "runtime_configuration"]:
-                cols.append(get_json_syntax(el[field]) if el[field] else None)
+                cols.append(get_json_syntax(el[field]) if el.get(field, "") else None)
         table.add_row(*cols)
     return table
 

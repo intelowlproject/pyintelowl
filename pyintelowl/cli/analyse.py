@@ -80,19 +80,8 @@ __playbook_analyse_options = __analyse_options.copy()
 # doing it twice to remove --analyzers-list and --connectors-list
 __playbook_analyse_options.pop(0)
 __playbook_analyse_options.pop(0)
-
-__playbook_analyse_options.append(
-    click.option(
-        "-pl",
-        "--playbooks-list",
-        type=str,
-        default="",
-        help="""
-        Comma separated list of playbook names to invoke.
-        Defaults to all configured playbooks.
-        """,
-    ),
-)
+__playbook_analyse_options.pop(3)
+__playbook_analyse_options.pop(2)
 
 
 @click.group("analyse")
@@ -184,57 +173,53 @@ def file(
 
 @analyse.command(help="Send playbook analysis request for an observable")
 @click.argument("value")
+@click.argument("playbook")
 @add_options(__playbook_analyse_options)
 @click.pass_context
 def playbook_observable(
     ctx: ClickContext,
     value: str,
-    playbooks_list: str,
+    playbook: str,
     tags_list: str,
     tlp: str,
-    check,
-    check_minutes_ago: int,
     runtime_config,
     should_poll: bool,
 ):
-    playbooks_list = playbooks_list.split(",") if len(playbooks_list) else []
     tags_labels = tags_list.split(",") if len(tags_list) else []
     if runtime_config:
         runtime_config = get_json_data(runtime_config)
     else:
         runtime_config = {}
     try:
+        print("here")
         ctx.obj._new_analysis_playbook_cli(
             value,
             "observable",
-            check,
+            playbook,
             tlp,
-            playbooks_list,
             runtime_config,
             tags_labels,
             should_poll,
-            check_minutes_ago,
         )
+        print("here3")
     except IntelOwlClientException as e:
         ctx.obj.logger.fatal(str(e))
 
 
 @analyse.command(help="Send playbook analysis request for an observable")
 @click.argument("filepath", type=click.Path(exists=True, resolve_path=True))
+@click.argument("playbook")
 @add_options(__playbook_analyse_options)
 @click.pass_context
 def playbook_file(
     ctx: ClickContext,
     filepath: str,
-    playbooks_list: str,
+    playbook: str,
     tags_list: str,
     tlp: str,
-    check,
-    check_minutes_ago: int,
     runtime_config,
     should_poll: bool,
 ):
-    playbooks_list = playbooks_list.split(",") if len(playbooks_list) else []
     tags_labels = tags_list.split(",") if len(tags_list) else []
     if runtime_config:
         runtime_config = get_json_data(runtime_config)
@@ -244,13 +229,11 @@ def playbook_file(
         ctx.obj._new_analysis_playbook_cli(
             filepath,
             "file",
-            check,
+            playbook,
             tlp,
-            playbooks_list,
             runtime_config,
             tags_labels,
             should_poll,
-            check_minutes_ago,
         )
     except IntelOwlClientException as e:
         ctx.obj.logger.fatal(str(e))

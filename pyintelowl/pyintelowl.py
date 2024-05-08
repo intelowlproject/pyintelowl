@@ -769,13 +769,11 @@ class IntelOwl:
         self,
         obj: str,
         type_: str,
-        check,
         playbook: str,
         tlp: TLPType = None,
         runtime_configuration: Dict = None,
         tags_labels: List[str] = None,
         should_poll: bool = False,
-        minutes_ago: int = None,
     ) -> None:
         """
         For internal use by the pyintelowl CLI.
@@ -784,8 +782,6 @@ class IntelOwl:
             runtime_configuration = {}
         if not tags_labels:
             tags_labels = []
-
-            return
 
         self.logger.info(
             f"""Requesting analysis..
@@ -799,8 +795,8 @@ class IntelOwl:
         if type_ == "observable":
             resp = self.send_observable_analysis_playbook_request(
                 observable_name=obj,
-                tlp=tlp,
                 playbook_requested=playbook,
+                tlp=tlp,
                 runtime_configuration=runtime_configuration,
                 tags_labels=tags_labels,
             )
@@ -809,8 +805,8 @@ class IntelOwl:
             resp = self.send_file_analysis_playbook_request(
                 filename=path.name,
                 binary=path.read_bytes(),
-                tlp=tlp,
                 playbook_requested=playbook,
+                tlp=tlp,
                 runtime_configuration=runtime_configuration,
                 tags_labels=tags_labels,
             )
