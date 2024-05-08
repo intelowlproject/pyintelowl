@@ -1,5 +1,8 @@
 # Changelog
 
+## [5.0.0](https://github.com/intelowlproject/pyintelowl/releases/tag/5.0.0)
+- Fixes for Playbook Analysis
+
 ## [4.4.7](https://github.com/intelowlproject/pyintelowl/releases/tag/4.4.7)
 - Fixed Running Playbook without TLP set
 
