@@ -702,8 +702,8 @@ class IntelOwl:
         self.logger.info(
             f"""Requesting analysis..
             {type_}: [blue]{obj}[/]
-            analyzers: [i green]{analyzers_list if analyzers_list else 'all'}[/]
-            connectors: [i green]{connectors_list if connectors_list else 'all'}[/]
+            analyzers: [i green]{analyzers_list if analyzers_list else 'none'}[/]
+            connectors: [i green]{connectors_list if connectors_list else 'none'}[/]
             tags: [i green]{tags_labels}[/]
             """
         )
