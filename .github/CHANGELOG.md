@@ -1,4 +1,7 @@
 # Changelog
+## [5.0.1](https://github.com/intelowlproject/pyintelowl/releases/tag/5.0.1)
+- Updated documentation
+- Removed old endpoints
 
 ## [5.0.0](https://github.com/intelowlproject/pyintelowl/releases/tag/5.0.0)
 - Fixes for Playbook Analysis
