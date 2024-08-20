@@ -551,33 +551,6 @@ class IntelOwl:
         response = self.__make_request("PUT", url=url, data=data)
         return response.json()
 
-    def get_analyzer_configs(self):
-        """
-        Get current state of `analyzer_config.json` from the IntelOwl instance.\n
-        Endpoint: ``/api/get_analyzer_configs``
-        """
-        url = self.instance + "/api/get_analyzer_configs"
-        response = self.__make_request("GET", url=url)
-        return response.json()
-
-    def get_connector_configs(self):
-        """
-        Get current state of `connector_config.json` from the IntelOwl instance.\n
-        Endpoint: ``/api/get_connector_configs``
-        """
-        url = self.instance + "/api/get_connector_configs"
-        response = self.__make_request("GET", url=url)
-        return response.json()
-
-    def get_playbook_configs(self):
-        """
-        Get current state of `playbook_config.json` from the IntelOwl instance.\n
-        Endpoint: ``/api/get_playbook_configs``
-        """
-        url = self.instance + "/api/get_playbook_configs"
-        response = self.__make_request("GET", url=url)
-        return response.json()
-
     def get_all_tags(self) -> List[Dict[str, str]]:
         """
         Fetch list of all tags.\n
@@ -702,8 +675,8 @@ class IntelOwl:
         self.logger.info(
             f"""Requesting analysis..
             {type_}: [blue]{obj}[/]
-            analyzers: [i green]{analyzers_list if analyzers_list else 'all'}[/]
-            connectors: [i green]{connectors_list if connectors_list else 'all'}[/]
+            analyzers: [i green]{analyzers_list if analyzers_list else 'none'}[/]
+            connectors: [i green]{connectors_list if connectors_list else 'none'}[/]
             tags: [i green]{tags_labels}[/]
             """
         )
