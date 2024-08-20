@@ -17,7 +17,6 @@ Robust Python **SDK** and **Command Line Client** for interacting with [IntelOwl
   - Choose whether you want to HTTP poll for the analysis to finish or not.
 - List all jobs or view one job in a prettified tabular form.
 - List all tags or view one tag in a prettified tabular form.
-- Tabular view of the `analyzer_config.json` and `connector_config.json` from IntelOwl with RegEx matching capabilities.
 
 ## Demo
 
@@ -51,8 +50,6 @@ Commands:
   analyzer-healthcheck   Send healthcheck request for an analyzer...
   config                 Set or view config variables
   connector-healthcheck  Send healthcheck request for a connector
-  get-analyzer-config    Get current state of `analyzer_config.json` from...
-  get-connector-config   Get current state of `connector_config.json` from...
   jobs                   Manage Jobs
   tags                   Manage tags
 ```
@@ -64,27 +61,18 @@ from pyintelowl import IntelOwl
 obj = IntelOwl("<your_api_key>", "<your_intelowl_instance_url>", "optional<path_to_pem_file>", "optional<proxies>")
 ```
 
-For more comprehensive documentation, please see https://pyintelowl.readthedocs.io/.
+For more comprehensive documentation, please see https://intelowlproject.github.io/docs/pyintelowl/.
 
 ## Changelog
 
 View [CHANGELOG.md](https://github.com/intelowlproject/pyintelowl/blob/master/.github/CHANGELOG.md).
 
-## FAQ
 
-#### Generate API key
+## How to generate an API key
 
 You need a valid API key to interact with the IntelOwl server.
-Keys should be created from the admin interface of [IntelOwl](https://github.com/intelowlproject/intelowl): you have to go in the _Durin_ section (click on `Auth tokens`) and generate a key there.
+Keys can be created from the "API access" section of the user's menu in the IntelOwl's GUI.
 
-#### Incompatibility after version 3.0
+![api_access](static/api_access.png)
 
-We did a complete rewrite of the PyIntelOwl client and CLI both for the version `3.0.0`. We very much recommend you to update to the latest version to enjoy all new features.
-
-#### (old auth method) JWT Token Authentication
-
-> this auth was available in IntelOwl versions <1.8.0 and pyintelowl versions <2.0.0
-
-From the admin interface of IntelOwl, you have to go in the _Outstanding tokens_ section and generate a token there.
-
-You can use it by pasting it into the file [api_token.txt](api_token.txt).
+Otherwise, you can create them from the Django Admin Interface of the IntelOwl application with an administration account. Section "Durin" -> "Auth tokens"

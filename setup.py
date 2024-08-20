@@ -47,6 +47,7 @@ setup(
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
     packages=find_packages(),
@@ -57,7 +58,7 @@ setup(
         "Documentation": GITHUB_URL,
         "Funding": "https://liberapay.com/IntelOwlProject/",
         "Source": GITHUB_URL,
-        "Tracker": "{}/issues".format(GITHUB_URL),
+        "Tracker": f"{GITHUB_URL}/issues",
     },
     keywords="intelowl sdk python command line osint threat intel malware",
     # List additional groups of dependencies here (e.g. development
