@@ -1,11 +1,8 @@
 from pyintelowl.exceptions import IntelOwlClientException
 from tests.mocked_requests import (
-    mocked_analyzer_config,
     mocked_ask_analysis_no_job_id,
     mocked_ask_analysis_no_status,
     mocked_ask_analysis_success,
-    mocked_connector_config,
-    mocked_playbook_config,
     mocked_raise_exception,
     mocked_send_analysis_success,
     mocked_send_playbook_analysis_success,
@@ -59,33 +56,6 @@ class TestGeneral(BaseTest):
                 md5=md5,
                 analyzers=analyzers,
             )
-
-    @mock_connections(patch("requests.Session.get", side_effect=mocked_analyzer_config))
-    def test_get_analyzer_config_success(self, mocked_requests):
-        ac = self.client.get_analyzer_configs()
-        self.assertNotEqual({}, ac)
-
-    @mock_connections(patch("requests.Session.get", side_effect=mocked_raise_exception))
-    def test_get_analyzer_config_failure(self, mocked_requests):
-        with self.assertRaises(IntelOwlClientException):
-            self.client.get_analyzer_configs()
-
-    @mock_connections(
-        patch("requests.Session.get", side_effect=mocked_connector_config)
-    )
-    def test_get_connector_config_success(self, mocked_requests):
-        cc = self.client.get_connector_configs()
-        self.assertNotEqual({}, cc)
-
-    @mock_connections(patch("requests.Session.get", side_effect=mocked_playbook_config))
-    def test_get_playbook_config_success(self, mocked_requests):
-        cc = self.client.get_playbook_configs()
-        self.assertNotEqual({}, cc)
-
-    @mock_connections(patch("requests.Session.get", side_effect=mocked_raise_exception))
-    def test_get_connector_config_failure(self, mocked_requests):
-        with self.assertRaises(IntelOwlClientException):
-            self.client.get_connector_configs()
 
     @mock_connections(
         patch("requests.Session.post", side_effect=mocked_send_analysis_success)
