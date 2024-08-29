@@ -3,7 +3,6 @@ exclude = '''
 /(
   opt
   | venv
-  | migrations
 )/
 '''
 [tool.isort]

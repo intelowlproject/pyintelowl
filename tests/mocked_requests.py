@@ -5,66 +5,6 @@ def mocked_raise_exception(*args, **kwargs):
     raise Exception
 
 
-def mocked_analyzer_config(*args, **kwargs):
-    return MockResponse(
-        {
-            "test_analyzer": {
-                "type": "observable",
-                "python_module": "test_class.test_module",
-                "description": "a test analyzer",
-                "disabled": False,
-                "external_service": False,
-                "leaks_info": False,
-                "observable_supported": ["domain"],
-                "config": {"soft_time_limit": 30, "queue": "default"},
-                "secrets": {},
-            }
-        },
-        200,
-        "/api/get_analyzer_configs",
-    )
-
-
-def mocked_connector_config(*args, **kwargs):
-    return MockResponse(
-        {
-            "test_connector": {
-                "python_module": "test_class.test_module",
-                "description": "a test connector",
-                "disabled": False,
-                "maximum_tlp": "WHITE",
-                "config": {"soft_time_limit": 30, "queue": "default"},
-                "secrets": {},
-            }
-        },
-        200,
-        "/api/get_connector_configs",
-    )
-
-
-def mocked_playbook_config(*args, **kwargs):
-    return MockResponse(
-        {
-            "test_playbook": {
-                "name": "test_playbook",
-                "supports": ["ip", "url", "domain", "generic", "hash"],
-                "python_module": "",
-                "disabled": False,
-                "description": "a test playbook",
-                "analyzers": {
-                    "Classic_DNS": {
-                        "query_type": "A",
-                    },
-                },
-                "connectors": {},
-                "verification": {},
-            }
-        },
-        200,
-        "/api/get_playbook_configs",
-    )
-
-
 def mocked_ask_analysis_success(*args, **kwargs):
     return MockResponse(
         {
