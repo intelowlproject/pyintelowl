@@ -1,6 +1,5 @@
 import time
 
-
 from rich import box
 from rich.console import Console, Group
 from rich.panel import Panel
