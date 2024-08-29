@@ -1,5 +1,6 @@
 import time
 
+
 from rich import box
 from rich.console import Console, Group
 from rich.panel import Panel
@@ -115,9 +116,11 @@ def _display_all_jobs(logger, rows):
             table.add_row(
                 str(el["id"]),
                 el["observable_name"] if el["observable_name"] else el["file_name"],
-                el["observable_classification"]
-                if el["observable_classification"]
-                else el["file_mimetype"],
+                (
+                    el["observable_classification"]
+                    if el["observable_classification"]
+                    else el["file_mimetype"]
+                ),
                 ", ".join([t["label"] for t in el["tags"]]),
                 ", ".join(el["analyzers_to_execute"]),
                 ", ".join(el["connectors_to_execute"]),
