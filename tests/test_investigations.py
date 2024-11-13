@@ -57,27 +57,27 @@ class TestInvestigations(BaseTest):
     def test_get_investigation_by_id_invalid(self, mock_requests):
         job_id = 999
         self.assertRaises(
-            IntelOwlClientException, self.client.get_investigation_by_id(), job_id
+            IntelOwlClientException, self.client.get_investigation_by_id, job_id
         )
 
         job_id = "999"
         self.assertRaises(
-            IntelOwlClientException, self.client.get_investigation_by_id(), job_id
+            IntelOwlClientException, self.client.get_investigation_by_id, job_id
         )
 
         job_id = ""
         self.assertRaises(
-            IntelOwlClientException, self.client.get_investigation_by_id(), job_id
+            IntelOwlClientException, self.client.get_investigation_by_id, job_id
         )
 
         job_id = None
         self.assertRaises(
-            IntelOwlClientException, self.client.get_investigation_by_id(), job_id
+            IntelOwlClientException, self.client.get_investigation_by_id, job_id
         )
 
         job_id = "a"
         self.assertRaises(
-            IntelOwlClientException, self.client.get_investigation_by_id(), job_id
+            IntelOwlClientException, self.client.get_investigation_by_id, job_id
         )
 
     @mock_connections(
@@ -148,25 +148,25 @@ class TestInvestigations(BaseTest):
     def test_get_investigation_tree_by_id_invalid(self, mock_requests):
         job_id = 999
         self.assertRaises(
-            IntelOwlClientException, self.client.get_investigation_tree_by_id(), job_id
+            IntelOwlClientException, self.client.get_investigation_tree_by_id, job_id
         )
 
         job_id = "999"
         self.assertRaises(
-            IntelOwlClientException, self.client.get_investigation_tree_by_id(), job_id
+            IntelOwlClientException, self.client.get_investigation_tree_by_id, job_id
         )
 
         job_id = ""
         self.assertRaises(
-            IntelOwlClientException, self.client.get_investigation_tree_by_id(), job_id
+            IntelOwlClientException, self.client.get_investigation_tree_by_id, job_id
         )
 
         job_id = None
         self.assertRaises(
-            IntelOwlClientException, self.client.get_investigation_tree_by_id(), job_id
+            IntelOwlClientException, self.client.get_investigation_tree_by_id, job_id
         )
 
         job_id = "a"
         self.assertRaises(
-            IntelOwlClientException, self.client.get_investigation_tree_by_id(), job_id
+            IntelOwlClientException, self.client.get_investigation_tree_by_id, job_id
         )
