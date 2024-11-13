@@ -32,7 +32,7 @@ def _render_investigation_attributes(data):
     console.print(data)
     r = Group(
         f"{style}Investigation ID:[/] {str(data['id'])}",
-        f"{style}Name:[/] {data["name"]}",
+        f"{style}Name:[/] {data['name']}",
         f"{style}Tags:[/] {tags}",
         f"{style}Status:[/] {status}",
         f"{style}TLP:[/] {data['tlp']}",
