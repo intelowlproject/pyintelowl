@@ -88,7 +88,7 @@ class TestInvestigations(BaseTest):
         self.assertEqual(
             investigation.get("name", ""), "InvestigationName: https://www.test.com"
         )
-        self.assertEqual(investigation.get("owner", ""), "admin")
+        self.assertEqual(investigation.get("owner", ""), 1)
         self.assertNotEqual(investigation.get("jobs", []), [])
 
         jobs = investigation.get("jobs")[0]
@@ -117,7 +117,7 @@ class TestInvestigations(BaseTest):
         self.assertEqual(
             investigation.get("name", ""), "InvestigationName: https://www.test.com"
         )
-        self.assertEqual(investigation.get("owner", ""), "admin")
+        self.assertEqual(investigation.get("owner", ""), 1)
         self.assertNotEqual(investigation.get("jobs", []), [])
 
         jobs = investigation.get("jobs")[0]
