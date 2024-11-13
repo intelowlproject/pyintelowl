@@ -616,6 +616,44 @@ class IntelOwl:
         response = self.__make_request("GET", url=url)
         return response.json()
 
+    def get_investigation_by_id(
+        self, investigation_id: Union[int, str]
+    ) -> Dict[str, Any]:
+        """Fetch investigation info by ID.
+        Endpoint: ``/api/investigation/{job_id}``
+
+        Args:
+            investigation_id (Union[int, str]): Investigation ID to retrieve
+
+        Raises:
+            IntelOwlClientException: on client/HTTP error
+
+        Returns:
+            Dict[str, Any]: JSON body.
+        """
+        url = self.instance + "/api/investigation/" + str(investigation_id)
+        response = self.__make_request("GET", url=url)
+        return response.json()
+
+    def get_investigation_tree_by_id(
+        self, investigation_id: Union[int, str]
+    ) -> Dict[str, Any]:
+        """Fetch investigation tree info by ID.
+        Endpoint: ``/api/investigation/{job_id}/tree``
+
+        Args:
+            investigation_id (Union[int, str]): Investigation ID to retrieve
+
+        Raises:
+            IntelOwlClientException: on client/HTTP error
+
+        Returns:
+            Dict[str, Any]: JSON body.
+        """
+        url = self.instance + "/api/investigation/" + str(investigation_id) + "/tree"
+        response = self.__make_request("GET", url=url)
+        return response.json()
+
     @staticmethod
     def get_md5(
         to_hash: AnyStr,
