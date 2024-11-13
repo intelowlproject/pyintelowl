@@ -24,7 +24,9 @@ def investigations():
 
 def _render_investigation_attributes(data):
     style = "[bold #31DDCF]"
-    tags = ", ".join(data["tags"])
+    tags = ", ".join(
+        data["tags"]
+    )  # this is a [str], not a complex object like in job API
     status: str = get_status_text(data["status"], as_text=False)
     console = Console()
     console.print(data)
