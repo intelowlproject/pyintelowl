@@ -4,6 +4,7 @@ from pyintelowl import IntelOwlClientException
 from tests.mocked_requests import (
     mocked_get_investigation_by_id,
     mocked_get_investigation_tree_by_id,
+    mocked_raise_exception,
 )
 from tests.utils import BaseTest, mock_connections
 
@@ -51,9 +52,7 @@ class TestInvestigations(BaseTest):
         )
         self.assertEqual(investigation.get("owner", ""), "admin")
 
-    @mock_connections(
-        patch("requests.Session.get", side_effect=mocked_get_investigation_by_id)
-    )
+    @mock_connections(patch("requests.Session.get", side_effect=mocked_raise_exception))
     def test_get_investigation_by_id_invalid(self, mock_requests):
         job_id = 999
         self.assertRaises(
@@ -100,7 +99,7 @@ class TestInvestigations(BaseTest):
             jobs.get("received_request_time", ""),
             "2024-11-13T07:42:17.534614Z",
         )
-        self.assertFalse(investigation.get("is_sample", True))
+        self.assertFalse(jobs.get("is_sample", True))
 
         children = jobs.get("children")[0]
         self.assertEqual(children.get("pk", 0), 2)
@@ -129,7 +128,7 @@ class TestInvestigations(BaseTest):
             jobs.get("received_request_time", ""),
             "2024-11-13T07:42:17.534614Z",
         )
-        self.assertFalse(investigation.get("is_sample", True))
+        self.assertFalse(jobs.get("is_sample", True))
 
         children = jobs.get("children")[0]
         self.assertEqual(children.get("pk", 0), 2)
@@ -142,9 +141,7 @@ class TestInvestigations(BaseTest):
         )
         self.assertTrue(children.get("is_sample", False))
 
-    @mock_connections(
-        patch("requests.Session.get", side_effect=mocked_get_investigation_tree_by_id)
-    )
+    @mock_connections(patch("requests.Session.get", side_effect=mocked_raise_exception))
     def test_get_investigation_tree_by_id_invalid(self, mock_requests):
         job_id = 999
         self.assertRaises(
