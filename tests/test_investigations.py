@@ -196,7 +196,7 @@ class TestInvestigations(BaseTest):
     @mock_connections(
         patch("requests.Session.get", side_effect=mocked_get_all_investigations)
     )
-    def test_get_all_investigations(self):
+    def test_get_all_investigations(self, mock_requests):
         investigation = self.client.get_investigation_tree_by_id(self.investigation_id)
         self.assertEqual(investigation.get("count", 0), 2)
         self.assertEqual(investigation.get("total_pages", 0), 1)
@@ -212,7 +212,7 @@ class TestInvestigations(BaseTest):
         side_effect=mocked_delete_job_from_investigation,
     )
     @patch("requests.Session.get", side_effect=mocked_get_investigation_tree_by_id)
-    def test_delete_job_from_investigation(self):
+    def test_delete_job_from_investigation(self, *mock_requests):
         # before delete there are two jobs
         investigation = self.client.get_investigation_tree_by_id(self.investigation_id)
         self.assertEqual(len(investigation.get("jobs", [])), 2)
@@ -235,7 +235,7 @@ class TestInvestigations(BaseTest):
         side_effect=mocked_delete_job_from_investigation,
     )
     @patch("requests.Session.get", side_effect=mocked_get_investigation_tree_by_id_2)
-    def add_job_to_investigation(self):
+    def add_job_to_investigation(self, *mock_requests):
         # before add there is 1 job
         investigation = self.client.get_investigation_tree_by_id(self.investigation_id)
         self.assertEqual(len(investigation.get("jobs", [])), 1)
