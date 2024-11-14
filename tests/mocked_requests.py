@@ -312,7 +312,7 @@ def mocked_add_job_to_investigation(*args, **kwargs):
     )
 
 
-def mocked_get_investigation_tree_by_id_2(*args, **kwargs):
+def mocked_get_investigation_tree_by_id_two_results(*args, **kwargs):
     return MockResponse(
         {
             "name": "InvestigationName: https://www.test.com",
@@ -326,6 +326,27 @@ def mocked_get_investigation_tree_by_id_2(*args, **kwargs):
                     "received_request_time": "2024-11-13T07:42:17.534614Z",
                     "is_sample": False,
                 },
+                {
+                    "pk": 2,
+                    "analyzed_object_name": "https://www.test2.com",
+                    "playbook": "Playbook2",
+                    "status": "reported_without_fails",
+                    "received_request_time": "2024-11-14T10:38:05.459358Z",
+                    "is_sample": False,
+                },
+            ],
+        },
+        200,
+        "/api/investigation/1/tree",
+    )
+
+
+def mocked_get_investigation_tree_by_id_one_result(*args, **kwargs):
+    return MockResponse(
+        {
+            "name": "InvestigationName: https://www.test.com",
+            "owner": 1,
+            "jobs": [
                 {
                     "pk": 2,
                     "analyzed_object_name": "https://www.test2.com",

@@ -6,7 +6,8 @@ from tests.mocked_requests import (
     mocked_get_all_investigations,
     mocked_get_investigation_by_id,
     mocked_get_investigation_tree_by_id,
-    mocked_get_investigation_tree_by_id_2,
+    mocked_get_investigation_tree_by_id_one_result,
+    mocked_get_investigation_tree_by_id_two_results,
     mocked_raise_exception,
 )
 from tests.utils import BaseTest, mock_connections
@@ -203,15 +204,22 @@ class TestInvestigations(BaseTest):
         self.assertTrue(investigation.get("results", []))
         self.assertEqual(len(investigation.get("results", [])), 2)
 
-    @patch(
-        "requests.Session.get",
-        side_effect=mocked_get_investigation_tree_by_id_2,
+    @mock_connections(
+        patch(
+            "requests.Session.get",
+            side_effect=[
+                # if more than one side effect you have to actually call the function
+                mocked_get_investigation_tree_by_id_two_results(),
+                mocked_get_investigation_tree_by_id_one_result(),
+            ],
+        )
     )
-    @patch(
-        "requests.Session.post",
-        side_effect=mocked_delete_job_from_investigation,
+    @mock_connections(
+        patch(
+            "requests.Session.post",
+            side_effect=[mocked_delete_job_from_investigation()],
+        )
     )
-    @patch("requests.Session.get", side_effect=mocked_get_investigation_tree_by_id)
     def test_delete_job_from_investigation(self, *mock_requests):
         # before delete there are two jobs
         investigation = self.client.get_investigation_tree_by_id(self.investigation_id)
@@ -226,15 +234,22 @@ class TestInvestigations(BaseTest):
         investigation = self.client.get_investigation_tree_by_id(self.investigation_id)
         self.assertEqual(len(investigation.get("jobs", [])), 1)
 
-    @patch(
-        "requests.Session.get",
-        side_effect=mocked_get_investigation_tree_by_id,
+    @mock_connections(
+        patch(
+            "requests.Session.get",
+            side_effect=[
+                # if more than one side effect you have to actually call the function
+                mocked_get_investigation_tree_by_id_one_result(),
+                mocked_get_investigation_tree_by_id_two_results(),
+            ],
+        )
     )
-    @patch(
-        "requests.Session.post",
-        side_effect=mocked_delete_job_from_investigation,
+    @mock_connections(
+        patch(
+            "requests.Session.post",
+            side_effect=[mocked_delete_job_from_investigation()],
+        )
     )
-    @patch("requests.Session.get", side_effect=mocked_get_investigation_tree_by_id_2)
     def add_job_to_investigation(self, *mock_requests):
         # before add there is 1 job
         investigation = self.client.get_investigation_tree_by_id(self.investigation_id)
