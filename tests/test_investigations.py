@@ -197,7 +197,7 @@ class TestInvestigations(BaseTest):
         patch("requests.Session.get", side_effect=mocked_get_all_investigations)
     )
     def test_get_all_investigations(self, mock_requests):
-        investigation = self.client.get_investigation_tree_by_id(self.investigation_id)
+        investigation = self.client.get_all_investigations()
         self.assertEqual(investigation.get("count", 0), 2)
         self.assertEqual(investigation.get("total_pages", 0), 1)
         self.assertTrue(investigation.get("results", []))
