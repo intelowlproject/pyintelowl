@@ -268,3 +268,115 @@ def mocked_get_investigation_tree_by_id(*args, **kwargs):
         200,
         "/api/investigation/1/tree",
     )
+
+
+def mocked_delete_job_from_investigation():
+    return MockResponse(
+        {
+            "id": 1,
+            "tags": [],
+            "tlp": "CLEAR",
+            "total_jobs": 1,
+            "jobs": [2],
+            "status": "concluded",
+            "for_organization": True,
+            "name": "InvestigationName: https://www.test.com",
+            "description": "",
+            "start_time": "2024-11-14T10:38:05.459358Z",
+            "end_time": "2024-11-14T10:38:17.638776Z",
+            "owner": "admin",
+        },
+        200,
+        "/api/investigation/1/remove_job",
+    )
+
+
+def mocked_add_job_to_investigation():
+    return MockResponse(
+        {
+            "id": 1,
+            "tags": [],
+            "tlp": "CLEAR",
+            "total_jobs": 2,
+            "jobs": [2],
+            "status": "concluded",
+            "for_organization": True,
+            "name": "InvestigationName: https://www.test.com",
+            "description": "",
+            "start_time": "2024-11-14T10:38:05.459358Z",
+            "end_time": "2024-11-14T10:38:17.638776Z",
+            "owner": "admin",
+        },
+        200,
+        "/api/investigation/1/add_job",
+    )
+
+
+def mocked_get_investigation_tree_by_id_2():
+    return MockResponse(
+        {
+            "name": "InvestigationName: https://www.test.com",
+            "owner": 1,
+            "jobs": [
+                {
+                    "pk": 1,
+                    "analyzed_object_name": "https://www.test.com",
+                    "playbook": "Playbook1",
+                    "status": "reported_without_fails",
+                    "received_request_time": "2024-11-13T07:42:17.534614Z",
+                    "is_sample": False,
+                },
+                {
+                    "pk": 2,
+                    "analyzed_object_name": "https://www.test2.com",
+                    "playbook": "Playbook2",
+                    "status": "reported_without_fails",
+                    "received_request_time": "2024-11-14T10:38:05.459358Z",
+                    "is_sample": False,
+                },
+            ],
+        },
+        200,
+        "/api/investigation/1/tree",
+    )
+
+
+def mocked_get_all_investigations():
+    return MockResponse(
+        {
+            "count": 2,
+            "total_pages": 1,
+            "results": [
+                {
+                    "id": 2,
+                    "tags": [],
+                    "tlp": "CLEAR",
+                    "total_jobs": 2,
+                    "jobs": [2],
+                    "status": "concluded",
+                    "for_organization": True,
+                    "name": "investigation2",
+                    "description": "",
+                    "start_time": "2024-11-13T07:42:17.534614Z",
+                    "end_time": "2024-11-13T07:42:35.861687Z",
+                    "owner": "admin",
+                },
+                {
+                    "id": 1,
+                    "tags": [],
+                    "tlp": "CLEAR",
+                    "total_jobs": 2,
+                    "jobs": [1],
+                    "status": "concluded",
+                    "for_organization": True,
+                    "name": "investigation1",
+                    "description": "",
+                    "start_time": "2024-11-12T11:10:42.887446Z",
+                    "end_time": "2024-11-12T11:10:49.632430Z",
+                    "owner": "admin",
+                },
+            ],
+        },
+        200,
+        "/api/investigation",
+    )

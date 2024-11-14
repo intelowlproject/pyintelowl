@@ -12,6 +12,7 @@ from tests import (
     TEST_FILE_HASH,
     TEST_GENERIC,
     TEST_HASH,
+    TEST_INVESTIGATION_ID,
     TEST_IP,
     TEST_JOB_ID,
     TEST_URL,
@@ -55,6 +56,7 @@ class BaseTest(TestCase):
     def setUp(self):
         self.client = IntelOwl("test-token", "test-url")
         self.job_id = TEST_JOB_ID
+        self.investigation_id = TEST_INVESTIGATION_ID
         self.ip = TEST_IP
         self.url = TEST_URL
         self.domain = TEST_DOMAIN

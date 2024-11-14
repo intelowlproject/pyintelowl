@@ -616,6 +616,64 @@ class IntelOwl:
         response = self.__make_request("GET", url=url)
         return response.json()
 
+    def add_job_to_investigation(
+        self, investigation_id: Union[int, str], job_id: Union[int, str]
+    ):
+        """Add an existing job to an existing investigation.
+        Endpoint: ``/api/investigation/{job_id}/add_job``
+
+        Args:
+            job_id (Union[int, str]): Job ID
+            investigation_id (Union[int, str]): Investigation ID
+
+        Raises:
+            IntelOwlClientException: on client/HTTP error
+
+        Returns:
+            Dict[str, Any]: JSON body.
+        """
+        url: str = self.instance + f"/api/investigation/{str(investigation_id)}/add_job"
+        json_data: str = json.dumps({"job": job_id})
+        response = self.__make_request("POST", url=url, json=json_data)
+        return response.json()
+
+    def delete_job_from_investigation(
+        self, investigation_id: Union[int, str], job_id: Union[int, str]
+    ):
+        """Delete a job from an existing investigation.
+        Endpoint: ``/api/investigation/{job_id}/remove_job``
+
+        Args:
+            job_id (Union[int, str]): Job ID
+            investigation_id (Union[int, str]): Investigation ID
+
+        Raises:
+            IntelOwlClientException: on client/HTTP error
+
+        Returns:
+            Dict[str, Any]: JSON body.
+        """
+        url: str = (
+            self.instance + f"/api/investigation/{str(investigation_id)}/remove_job"
+        )
+        json_data: str = json.dumps({"job": job_id})
+        response = self.__make_request("POST", url=url, json=json_data)
+        return response.json()
+
+    def get_all_investigations(self) -> Dict[str, Any]:
+        """Fetch all investigations info.
+        Endpoint: ``/api/investigation/``
+
+        Raises:
+            IntelOwlClientException: on client/HTTP error
+
+        Returns:
+            Dict[str, Any]: JSON body.
+        """
+        url = self.instance + "/api/investigation"
+        response = self.__make_request("GET", url=url)
+        return response.json()
+
     def get_investigation_by_id(
         self, investigation_id: Union[int, str]
     ) -> Dict[str, Any]:
