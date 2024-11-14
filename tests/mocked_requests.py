@@ -270,7 +270,7 @@ def mocked_get_investigation_tree_by_id(*args, **kwargs):
     )
 
 
-def mocked_delete_job_from_investigation():
+def mocked_delete_job_from_investigation(*args, **kwargs):
     return MockResponse(
         {
             "id": 1,
@@ -291,7 +291,7 @@ def mocked_delete_job_from_investigation():
     )
 
 
-def mocked_add_job_to_investigation():
+def mocked_add_job_to_investigation(*args, **kwargs):
     return MockResponse(
         {
             "id": 1,
@@ -312,7 +312,7 @@ def mocked_add_job_to_investigation():
     )
 
 
-def mocked_get_investigation_tree_by_id_2():
+def mocked_get_investigation_tree_by_id_2(*args, **kwargs):
     return MockResponse(
         {
             "name": "InvestigationName: https://www.test.com",
@@ -341,7 +341,7 @@ def mocked_get_investigation_tree_by_id_2():
     )
 
 
-def mocked_get_all_investigations():
+def mocked_get_all_investigations(*args, **kwargs):
     return MockResponse(
         {
             "count": 2,
