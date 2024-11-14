@@ -22,6 +22,69 @@ def investigations():
     pass
 
 
+def _display_all_investigations(logger, rows):
+    console = Console()
+    table = Table(show_header=True, title="List of Investigations", box=box.DOUBLE_EDGE)
+    header_style = "bold blue"
+    table.add_column(header="Id", header_style=header_style)
+    table.add_column(header="Name", header_style=header_style)
+    table.add_column(header="Tags", header_style=header_style)
+    table.add_column(header="Description", header_style=header_style)
+    table.add_column(header="Owner", header_style=header_style)
+    table.add_column(header="TLP", header_style=header_style)
+    table.add_column(header="Total jobs", header_style=header_style)
+    table.add_column(header="Jobs", header_style=header_style)
+    table.add_column(header="Status", header_style=header_style)
+    try:
+        for el in rows:
+            table.add_row(
+                str(el["id"]),
+                el["name"],
+                ", ".join([str(tag) for tag in el["tags"]]),
+                el["description"],
+                el["owner"],
+                el["tlp"],
+                str(el["total_jobs"]),
+                ", ".join([str(job_id) for job_id in el["jobs"]]),
+                el["status"],
+            )
+        console.print(table, justify="center")
+    except Exception as e:
+        logger.fatal(e, exc_info=True)
+
+
+@investigations.command(help="Delete job from investigation by their ID")
+@click.argument("investigation_id", type=int)
+@click.argument("job_id", type=int)
+@click.pass_context
+def rm(ctx: ClickContext, investigation_id: int, job_id: int):
+    ctx.obj.logger.info(
+        f"Requesting delete for Job [underline blue]#{job_id}[/] "
+        f"from Investigation #[underline blue]#{investigation_id}[/].."
+    )
+    try:
+        ctx.obj.delete_job_from_investigation(investigation_id, job_id)
+    except IntelOwlClientException as e:
+        ctx.obj.logger.fatal(str(e))
+
+
+@investigations.command(
+    help="Add existing job to an existing investigation by their ID"
+)
+@click.argument("investigation_id", type=int)
+@click.argument("job_id", type=int)
+@click.pass_context
+def add(ctx: ClickContext, investigation_id: int, job_id: int):
+    ctx.obj.logger.info(
+        f"Requesting add for Job [underline blue]#{job_id}[/] "
+        f"to Investigation #[underline blue]#{investigation_id}[/].."
+    )
+    try:
+        ctx.obj.add_job_to_investigation(investigation_id, job_id)
+    except IntelOwlClientException as e:
+        ctx.obj.logger.fatal(str(e))
+
+
 def _render_investigation_attributes(data):
     style = "[bold #31DDCF]"
     tags = ", ".join(
@@ -160,3 +223,31 @@ def view_tree(
         rprint(json.dumps(ans, indent=4))
     else:
         _display_investigation_tree(ans)
+
+
+@investigations.command(help="List all investigations")
+@click.option(
+    "--status",
+    type=click.Choice(
+        ["created", "running", "concluded"],
+        case_sensitive=False,
+    ),
+    show_choices=True,
+    help="Only show investigations having a particular status",
+)
+@add_options(json_flag_option)
+@click.pass_context
+def ls(ctx: ClickContext, status: str, as_json: bool):
+    ctx.obj.logger.info("Requesting list of investigations..")
+    try:
+        ans = ctx.obj.get_all_investigations()
+        results = ans.get("results", [])
+        ctx.obj.logger.info(results)
+        if status:
+            ans = [el for el in results if el["status"].lower() == status.lower()]
+        if as_json:
+            rprint(json.dumps(ans, indent=4))
+        else:
+            _display_all_investigations(ctx.obj.logger, results)
+    except IntelOwlClientException as e:
+        ctx.obj.logger.fatal(str(e))

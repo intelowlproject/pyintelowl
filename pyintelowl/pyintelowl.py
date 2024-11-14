@@ -633,8 +633,8 @@ class IntelOwl:
             Dict[str, Any]: JSON body.
         """
         url: str = self.instance + f"/api/investigation/{str(investigation_id)}/add_job"
-        json_data: str = json.dumps({"job": job_id})
-        response = self.__make_request("POST", url=url, json=json_data)
+        data: dict = {"job": job_id}
+        response = self.__make_request("POST", url=url, data=data)
         return response.json()
 
     def delete_job_from_investigation(
@@ -656,8 +656,8 @@ class IntelOwl:
         url: str = (
             self.instance + f"/api/investigation/{str(investigation_id)}/remove_job"
         )
-        json_data: str = json.dumps({"job": job_id})
-        response = self.__make_request("POST", url=url, json=json_data)
+        data: dict = {"job": job_id}
+        response = self.__make_request("POST", url=url, data=data)
         return response.json()
 
     def get_all_investigations(self) -> Dict[str, Any]:
