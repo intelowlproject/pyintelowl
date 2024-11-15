@@ -401,3 +401,101 @@ def mocked_get_all_investigations(*args, **kwargs):
         200,
         "/api/investigation",
     )
+
+
+def mocked_get_playbook_by_name(*args, **kwargs):
+    return MockResponse(
+        {
+            "id": 1,
+            "type": ["test"],
+            "analyzers": ["Analyzer1"],
+            "connectors": [],
+            "pivots": [],
+            "visualizers": [],
+            "runtime_configuration": {
+                "pivots": {},
+                "analyzers": {},
+                "connectors": {},
+                "visualizers": {},
+            },
+            "scan_mode": 2,
+            "scan_check_time": "1:00:00:00",
+            "tags": [],
+            "tlp": "CLEAR",
+            "weight": 1,
+            "is_editable": False,
+            "for_organization": False,
+            "name": "Playbook1",
+            "description": "test",
+            "disabled": False,
+            "starting": True,
+            "owner": None,
+        },
+        200,
+        "/api/playbook/Playbook1",
+    )
+
+
+def mocked_get_all_playbooks(*args, **kwargs):
+    return MockResponse(
+        {
+            "count": 2,
+            "total_pages": 1,
+            "results": [
+                {
+                    "id": 1,
+                    "type": ["test"],
+                    "analyzers": ["Analyzer1"],
+                    "connectors": [],
+                    "pivots": [],
+                    "visualizers": [],
+                    "runtime_configuration": {
+                        "pivots": {},
+                        "analyzers": {},
+                        "connectors": {},
+                        "visualizers": {},
+                    },
+                    "scan_mode": 2,
+                    "scan_check_time": "1:00:00:00",
+                    "tags": [],
+                    "tlp": "CLEAR",
+                    "weight": 1,
+                    "is_editable": False,
+                    "for_organization": False,
+                    "name": "Playbook1",
+                    "description": "test",
+                    "disabled": False,
+                    "starting": True,
+                    "owner": None,
+                },
+                {
+                    "id": 2,
+                    "type": ["test2"],
+                    "analyzers": ["Analyzer2"],
+                    "connectors": [],
+                    "pivots": ["Pivot1"],
+                    "visualizers": ["Visualizer"],
+                    "runtime_configuration": {
+                        "pivots": {},
+                        "analyzers": {},
+                        "connectors": {},
+                        "visualizers": {},
+                    },
+                    "scan_mode": 2,
+                    "scan_check_time": "1:00:00:00",
+                    "tags": [],
+                    "tlp": "AMBER",
+                    "weight": 1,
+                    "is_editable": False,
+                    "for_organization": False,
+                    "name": "Playbook2",
+                    "description": "test",
+                    "disabled": False,
+                    "starting": True,
+                    "owner": None,
+                },
+            ],
+        },
+        200,
+        "/api/playbook",
+    )

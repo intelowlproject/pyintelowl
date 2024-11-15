@@ -1181,3 +1181,48 @@ class IntelOwl:
         url = self.instance + f"/api/connector/{connector_name}/healthcheck"
         response = self.__make_request("GET", url=url)
         return response.json().get("status", None)
+
+    def get_playbook_by_name(self, playbook_name: str) -> Dict[str, Any]:
+        """Fetch playbook info by its name.
+        Endpoint: ``/api/playbook/{playbook_name}``
+
+        Args:
+            playbook_name (str): Playbook name to retrieve
+
+        Raises:
+            IntelOwlClientException: on client/HTTP error
+
+        Returns:
+            Dict[str, Any]: JSON body.
+        """
+        url = self.instance + "/api/playbook/" + playbook_name
+        response = self.__make_request("GET", url=url)
+        return response.json()
+
+    def get_all_playbooks(self) -> Dict[str, Any]:
+        """Fetch all playbooks info.
+        Endpoint: ``/api/playbook``
+
+        Raises:
+            IntelOwlClientException: on client/HTTP error
+
+        Returns:
+            Dict[str, Any]: JSON body.
+        """
+        url = self.instance + "/api/playbook"
+        response = self.__make_request("GET", url=url)
+        return response.json()
+
+    def disable_playbook_for_org(self, playbook_name: str):
+        """Disables the plugin for the organization of the user.
+        Endpoint: ``/api/playbook/{playbook_name}/organization``
+
+        Args:
+            playbook_name (str): Playbook name to disable for org
+
+        Raises:
+            IntelOwlClientException: on client/HTTP error
+        """
+        url = self.instance + "/api/playbook/" + playbook_name + "/organization"
+        # this call doesn't have a response
+        self.__make_request("POST", url=url)
