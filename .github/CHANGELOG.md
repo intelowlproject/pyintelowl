@@ -1,42 +1,59 @@
 # Changelog
+
+## [5.1.0](https://github.com/intelowlproject/pyintelowl/releases/tag/5.1.0)
+
+Added support for investigation framework and implemented remaining endpoints for playbooks.
+
 ## [5.0.2](https://github.com/intelowlproject/pyintelowl/releases/tag/5.0.2)
+
 Fixed previous broken release
 
 ## [5.0.1](https://github.com/intelowlproject/pyintelowl/releases/tag/5.0.1)
+
 - Updated documentation
 - Removed old endpoints
 
 ## [5.0.0](https://github.com/intelowlproject/pyintelowl/releases/tag/5.0.0)
+
 - Fixes for Playbook Analysis
 
 ## [4.4.7](https://github.com/intelowlproject/pyintelowl/releases/tag/4.4.7)
+
 - Fixed Running Playbook without TLP set
 
 ## [4.4.6](https://github.com/intelowlproject/pyintelowl/releases/tag/4.4.6)
+
 - Readded default TLP for analysis as TLP:CLEAR for "classic" analyses only (the ones that do not leverage a Playbook)
 
-
 ## [4.4.5](https://github.com/intelowlproject/pyintelowl/releases/tag/4.4.5)
-- Default TLP for analysis is not TLP:CLEAR anymore. For instance, this prevents the client to overwrite the TLP configuration of a Playbook.
+
+- Default TLP for analysis is not TLP:CLEAR anymore. For instance, this prevents the client to overwrite the TLP
+  configuration of a Playbook.
 
 ## [4.4.4](https://github.com/intelowlproject/pyintelowl/releases/tag/4.4.4)
+
 - Little fixes
 
 ## [4.4.3](https://github.com/intelowlproject/pyintelowl/releases/tag/4.4.3)
+
 - Fixed client results management in case of errors
 - Removed support for Python 3.7
 
 ## [4.4.2](https://github.com/intelowlproject/pyintelowl/releases/tag/4.4.2)
+
 - Added support for TLP:CLEAR
 
 ## [4.4.1](https://github.com/intelowlproject/pyintelowl/releases/tag/4.4.1)
+
 - Analyzing a File with a Playbook now works correctly
 - other little bug fixing
 
 ## [4.4.0](https://github.com/intelowlproject/pyintelowl/releases/tag/4.4.0)
+
 - this version supports the usage of a proxy while connecting to IntelOwl via Python code.
 
 ## [4.3.0](https://github.com/intelowlproject/pyintelowl/releases/tag/4.3.0)
+
 - this version supports the new Playbooks feature released with IntelOwl v4.1.0
 
 ## [4.2.0](https://github.com/intelowlproject/pyintelowl/releases/tag/4.2.0)
@@ -57,7 +74,8 @@ Fixed previous broken release
 
 ## [4.1.3](https://github.com/intelowlproject/pyintelowl/releases/tag/4.1.3)
 
-- Library: `IntelOwl.ask_analysis_availability` now accepts an argument `minutes_ago`. Use to specify number of minutes to go back when searching for a previous analysis.
+- Library: `IntelOwl.ask_analysis_availability` now accepts an argument `minutes_ago`. Use to specify number of minutes
+  to go back when searching for a previous analysis.
 - CLI: `-m/--check-minutes-ago` flag in `analyse`.
 
 ## [4.1.2](https://github.com/intelowlproject/pyintelowl/releases/tag/4.1.2)
@@ -76,7 +94,10 @@ Fixed previous broken release
 
 **Breaking Changes:**:
 
-- Library: The `tags: List[int]` argument has been deprecated in favor of `tags_labels: List[str]` in the methods, `IntelOwl.send_observable_analysis_request` and `IntelOwl.send_file_analysis_request`. Previously, the `tags` argument would accept a list of tag indices, now the `tags_labels` accepts a list of tag labels (non-existing `Tag` objects are created automatically with a randomly generated color).
+- Library: The `tags: List[int]` argument has been deprecated in favor of `tags_labels: List[str]` in the methods,
+  `IntelOwl.send_observable_analysis_request` and `IntelOwl.send_file_analysis_request`. Previously, the `tags` argument
+  would accept a list of tag indices, now the `tags_labels` accepts a list of tag labels (non-existing `Tag` objects are
+  created automatically with a randomly generated color).
 - CLI: Due to above change the `-tl/--tags-list` flag in `analyse` now also accepts a list of tag labels.
 
 **Others:**
@@ -89,7 +110,8 @@ Fixed previous broken release
 
 **Changes:**
 
-- Refactored argument names and ordering for `ask_analysis_availability`, `send_file_analysis_request`, `send_observable_analysis_request` methods to comply with latest changes in IntelOwl's REST API.
+- Refactored argument names and ordering for `ask_analysis_availability`, `send_file_analysis_request`,
+  `send_observable_analysis_request` methods to comply with latest changes in IntelOwl's REST API.
 - Deprecate `run_all_available_analyzers` argument/flag.
 
 **New Features:**
@@ -98,7 +120,9 @@ Fixed previous broken release
 - Ability to request and view "Connector Reports" for a job.
 - Ability to request `connector_config.json` file and view in either JSON or tabular format.
 - Ability to request download of sample associated with a job.
-- Added `kill`, `retry` and `healthcheck` features to analyzers and connectors. See [Managing Analyzers and Connectors](https://intelowl.readthedocs.io/en/master/Usage.html#managing-analyzers-and-connectors) section of the documentation.
+- Added `kill`, `retry` and `healthcheck` features to analyzers and connectors.
+  See [Managing Analyzers and Connectors](https://intelowl.readthedocs.io/en/master/Usage.html#managing-analyzers-and-connectors)
+  section of the documentation.
 
 **Others:**
 
@@ -145,22 +169,31 @@ Other changes:
 
 _Note: Incompatible with previous versions_
 
-This version brings a complete rewrite of the pyintelowl library as well as command line client. We very much recommend you to update to the latest version to enjoy all new features.
+This version brings a complete rewrite of the pyintelowl library as well as command line client. We very much recommend
+you to update to the latest version to enjoy all new features.
 
-- The new CLI is written with [pallets/click](https://github.com/pallets/click) and supports all IntelOwl API endpoints. The CLI is well-documented and will help you navigate different commands; you can use it to request new analysis, view an old analysis, view `analyzer_config.json`, view list of tags, list of jobs, etc.
-- Complete type-hinting and sphinx docs for the `pyintelowl.IntelOwl` class with helper member functions for each IntelOwl API endpoint.
+- The new CLI is written with [pallets/click](https://github.com/pallets/click) and supports all IntelOwl API endpoints.
+  The CLI is well-documented and will help you navigate different commands; you can use it to request new analysis, view
+  an old analysis, view `analyzer_config.json`, view list of tags, list of jobs, etc.
+- Complete type-hinting and sphinx docs for the `pyintelowl.IntelOwl` class with helper member functions for each
+  IntelOwl API endpoint.
 
 ## [2.0.0](https://github.com/intelowlproject/pyintelowl/releases/tag/2.0.0)
 
-**This version supports only IntelOwl versions >=1.8.0 (about to be released). To interact with previous IntelOwl versions programmatically please refer to pyintelowl version 1.3.5**
+**This version supports only IntelOwl versions >=1.8.0 (about to be released). To interact with previous IntelOwl
+versions programmatically please refer to pyintelowl version 1.3.5**
 
-- we forced [black](https://github.com/psf/black) style, added linters and precommit configuration. In this way pyintelowl is aligned to IntelOwl.
-- we have updated the authentication method from a JWT Token to a simple Token. In this way, it is easier to use pyintelowl for integrations with other products and there are no more concurrency problems on multiple simultaneous requests.
+- we forced [black](https://github.com/psf/black) style, added linters and precommit configuration. In this way
+  pyintelowl is aligned to IntelOwl.
+- we have updated the authentication method from a JWT Token to a simple Token. In this way, it is easier to use
+  pyintelowl for integrations with other products and there are no more concurrency problems on multiple simultaneous
+  requests.
 
 If you were using pyintelowl and IntelOwl before this version, you have to:
 
 - update IntelOwl to version>=1.8.0
-- retrieve a new API token from the Django Admin Interface for your user: you have to go in the _Durin_ section (click on `Auth tokens`) and generate a key there. This token is valid until manually deleted.
+- retrieve a new API token from the Django Admin Interface for your user: you have to go in the _Durin_ section (click
+  on `Auth tokens`) and generate a key there. This token is valid until manually deleted.
 
 ## [1.3.5](https://github.com/intelowlproject/pyintelowl/releases/tag/1.3.5)
 
@@ -204,7 +237,9 @@ PR #16 for details.
 
 ## [1.1.0](https://github.com/intelowlproject/pyintelowl/releases/tag/1.1.0)
 
-Added an option when executing pyintelowl as CLI: `-sc` will show the results in a colorful and organized way that helps the user in looking for useful information. By default, the results are still shown in the JSON format. Thanks to tsale to his idea and contribution.
+Added an option when executing pyintelowl as CLI: `-sc` will show the results in a colorful and organized way that helps
+the user in looking for useful information. By default, the results are still shown in the JSON format. Thanks to tsale
+to his idea and contribution.
 
 **Example:**
 

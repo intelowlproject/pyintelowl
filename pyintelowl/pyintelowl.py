@@ -616,6 +616,102 @@ class IntelOwl:
         response = self.__make_request("GET", url=url)
         return response.json()
 
+    def add_job_to_investigation(
+        self, investigation_id: Union[int, str], job_id: Union[int, str]
+    ):
+        """Add an existing job to an existing investigation.
+        Endpoint: ``/api/investigation/{job_id}/add_job``
+
+        Args:
+            job_id (Union[int, str]): Job ID
+            investigation_id (Union[int, str]): Investigation ID
+
+        Raises:
+            IntelOwlClientException: on client/HTTP error
+
+        Returns:
+            Dict[str, Any]: JSON body.
+        """
+        url: str = self.instance + f"/api/investigation/{str(investigation_id)}/add_job"
+        data: dict = {"job": job_id}
+        response = self.__make_request("POST", url=url, data=data)
+        return response.json()
+
+    def delete_job_from_investigation(
+        self, investigation_id: Union[int, str], job_id: Union[int, str]
+    ):
+        """Delete a job from an existing investigation.
+        Endpoint: ``/api/investigation/{job_id}/remove_job``
+
+        Args:
+            job_id (Union[int, str]): Job ID
+            investigation_id (Union[int, str]): Investigation ID
+
+        Raises:
+            IntelOwlClientException: on client/HTTP error
+
+        Returns:
+            Dict[str, Any]: JSON body.
+        """
+        url: str = (
+            self.instance + f"/api/investigation/{str(investigation_id)}/remove_job"
+        )
+        data: dict = {"job": job_id}
+        response = self.__make_request("POST", url=url, data=data)
+        return response.json()
+
+    def get_all_investigations(self) -> Dict[str, Any]:
+        """Fetch all investigations info.
+        Endpoint: ``/api/investigation/``
+
+        Raises:
+            IntelOwlClientException: on client/HTTP error
+
+        Returns:
+            Dict[str, Any]: JSON body.
+        """
+        url = self.instance + "/api/investigation"
+        response = self.__make_request("GET", url=url)
+        return response.json()
+
+    def get_investigation_by_id(
+        self, investigation_id: Union[int, str]
+    ) -> Dict[str, Any]:
+        """Fetch investigation info by ID.
+        Endpoint: ``/api/investigation/{job_id}``
+
+        Args:
+            investigation_id (Union[int, str]): Investigation ID to retrieve
+
+        Raises:
+            IntelOwlClientException: on client/HTTP error
+
+        Returns:
+            Dict[str, Any]: JSON body.
+        """
+        url = self.instance + "/api/investigation/" + str(investigation_id)
+        response = self.__make_request("GET", url=url)
+        return response.json()
+
+    def get_investigation_tree_by_id(
+        self, investigation_id: Union[int, str]
+    ) -> Dict[str, Any]:
+        """Fetch investigation tree info by ID.
+        Endpoint: ``/api/investigation/{job_id}/tree``
+
+        Args:
+            investigation_id (Union[int, str]): Investigation ID to retrieve
+
+        Raises:
+            IntelOwlClientException: on client/HTTP error
+
+        Returns:
+            Dict[str, Any]: JSON body.
+        """
+        url = self.instance + "/api/investigation/" + str(investigation_id) + "/tree"
+        response = self.__make_request("GET", url=url)
+        return response.json()
+
     @staticmethod
     def get_md5(
         to_hash: AnyStr,
@@ -1085,3 +1181,48 @@ class IntelOwl:
         url = self.instance + f"/api/connector/{connector_name}/healthcheck"
         response = self.__make_request("GET", url=url)
         return response.json().get("status", None)
+
+    def get_playbook_by_name(self, playbook_name: str) -> Dict[str, Any]:
+        """Fetch playbook info by its name.
+        Endpoint: ``/api/playbook/{playbook_name}``
+
+        Args:
+            playbook_name (str): Playbook name to retrieve
+
+        Raises:
+            IntelOwlClientException: on client/HTTP error
+
+        Returns:
+            Dict[str, Any]: JSON body.
+        """
+        url = self.instance + "/api/playbook/" + playbook_name
+        response = self.__make_request("GET", url=url)
+        return response.json()
+
+    def get_all_playbooks(self) -> Dict[str, Any]:
+        """Fetch all playbooks info.
+        Endpoint: ``/api/playbook``
+
+        Raises:
+            IntelOwlClientException: on client/HTTP error
+
+        Returns:
+            Dict[str, Any]: JSON body.
+        """
+        url = self.instance + "/api/playbook"
+        response = self.__make_request("GET", url=url)
+        return response.json()
+
+    def disable_playbook_for_org(self, playbook_name: str):
+        """Disables the plugin for the organization of the user.
+        Endpoint: ``/api/playbook/{playbook_name}/organization``
+
+        Args:
+            playbook_name (str): Playbook name to disable for org
+
+        Raises:
+            IntelOwlClientException: on client/HTTP error
+        """
+        url = self.instance + "/api/playbook/" + playbook_name + "/organization"
+        # this call doesn't have a response
+        self.__make_request("POST", url=url)
