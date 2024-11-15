@@ -26,15 +26,18 @@ def _display_all_investigations(logger, rows):
     console = Console()
     table = Table(show_header=True, title="List of Investigations", box=box.DOUBLE_EDGE)
     header_style = "bold blue"
-    table.add_column(header="Id", header_style=header_style)
-    table.add_column(header="Name", header_style=header_style)
-    table.add_column(header="Tags", header_style=header_style)
-    table.add_column(header="Description", header_style=header_style)
-    table.add_column(header="Owner", header_style=header_style)
-    table.add_column(header="TLP", header_style=header_style)
-    table.add_column(header="Total jobs", header_style=header_style)
-    table.add_column(header="Jobs", header_style=header_style)
-    table.add_column(header="Status", header_style=header_style)
+    headers: [] = [
+        "Id",
+        "Name",
+        "Tags",
+        "Description",
+        "Owner",
+        "TLP",
+        "Total jobs",
+        "Jobs",
+        "Status",
+    ]
+    [table.add_column(header=header, header_style=header_style) for header in headers]
     try:
         for el in rows:
             table.add_row(
