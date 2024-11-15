@@ -1,5 +1,6 @@
 # Checklist for creating a new release
 
+- [ ] I have already checked if all Dependabot issues have been solved before creating this PR.
 - [ ] Update `CHANGELOG.md` for the new version
 - [ ] Change version number in `pyintelowl/version.py`
 - [ ] Verify CI Tests
