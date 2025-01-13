@@ -6,6 +6,7 @@ from tests.mocked_requests import (
     mocked_download_job_sample,
     mocked_get_all_jobs,
     mocked_get_job_by_id,
+    mocked_get_jobs_py_page,
     mocked_kill_analyzer,
     mocked_kill_connector,
     mocked_kill_job,
@@ -25,6 +26,19 @@ class TestJobs(BaseTest):
     @mock_connections(patch("requests.Session.get", side_effect=mocked_raise_exception))
     def test_get_all_jobs_failure(self, mock_requests):
         self.assertRaises(IntelOwlClientException, self.client.get_all_jobs)
+
+    @mock_connections(
+        patch("requests.Session.get", side_effect=mocked_get_jobs_py_page)
+    )
+    def test_get_jobs_by_page_success(self, mock_requests):
+        page = 1
+        jobs = self.client.get_jobs_by_page(page)
+        self.assertIsInstance(jobs, dict)
+
+    @mock_connections(patch("requests.Session.get", side_effect=mocked_raise_exception))
+    def test_get_jobs_by_page_failure(self, mock_requests):
+        page = 1
+        self.assertRaises(IntelOwlClientException, self.client.get_jobs_by_page, page)
 
     @mock_connections(patch("requests.Session.get", side_effect=mocked_get_job_by_id))
     def test_get_job_by_id_valid(self, mock_requests):

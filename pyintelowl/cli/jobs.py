@@ -45,6 +45,7 @@ def jobs():
 @click.option(
     "-p",
     "--page",
+    type=int,
     help="""
     List jobs of a specific page. Each page contains 10 jobs.
     """,

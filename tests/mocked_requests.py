@@ -104,6 +104,14 @@ def mocked_get_all_jobs(*args, **kwargs):
     )
 
 
+def mocked_get_jobs_py_page(*args, **kwargs):
+    return MockResponse(
+        {"count": 1, "total_pages": 1, "results": []},
+        200,
+        "/api/jobs?page=1",
+    )
+
+
 def mocked_delete_job_by_id(*args, **kwargs):
     return MockResponse(
         True,
