@@ -104,11 +104,39 @@ def mocked_get_all_jobs(*args, **kwargs):
     )
 
 
-def mocked_get_jobs_py_page(*args, **kwargs):
+def mocked_get_jobs_by_page(*args, **kwargs):
     return MockResponse(
-        {"count": 1, "total_pages": 1, "results": []},
+        {
+            "count": 1,
+            "total_pages": 1,
+            "results": [
+                {
+                    "id": 1057,
+                    "user": {"username": "pranjal"},
+                    "tags": [],
+                    "pivots_to_execute": [],
+                    "analyzers_to_execute": ["UltraDNSAnalyzer"],
+                    "connectors_to_execute": [],
+                    "visualizers_to_execute": [],
+                    "playbook_to_execute": [],
+                    "is_sample": False,
+                    "md5": "",
+                    "observable_name": "",
+                    "observable_classification": "",
+                    "file_name": "",
+                    "file_mimetype": "",
+                    "status": "",
+                    "received_request_time": "",
+                    "finished_analysis_time": "",
+                    "process_time": 3.44,
+                    "tlp": "RED",
+                    "investigation": [],
+                    "playbook_requested": [],
+                }
+            ],
+        },
         200,
-        "/api/jobs?page=1",
+        "/api/jobs",
     )
 
 
