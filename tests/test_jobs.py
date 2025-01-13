@@ -83,6 +83,14 @@ class TestJobs(BaseTest):
             IntelOwlClientException, self.client.kill_running_job, self.job_id
         )
 
+    @mock_connections(
+        patch("requests.Session.get", side_effect=mocked_download_job_sample)
+    )
+    def test_download_job_sample(self, mocked_requests):
+        file_data = get_file_data(self.filepath)
+        downloaded = self.client.download_sample(self.job_id)
+        self.assertEqual(downloaded, file_data)
+
     @mock_connections(patch("requests.Session.get", side_effect=mocked_raise_exception))
     def test_download_job_sample_failure(self, mocked_requests):
         self.assertRaises(
