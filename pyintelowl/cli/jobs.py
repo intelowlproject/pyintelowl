@@ -42,12 +42,23 @@ def jobs():
     show_choices=True,
     help="Only show jobs having a particular status",
 )
+@click.option(
+    "-p",
+    "--page",
+    type=int,
+    help="""
+    List jobs of a specific page. Each page contains 10 jobs.
+    """,
+)
 @add_options(json_flag_option)
 @click.pass_context
-def ls(ctx: ClickContext, status: str, as_json: bool):
+def ls(ctx: ClickContext, status: str, as_json: bool, page: int):
     ctx.obj.logger.info("Requesting list of jobs..")
     try:
-        ans = ctx.obj.get_all_jobs()
+        if page:
+            ans = ctx.obj.get_jobs_by_page(page)
+        else:
+            ans = ctx.obj.get_all_jobs()
         results = ans.get("results", [])
         ctx.obj.logger.info(results)
         if status:

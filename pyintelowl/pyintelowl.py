@@ -581,6 +581,24 @@ class IntelOwl:
         response = self.__make_request("GET", url=url)
         return response.json()
 
+    def get_jobs_by_page(self, page: int) -> List[Dict[str, Any]]:
+        """
+        Fetch list of jobs by page number.\n
+        Endpoint: ``/api/jobs``
+
+        Args:
+            page (int): Page number
+
+        Raises:
+            IntelOwlClientException: on client/HTTP error
+
+        Returns:
+            Dict: Dict with 3 keys: "count", "total_pages", "results"
+        """
+        url = self.instance + f"/api/jobs?page={page}"
+        response = self.__make_request("GET", url=url)
+        return response.json()
+
     def get_tag_by_id(self, tag_id: Union[int, str]) -> Dict[str, str]:
         """Fetch tag info by ID.\n
         Endpoint: ``/api/tag/{tag_id}``
