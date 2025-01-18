@@ -1177,7 +1177,7 @@ class IntelOwl:
             Bool: success or not
         """
 
-        url = self.instance + f"/api/analyzer/{analyzer_name}/healthcheck"
+        url = self.instance + f"/api/analyzer/{analyzer_name}/health_check"
         response = self.__make_request("GET", url=url)
         return response.json().get("status", None)
 
